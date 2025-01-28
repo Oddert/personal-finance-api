@@ -37,7 +37,6 @@ export const createSingleBudget = async (req: Request, res: Response) => {
         const now = new Date().toISOString()
         const body = { ...req.body, isDefault: Boolean(req.body.isDefault), createdOn: now, updatedOn: now }
         delete body.id
-        console.log({ body })
         const stagedBudget = await Budget.query().insertAndFetch(body)
         
         for (const row of req.body.budgetRows) {

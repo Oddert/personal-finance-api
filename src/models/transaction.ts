@@ -1,4 +1,4 @@
-import { Model } from 'objection'
+import { ColumnNameMappers, Model } from 'objection'
 
 import knex from '../db/knex'
 
@@ -6,6 +6,7 @@ Model.knex(knex)
 
 export default class Transaction extends Model {
     id?: 'integer'
+    card_id?: number
     date?: Date
     transaction_type?: string
     description?: string
@@ -63,5 +64,38 @@ export default class Transaction extends Model {
                 }
             }
         }
+    }
+    
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                cardId: obj.card_id,
+                date: obj.date,
+                transactionType: obj.transaction_type,
+                description: obj.description,
+                debit: obj.debit,
+                credit: obj.credit,
+                ballance: obj.ballance,
+                createdOn: obj.created_on,
+                updatedOn: obj.updated_on,
+                categoryId: obj.category_id,
+            }
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                card_id: obj.cardId,
+                date: obj.date,
+                transaction_type: obj.transactionType,
+                description: obj.description,
+                debit: obj.debit,
+                credit: obj.credit,
+                ballance: obj.ballance,
+                created_on: obj.createdOn,
+                updated_on: obj.updatedOn,
+                category_id: obj.categoryId,
+            }
+        },
     }
 }
