@@ -15,6 +15,7 @@ export default class Transaction extends Model {
     ballance?: number
     created_on: Date | string
     updated_on: Date | string
+    currency?: string
     static created_on: Date | string
     static updated_on: Date | string
     category_id?: 'integer'
@@ -48,6 +49,7 @@ export default class Transaction extends Model {
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 category_id: { type: 'number' },
+                currency: { type: 'string' },
             }
         }
     }
@@ -70,6 +72,7 @@ export default class Transaction extends Model {
         parse(obj) {
             return {
                 id: obj.id,
+                currency: obj.currency,
                 cardId: obj.card_id,
                 date: obj.date,
                 transactionType: obj.transaction_type,
@@ -85,6 +88,7 @@ export default class Transaction extends Model {
         format(obj) {
             return {
                 id: obj.id,
+                currency: obj.currency,
                 card_id: obj.cardId,
                 date: obj.date,
                 transaction_type: obj.transactionType,
