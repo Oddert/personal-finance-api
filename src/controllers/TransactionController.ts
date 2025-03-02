@@ -138,7 +138,6 @@ export const createManyTransactions = async (req: Request, res: Response) => {
 
         return respondCreated(req, res, { createdTransactions }, 'Transactions created successfully')
     } catch(err: any) {
-        console.log(err)
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }
 }
