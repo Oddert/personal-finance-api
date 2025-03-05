@@ -1,5 +1,7 @@
 import { Router } from 'express'
 
+import { requiresAuth } from '../security/middleware'
+
 import {
     createSingleCard,
     deleteSingleCard,
@@ -12,15 +14,15 @@ import {
 const router = Router()
 
 router.route('/')
-    .get(getCards)
-    .post(createSingleCard)
+    .get(requiresAuth, getCards)
+    .post(requiresAuth, createSingleCard)
 
 router.route('/:id')
-    .get(getSingleCard)
-    .put(updateSingleCard)
-    .delete(deleteSingleCard)
+    .get(requiresAuth, getSingleCard)
+    .put(requiresAuth, updateSingleCard)
+    .delete(requiresAuth, deleteSingleCard)
 
 router.route('/preferences/:id')
-    .put(setActiveCard)
+    .put(requiresAuth, setActiveCard)
 
 export default router

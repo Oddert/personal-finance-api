@@ -1,9 +1,9 @@
 import { Router } from 'express'
 
 import {
-	getMatcherCategory,
-	getSeeds,
-	resetServer,
+    getMatcherCategory,
+    getSeeds,
+    resetServer,
 } from '../controllers/DebugController'
 	
 const router = Router()
