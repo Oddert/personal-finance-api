@@ -24,14 +24,14 @@ const representUser = (user: any) => {
 
 export const registerUser = async (req: Request, res: Response) => {
     try {
-        const checkExisting = await User.query().where('username', '=', req.body.username)
+        const checkExisting = await User.query().where('username', '=', req.body.username.toLowerCase())
 
         if (checkExisting.length > 0) {
             return respondConflict(req, res, null, 'The username requested is already taken.')
         }
 
-        const now = new Date().toISOString()
         const hashedPassword = await getHashedPassword(req.body.password)
+        const now = new Date().toISOString()
         const body = {
             languages: 'en-GB',
             defaultLang: 'en-GB',
@@ -40,6 +40,7 @@ export const registerUser = async (req: Request, res: Response) => {
             ...req.body,
             createdOn: now,
             updatedOn: now,
+            username: req.body.username.toLowerCase(),
             password: hashedPassword,
         }
         
@@ -55,7 +56,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
-        const user = await User.query().where('username', '=', req.body.username).first()
+        const user = await User.query().where('username', '=', req.body.username.toLowerCase()).first()
 
         if (!user) {
             return respondNotFound(req, res, null, `No found for username "${req.body.username}".`)
@@ -78,7 +79,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const getUserExists = async (req: Request, res: Response) => {
     try {
-        const user = await User.query().where('username', '=', req.params.username).first()
+        const user = await User.query().where('username', '=', req.params.username.toLowerCase()).first()
 
         if (user) {
             return respondOk(req, res, { exists: true })
