@@ -40,8 +40,6 @@ export const requiresAuth = (req: IUserRequest, res: Response, next: NextFunctio
     try {
         const JWT_SECRET = process.env.JWT_SECRET || ''
         const decodedToken = jwt.verify(token[1], JWT_SECRET)
-        console.log(decodedToken)
-        console.log(typeof decodedToken !== 'string' ? decodedToken?.exp : 'is a string??')
 
         if (typeof decodedToken === 'string') {
             throw new Error ('Unable to decode access token, token type is invalid.')
