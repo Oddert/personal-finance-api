@@ -1,6 +1,8 @@
 import dayjs from 'dayjs'
 import jwt from 'jsonwebtoken'
 
+import { v4 as uuid } from 'uuid'
+
 /**
  * Creates an Access Token for a user.
  *
@@ -18,7 +20,7 @@ export const createAccessToken = (username: string, expiresDelta?: number) => {
         .valueOf()
     
     const token = jwt.sign(
-        { exp: expiresIn, sub: username },
+        { exp: expiresIn, sub: username, jti: String(uuid()) },
         JWT_SECRET,
     )
     
@@ -42,7 +44,7 @@ export const createRefreshToken = (username: string, expiresDelta?: number) => {
         .valueOf()
 
     const token = jwt.sign(
-        { exp: expiresIn, sub: username },
+        { exp: expiresIn, sub: username, jti: String(uuid()) },
         JWT_SECRET,
     )
 
