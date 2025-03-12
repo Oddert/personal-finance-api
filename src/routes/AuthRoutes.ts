@@ -1,6 +1,12 @@
 import { Router } from 'express'
 
-import { getUserDetails, getUserExists, loginUser, registerUser } from '../controllers/AuthController'
+import {
+    getUserDetails,
+    getUserExists,
+    loginUser,
+    refreshToken,
+    registerUser,
+} from '../controllers/AuthController'
 
 import { requiresAuth } from '../security/middleware'
 
@@ -11,6 +17,9 @@ router.route('/signup')
 
 router.route('/login')
     .post(loginUser)
+
+router.route('/refresh-token')
+    .post(refreshToken)
 
 router.route('/user-exists/:username')
     .get(getUserExists)
