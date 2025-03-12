@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
+import cron from 'node-cron'
 
 import root from './routes/root'
 import auth from './routes/AuthRoutes'
@@ -14,11 +15,16 @@ import matcher from './routes/MatcherRoutes'
 import scenario from './routes/ScenarioRoutes'
 import transaction from './routes/TransactionRoutes'
 
+import { clearExpiredRefreshTokens } from './controllers/CronController'
+
 dotenv.config()
 
 const PORT = process.env.PORT || '8080'
 
 const app = express()
+
+cron.schedule('0 1 * * *', clearExpiredRefreshTokens)
+clearExpiredRefreshTokens()
 
 app.use(
     morgan('[morgan] :method :url :status :res[content-length] - :response-time ms')
