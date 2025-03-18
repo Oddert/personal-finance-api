@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class TokenExclude extends Model {
-    jwt: string
+    jti: string
     expires: Date | number
 
     static get tableName() {

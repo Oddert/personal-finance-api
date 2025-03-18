@@ -54,7 +54,7 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
             throw new Error('Token format is invalid, jti is missing.')
         }
 
-        const excludeRecord = await TokenExclude.query().findById(decodedToken.jti)
+        const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
 
         if (excludeRecord) {
             throw new Error('Token has been revoked.')
