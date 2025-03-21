@@ -42,10 +42,13 @@ app.use('/auth', auth)
 app.use('/budget', budget)
 app.use('/category', category)
 app.use('/card', card)
-app.use('/debug', debug)
 app.use('/matcher', matcher)
 app.use('/scenario', scenario)
 app.use('/transaction', transaction)
+
+if (process.env.NODE_ENV === 'development') {
+    app.use('/debug', debug)
+}
 
 const server = app.listen(
     PORT,
