@@ -120,7 +120,7 @@ export const refreshToken = async (req: Request, res: Response) => {
         const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
 
         if (excludeRecord) {
-            throw new Error('Refresh token has already been used.')
+            return respondUnauthenticated(req, res, null, 'Refresh token has already been used.', 401, 'Token Revoked')
         }
         
         const body = {

@@ -47,7 +47,7 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         }
         
         if (!decodedToken?.exp || decodedToken.exp <= new Date().getTime()) {
-            throw new Error ('Access token has expired.')
+            return respondUnauthenticated(req, res, null, 'Access token has expired.', 401, 'Token Expired')
         }
 
         if (!decodedToken.jti) {
@@ -57,7 +57,7 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
 
         if (excludeRecord) {
-            throw new Error('Token has been revoked.')
+            return respondUnauthenticated(req, res, null, 'Access token has already been used.', 401, 'Token Revoked')
         }
 
         req.user = decodedToken
