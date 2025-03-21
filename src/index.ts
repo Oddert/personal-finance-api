@@ -7,6 +7,7 @@ import morgan from 'morgan'
 import root from './routes/root'
 import budget from './routes/BudgetRoutes'
 import category from './routes/CategoryRoutes'
+import card from './routes/CardRoutes'
 import debug from './routes/DebugRoutes'
 import matcher from './routes/MatcherRoutes'
 import scenario from './routes/ScenarioRoutes'
@@ -32,6 +33,7 @@ app.use(cors())
 app.use('/', root)
 app.use('/budget', budget)
 app.use('/category', category)
+app.use('/card', card)
 app.use('/debug', debug)
 app.use('/matcher', matcher)
 app.use('/scenario', scenario)
@@ -41,4 +43,5 @@ const server = app.listen(
     PORT,
     () => `[${new Date().toLocaleString('en-GB')}] Server initialised on PORT: ${PORT}`
 )
+
 export default server

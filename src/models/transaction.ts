@@ -1,4 +1,4 @@
-import { Model } from 'objection'
+import { ColumnNameMappers, Model } from 'objection'
 
 import knex from '../db/knex'
 
@@ -6,6 +6,7 @@ Model.knex(knex)
 
 export default class Transaction extends Model {
     id?: 'integer'
+    card_id?: number
     date?: Date
     transaction_type?: string
     description?: string
@@ -14,6 +15,7 @@ export default class Transaction extends Model {
     ballance?: number
     created_on: Date | string
     updated_on: Date | string
+    currency?: string
     static created_on: Date | string
     static updated_on: Date | string
     category_id?: 'integer'
@@ -47,6 +49,7 @@ export default class Transaction extends Model {
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 category_id: { type: 'number' },
+                currency: { type: 'string' },
             }
         }
     }
@@ -63,5 +66,40 @@ export default class Transaction extends Model {
                 }
             }
         }
+    }
+    
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                currency: obj.currency,
+                cardId: obj.card_id,
+                date: obj.date,
+                transactionType: obj.transaction_type,
+                description: obj.description,
+                debit: obj.debit,
+                credit: obj.credit,
+                ballance: obj.ballance,
+                createdOn: obj.created_on,
+                updatedOn: obj.updated_on,
+                categoryId: obj.category_id,
+            }
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                currency: obj.currency,
+                card_id: obj.cardId,
+                date: obj.date,
+                transaction_type: obj.transactionType,
+                description: obj.description,
+                debit: obj.debit,
+                credit: obj.credit,
+                ballance: obj.ballance,
+                created_on: obj.createdOn,
+                updated_on: obj.updatedOn,
+                category_id: obj.categoryId,
+            }
+        },
     }
 }

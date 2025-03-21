@@ -11,17 +11,33 @@ dayjs.extend(customParseFormat)
 export const getTransaction = async (req: Request, res: Response) => {
     try {
         const startDate = typeof req.query?.from === 'string'
-            ? dayjs(req.query.from, 'DD/MM/YYYY').valueOf()
+            ? dayjs(req.query.from).valueOf()
             : dayjs(0).valueOf()
 
         const endDate = typeof req.query?.to === 'string'
-            ? dayjs(req.query.to, 'DD/MM/YYYY').valueOf()
+            ? dayjs(req.query.to).valueOf()
             : dayjs(undefined).valueOf()
 
         if (req.query.includeCategory) {
+            if (req.query.cardId) {
+                const transactions = await Transaction.query()
+                    .where('card_id', '=', Number(req.query.cardId))
+                    .whereBetween('date', [startDate, endDate])
+                    .withGraphFetched('assignedCategory')
+                    .orderBy('date', 'DESC')
+                return respondOk(req, res, { transactions })
+            }
             const transactions = await Transaction.query()
                 .whereBetween('date', [startDate, endDate])
                 .withGraphFetched('assignedCategory')
+                .orderBy('date', 'DESC')
+            return respondOk(req, res, { transactions })
+        }
+
+        if (req.query.cardId) {
+            const transactions = await Transaction.query()
+                .whereBetween('date', [startDate, endDate])
+                .where('card_id', '=', Number(req.query.cardId))
                 .orderBy('date', 'DESC')
             return respondOk(req, res, { transactions })
         }
@@ -30,6 +46,7 @@ export const getTransaction = async (req: Request, res: Response) => {
             .whereBetween('date', [startDate, endDate])
             .orderBy('date', 'DESC')
         return respondOk(req, res, { transactions })
+
     } catch(err: any) {
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }
