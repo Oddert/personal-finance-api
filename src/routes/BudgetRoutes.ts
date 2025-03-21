@@ -1,5 +1,7 @@
 import { Router } from 'express'
 
+import { requiresAuth } from '../security/middleware'
+
 import {
     createSingleBudget,
     deleteSingleBudget,
@@ -13,18 +15,18 @@ import {
 const router = Router()
 
 router.route('/')
-    .get(getBudgets)
-    .post(createSingleBudget)
+    .get(requiresAuth, getBudgets)
+    .post(requiresAuth, createSingleBudget)
 
 router.route('/:id')
-    .get(getSingleBudget)
-    .put(updateSingleBudget)
-    .delete(deleteSingleBudget)
+    .get(requiresAuth, getSingleBudget)
+    .put(requiresAuth, updateSingleBudget)
+    .delete(requiresAuth, deleteSingleBudget)
 
 router.route('/preferences/:id')
-    .put(setActiveBudget)
+    .put(requiresAuth, setActiveBudget)
 
 router.route('/rows')
-    .get(getBudgetRows)
+    .get(requiresAuth, getBudgetRows)
 
 export default router

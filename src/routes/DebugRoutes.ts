@@ -1,9 +1,10 @@
 import { Router } from 'express'
 
 import {
-	getMatcherCategory,
-	getSeeds,
-	resetServer,
+    getMatcherCategory,
+    getSeeds,
+    getTokenExclude,
+    resetServer,
 } from '../controllers/DebugController'
 	
 const router = Router()
@@ -16,5 +17,8 @@ router.route('/matcher-category')
 
 router.route('/create-seeds')
     .get(getSeeds)
+
+router.route('/token-exclude')
+    .get(getTokenExclude)
 
 export default router

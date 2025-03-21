@@ -148,6 +148,41 @@ export const respondBadRequest = (
 }
 
 /**
+ * Standard response formatter for 401 responses.
+ *
+ * The user is unauthenticated and requires login before proceeding.
+ * @category Utils
+ * @subcategory Response Utils
+ * @example
+ *  return respondUnauthenticated(req, res, null, null, 'You are not logged in.')
+ * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
+ * @param {Response} res Express response object.
+ * @param {any} payload The response content.
+ * @param {string} message Description of the response.
+ * @param {number} statusCode The HTTP status code for the response (default: 200).
+ * @param {string} error Description of any errors encountered.
+ * @returns {Response<response>}
+ */
+export const respondUnauthenticated = (
+    req: Request,
+    res: Response,
+    payload: any = null,
+    message: string|null = 'You are not logged in.',
+    statusCode = 401,
+    error: unknown = null,
+): Response<response> => {
+    return res
+        .status(statusCode)
+        .header('Content-Type', 'application/json')
+        .json({
+            status: statusCode,
+            payload,
+            message,
+            error,
+        })
+}
+
+/**
  * Standard response formatter for 400 band responses.
  *
  * The server cannot find the requested resource.
@@ -173,6 +208,41 @@ export const respondNotFound = (
     payload: any = null,
     message: string|null = 'The requested resource could not be found.',
     statusCode = 404,
+    error: unknown = null,
+): Response<response> => {
+    return res
+        .status(statusCode)
+        .header('Content-Type', 'application/json')
+        .json({
+            status: statusCode,
+            payload,
+            message,
+            error,
+        })
+}
+
+/**
+ * Standard response formatter for 409 responses.
+ *
+ * The request has a conflict and was rejected.
+ * @category Utils
+ * @subcategory Response Utils
+ * @example
+ *  return respondConflict(req, res, null, null, 'The requested username is already taken.')
+ * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
+ * @param {Response} res Express response object.
+ * @param {any} payload The response content.
+ * @param {string} message Description of the response.
+ * @param {number} statusCode The HTTP status code for the response (default: 200).
+ * @param {string} error Description of any errors encountered.
+ * @returns {Response<response>}
+ */
+export const respondConflict = (
+    req: Request,
+    res: Response,
+    payload: any = null,
+    message: string|null = 'The requested resource is not available.',
+    statusCode = 409,
     error: unknown = null,
 ): Response<response> => {
     return res

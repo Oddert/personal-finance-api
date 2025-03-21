@@ -57,7 +57,6 @@ export const updateSingleCard = async (req: Request, res: Response) => {
             icon: req.body?.icon || stagedCard.icon,
             coverImage: req.body?.coverImage || stagedCard.coverImage,
         }
-        console.log(body)
     
         const card = await Card.query().patchAndFetchById(req.params.id, body)
             

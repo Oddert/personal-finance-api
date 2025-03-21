@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { checkSchema } from 'express-validator'
 
+import { requiresAuth } from '../security/middleware'
+
 import {
     createSingleTransaction,
     getTransaction,
@@ -20,30 +22,34 @@ import {
 const router = Router()
 
 router.route('/')
-    .get(getTransaction)
+    .get(requiresAuth, getTransaction)
     .post(
+        requiresAuth,
         checkSchema(createTransactionSchema),
         createSingleTransaction,
     )
     
 router.route('/create-many')
     .post(
+        requiresAuth,
         checkSchema(createManyTransactionSchema),
         createManyTransactions,
     )
 
 router.route('/update-many')
     .put(
+        requiresAuth,
         checkSchema(createManyTransactionSchema),
         updateManyTransactions,
     )
 
 router.route('/:id')
-    .get(getSingleTransactions)
+    .get(requiresAuth, getSingleTransactions)
     .put(
+        requiresAuth,
         checkSchema(updateTransactionSchema),
         updateSingleTransaction,
     )
-    .delete(deleteSingleTransaction)
+    .delete(requiresAuth, deleteSingleTransaction)
 
 export default router

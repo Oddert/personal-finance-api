@@ -3,8 +3,10 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
+import cron from 'node-cron'
 
 import root from './routes/root'
+import auth from './routes/AuthRoutes'
 import budget from './routes/BudgetRoutes'
 import category from './routes/CategoryRoutes'
 import card from './routes/CardRoutes'
@@ -13,11 +15,16 @@ import matcher from './routes/MatcherRoutes'
 import scenario from './routes/ScenarioRoutes'
 import transaction from './routes/TransactionRoutes'
 
+import { clearExpiredRefreshTokens } from './controllers/CronController'
+
 dotenv.config()
 
 const PORT = process.env.PORT || '8080'
 
 const app = express()
+
+cron.schedule('0 1 * * *', clearExpiredRefreshTokens)
+clearExpiredRefreshTokens()
 
 app.use(
     morgan('[morgan] :method :url :status :res[content-length] - :response-time ms')
@@ -31,13 +38,17 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/', root)
+app.use('/auth', auth)
 app.use('/budget', budget)
 app.use('/category', category)
 app.use('/card', card)
-app.use('/debug', debug)
 app.use('/matcher', matcher)
 app.use('/scenario', scenario)
 app.use('/transaction', transaction)
+
+if (process.env.NODE_ENV === 'development') {
+    app.use('/debug', debug)
+}
 
 const server = app.listen(
     PORT,

@@ -1,5 +1,7 @@
 import { Router } from 'express'
 
+import { requiresAuth } from '../security/middleware'
+
 import {
     createManyScenarios,
     createSingleScenario,
@@ -13,18 +15,18 @@ import {
 const router = Router()
 
 router.route('/')
-    .get(getScenarios)
-    .post(createSingleScenario)
+    .get(requiresAuth, getScenarios)
+    .post(requiresAuth, createSingleScenario)
 
 router.route('/:id')
-    .get(getSingleScenario)
-    .put(updateSingleScenario)
-    .delete(deleteSingleScenario)
+    .get(requiresAuth, getSingleScenario)
+    .put(requiresAuth, updateSingleScenario)
+    .delete(requiresAuth, deleteSingleScenario)
 
 router.route('/create-many')
-    .post(createManyScenarios)
+    .post(requiresAuth, createManyScenarios)
 
 router.route('/delete-many')
-    .post(deleteManyScenarios)
+    .post(requiresAuth, deleteManyScenarios)
 
 export default router
