@@ -4,8 +4,9 @@ import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import cron from 'node-cron'
+import path from 'path'
 
-import root from './routes/root'
+// import root from './routes/root'
 import auth from './routes/AuthRoutes'
 import budget from './routes/BudgetRoutes'
 import category from './routes/CategoryRoutes'
@@ -30,14 +31,16 @@ app.use(
     morgan('[morgan] :method :url :status :res[content-length] - :response-time ms')
 )
 
-app.use(express.static('./'))
-
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser(process.env.SESSION_SECRET))
 app.use(express.json())
 app.use(cors())
 
-app.use('/', root)
+console.log(path.join(__dirname, './static/'))
+
+app.use('/', express.static(path.join(__dirname, './static/')))
+
+// app.use('/', root)
 app.use('/auth', auth)
 app.use('/budget', budget)
 app.use('/category', category)
