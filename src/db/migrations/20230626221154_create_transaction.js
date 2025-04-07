@@ -6,14 +6,14 @@
 exports.up = function(knex) {
     return knex.schema.createTable('transaction', table => {
         table.increments('id').primary()
-        table.date('date')
+        table.datetime('date')
         table.string('transaction_type', 5)
         table.string('description')
         table.integer('debit')
         table.integer('credit')
         table.integer('ballance')
-        table.date('created_on')
-        table.date('updated_on')
+        table.datetime('created_on')
+        table.datetime('updated_on')
         table.integer('category_id').references('category.id')
     })
 }

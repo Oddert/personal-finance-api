@@ -5,8 +5,8 @@
 exports.up = function(knex) {
     return knex.schema.createTable('user', (table) => {
         table.increments('id').primary()
-        table.date('created_on').notNullable()
-        table.date('updated_on').notNullable()
+        table.datetime('created_on').notNullable()
+        table.datetime('updated_on').notNullable()
         table.string('username').notNullable()
         table.string('password').notNullable()
         table.string('display_name').notNullable()

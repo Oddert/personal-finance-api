@@ -9,8 +9,8 @@ exports.up = function(knex) {
         table.string('label')
         table.string('description')
         table.string('colour')
-        table.date('created_on')
-        table.date('updated_on')
+        table.datetime('created_on')
+        table.datetime('updated_on')
     })
 }
 

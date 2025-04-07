@@ -11,12 +11,12 @@ exports.up = function(knex) {
         table.string('bank_name').notNullable()
         table.integer('sort_code')
         table.integer('card_number')
-        table.integer('expires')
+        table.datetime('expires')
         table.string('description')
         table.string('icon')
         table.string('cover_image')
-        table.date('created_on').notNullable()
-        table.date('updated_on').notNullable()
+        table.datetime('created_on').notNullable()
+        table.datetime('updated_on').notNullable()
     })
 };
 

@@ -5,7 +5,7 @@
 exports.up = function(knex) {
     return knex.schema.createTable('token_exclude', (table) => {
         table.string('jti').notNullable().primary()
-        table.date('expires').notNullable()
+        table.datetime('expires').notNullable()
     })
 };
 
