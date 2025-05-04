@@ -10,7 +10,7 @@ exports.up = function(knex) {
         table.datetime('updated_on').notNullable()
         table.string('description').notNullable()
         table.boolean('is_addition').notNullable().defaultTo(false)
-        table.integer('value').notNullable().defaultTo(0)
+        table.float('value').notNullable().defaultTo(0)
         table.integer('scenario_id').references('scenario.id')
     })
 }
