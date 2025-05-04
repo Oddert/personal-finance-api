@@ -10,6 +10,7 @@ import Transactor from '../models/Transactor'
 import Scheduler from '../models/Scheduler'
 import Transaction from '../models/Transaction'
 import TokenExclude from '../models/TokenExclude'
+import User from '../models/User'
 
 export const resetServer = async (req: Request, res: Response) => {
     try {
@@ -74,6 +75,20 @@ export const getTokenExclude = async (req: Request, res: Response) => {
         const tokenExclude: any[] = tokenExcludeRaw.map((token) => ({ jti: token.jti, expires: new Date(token.expires).toISOString() }))
 
         return respondOk(req, res, {tokenExclude})
+    } catch (error: any) {
+        respondServerError(req, res, error.name, null, 500, error.message)
+
+    }
+}
+
+/**
+ * Returns all token exclude records for debugging JWT refresh logic.
+ */
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await User.query()
+
+        return respondOk(req, res, {users})
     } catch (error: any) {
         respondServerError(req, res, error.name, null, 500, error.message)
 
