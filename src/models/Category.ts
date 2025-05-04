@@ -47,8 +47,8 @@ export default class Category extends Model {
     }
 
     static get relationMappings() {
-        const Transaction = __dirname + '/Transaction' // require('./User')
-        const Matcher = __dirname + '/Matcher' // require('./User')
+        const Transaction = __dirname + '/Transaction'
+        const Matcher = __dirname + '/Matcher'
         return {
             transactions: {
                 relation: Model.HasManyRelation,

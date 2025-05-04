@@ -44,13 +44,14 @@ export const registerUser = async (req: Request, res: Response) => {
             updatedOn: now,
             username: req.body.username.toLowerCase(),
             password: hashedPassword,
+            id: Math.floor(Math.random() * 100000)
         }
         
         const user = await User.query().insertAndFetch(body)
         const accessToken = createAccessToken(user.username)
         const refreshToken = createRefreshToken(user.username)
 
-        return respondOk(req, res, { accessToken, refreshToken, user: representUser(user) })
+        return respondOk(req, res, { accessToken, refreshToken, user: representUser(user) }, 'User created successfully')
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
