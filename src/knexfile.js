@@ -1,4 +1,3 @@
-// const knex = require( 'knex' );
 const dayjs = require('dayjs');
 const { types } = require('pg');
 const { builtins } = require ('pg-types');
@@ -10,42 +9,10 @@ const parseFn = (val) => {
 types.setTypeParser(builtins.TIMESTAMPTZ, parseFn);
 types.setTypeParser(builtins.TIMESTAMP, parseFn);
 
-// knex.on('query', (queryData) => {
-//     console.log(queryData);
-// });
-
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 const config = {
-    // development: {
-    //     client: 'pg',
-    //     connection: {
-    //         user: 'postgres',
-    //         password: 'examplepassword',
-    //         database: 'mydatabase',
-    //         host: 'host.docker.internal',
-    //         port: 5432,
-    //         // host: '127.0.0.1',
-    //         // charset: 'utf8mb4',
-    //         // timezone: 'bst',
-    //         // typeCast: (field, next) => {
-    //         //     console.log(field.type)
-    //         //     if (field.type === 'DATE') {
-    //         //         console.log(field)
-    //         //         return field.string();
-    //         //     }
-    //         //     return next();
-    //         // },
-    //     },
-    //     useNullAsDefault: true,
-    //     migrations: {
-    //         directory: __dirname + '/db/migrations'
-    //     },
-    //     seeds: {
-    //         directory: __dirname + '/db/seeds'
-    //     }
-    // },
     development: {
         client: 'sqlite3',
         connection: {
@@ -56,7 +23,7 @@ const config = {
             directory: __dirname + '/db/migrations'
         },
         seeds: {
-            directory: __dirname + '/db/private-seeds'
+            directory: __dirname + '/db/seeds'
         }
     },
     staging: {
@@ -73,7 +40,7 @@ const config = {
             directory: __dirname + '/db/migrations'
         },
         seeds: {
-            directory: __dirname + '/db/seeds'
+            directory: __dirname + '/db/private-seeds'
         }
     },
     production: {
@@ -94,7 +61,7 @@ const config = {
             directory: __dirname + '/db/migrations'
         },
         seeds: {
-            directory: __dirname + '/db/seeds'
+            directory: __dirname + '/db/private-seeds'
         }
     },
 }
