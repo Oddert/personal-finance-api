@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: personal-finance-api-production-db
     image: postgres:13
     command: postgres -p 5432 -c datestyle='dmy'
     environment:
@@ -14,6 +15,7 @@ services:
       - 5432:5432
 
   app:
+    container_name: personal-finance-api-production-app
     build:
       dockerfile: ./Dockerfile.production
     depends_on:

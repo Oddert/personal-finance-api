@@ -1,7 +1,10 @@
 services:
   app:
+    container_name: personal-finance-api-development-app
     build:
       dockerfile: ./Dockerfile.development
+    environment:
+      - NODE_ENV=development
     depends_on:
       - db
     ports:
