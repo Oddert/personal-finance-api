@@ -2,7 +2,6 @@
   "name": "personal-finance-server",
   "version": "1.0.0",
   "description": "Server component for Personal Finance project",
-  "main": "app.js",
   "scripts": {
     "test": "rm -rf dist/ && npm run build && mocha dist/test/**/*.test.js --exit",
     "test:watch": "mocha dist/test/**/*.test.js --watch",
@@ -11,8 +10,7 @@
     "start": "cross-env NODE_ENV=\"development\" concurrently \"tsc --watch\" \"nodemon dist/index.js\"",
     "start:staging": "cross-env NODE_ENV=\"staging\" nodemon dist/index.js",
     "start:production": "cross-env NODE_ENV=\"production\" nodemon dist/index.js",
-    "copy-static": "cp -r src/static/* dist/static/",
-    "build": "tsc && npm run copy-static",
+    "build": "cross-env DEBUG=knex* && rm -rf dist/ && tsc",
     "build:watch": "tsc --watch",
     "db:migrate": "cd dist && knex migrate:latest",
     "db:seed": "cd dist && knex seed:run",
@@ -36,6 +34,8 @@
     "knex": "^2.4.2",
     "node-cron": "^3.0.3",
     "objection": "^3.0.1",
+    "pg": "^8.14.1",
+    "pg-types": "^4.0.2",
     "sqlite3": "^5.1.6",
     "uuid": "^11.1.0"
   },
