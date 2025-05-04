@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      dockerfile: ./Dockerfile.development
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    networks:
+      - app-network
+    
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
