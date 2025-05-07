@@ -14,12 +14,14 @@ import {
     createManyCategoriesSchema,
     updateCategorySchema,
 } from '../schemas/CategorySchema'
+import { requiresAuth } from '../security/middleware'
 
 const router = Router()
 
 router.route('/')
-    .get(getCategories)
+    .get(requiresAuth, getCategories)
     .post(
+        requiresAuth,
         checkSchema(createCategorySchema),
         createSingleCategory,
     )
@@ -27,13 +29,15 @@ router.route('/')
 router.route('/:id')
     .get(getSingleCategory)
     .put(
+        requiresAuth, 
         checkSchema(updateCategorySchema),
         updateSingleCategory,
     )
-    .delete(deleteSingleCategory)
+    .delete(requiresAuth, deleteSingleCategory)
 
 router.route('/create-many')
     .post(
+        requiresAuth, 
         checkSchema(createManyCategoriesSchema),
         createManyCategories,
     )

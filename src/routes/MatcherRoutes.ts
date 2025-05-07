@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { checkSchema } from 'express-validator'
 
+import { requiresAuth } from '../security/middleware'
+
 import {
     createManyMatchers,
     createSingleMatcher,
@@ -19,22 +21,25 @@ import {
 const router = Router()
 
 router.route('/')
-    .get(getMatchers)
+    .get(requiresAuth, getMatchers)
     .post(
+        requiresAuth,
         checkSchema(createMatcherSchema),
         createSingleMatcher,
     )
 
 router.route('/:id')
-    .get(getSingleMatcher)
+    .get(requiresAuth, getSingleMatcher)
     .put(
+        requiresAuth,
         checkSchema(updateMatcherSchema),
         updateSingleMatcher,
     )
-    .delete(deleteSingleMatcher)
+    .delete(requiresAuth, deleteSingleMatcher)
 
 router.route('/create-many')
     .post(
+        requiresAuth,
         checkSchema(createManyMatchersSchema),
         createManyMatchers,
     )

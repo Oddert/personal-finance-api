@@ -9,6 +9,7 @@ import Category from '../models/Category'
 import Transactor from '../models/Transactor'
 import Scheduler from '../models/Scheduler'
 import Transaction from '../models/Transaction'
+import TokenExclude from '../models/TokenExclude'
 
 export const resetServer = async (req: Request, res: Response) => {
     try {
@@ -61,5 +62,20 @@ export const getSeeds = async (req: Request, res: Response) => {
         })
     } catch (error: any) {
         respondServerError(req, res, null, null, 500, error.message)
+    }
+}
+
+/**
+ * Returns all token exclude records for debugging JWT refresh logic.
+ */
+export const getTokenExclude = async (req: Request, res: Response) => {
+    try {
+        const tokenExcludeRaw = await TokenExclude.query()
+        const tokenExclude: any[] = tokenExcludeRaw.map((token) => ({ jti: token.jti, expires: new Date(token.expires).toISOString() }))
+
+        return respondOk(req, res, {tokenExclude})
+    } catch (error: any) {
+        respondServerError(req, res, error.name, null, 500, error.message)
+
     }
 }

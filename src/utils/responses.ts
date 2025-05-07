@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-declare interface response {
+export interface IStandardResponse {
     message?: string    
     error?: string
     status: number
@@ -13,13 +13,12 @@ declare interface response {
  * @subcategory Response Utils
  * @example
  *  return respondOk(req, res, { myData: [1, 2, 3] })
- * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
- * @param {Response} res Express response object.
- * @param {any} payload The response content.
- * @param {string} message Description of the response.
- * @param {number} statusCode The HTTP status code for the response (default: 200).
- * @param {string} error Description of any errors encountered.
- * @returns {Response<response>}
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
  */
 export const respondOk = (
     req: Request,
@@ -28,7 +27,7 @@ export const respondOk = (
     message: string|null = 'Request processed successfully.',
     statusCode = 200,
     error: unknown = null,
-): Response<response> => {
+): Response<IStandardResponse> => {
     return res
         .status(statusCode)
         .header('Content-Type', 'application/json')
@@ -48,13 +47,12 @@ export const respondOk = (
  * @subcategory Response Utils
  * @example
  *  return respondCreated(req, res, { createdEntity: { name: 'Jean Luc' } })
- * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
- * @param {Response} res Express response object.
- * @param {any} payload The response content.
- * @param {string} message Description of the response.
- * @param {number} statusCode The HTTP status code for the response (default: 200).
- * @param {string} error Description of any errors encountered.
- * @returns {Response<response>}
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
  */
 export const respondCreated = (
     req: Request,
@@ -63,7 +61,7 @@ export const respondCreated = (
     message: string|null = 'Create request processed successfully.',
     statusCode = 201,
     error: unknown = null,
-): Response<response> => {
+): Response<IStandardResponse> => {
     return res
         .status(statusCode)
         .header('Content-Type', 'application/json')
@@ -85,13 +83,12 @@ export const respondCreated = (
  * @subcategory Response Utils
  * @example
  *  return respondMultipleChoices(req, res, { options: [1, 2] })
- * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
- * @param {Response} res Express response object.
- * @param {any} payload The response content.
- * @param {string} message Description of the response.
- * @param {number} statusCode The HTTP status code for the response (default: 200).
- * @param {string} error Description of any errors encountered.
- * @returns {Response<response>}
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
  */
 export const respondMultipleChoices = (
     req: Request,
@@ -100,7 +97,7 @@ export const respondMultipleChoices = (
     message: string|null = 'The request has more than one possible response.',
     statusCode = 300,
     error: unknown = null,
-): Response<response> => {
+): Response<IStandardResponse> => {
     return res
         .status(statusCode)
         .header('Content-Type', 'application/json')
@@ -120,13 +117,12 @@ export const respondMultipleChoices = (
  * @subcategory Response Utils
  * @example
  *  return respondBadRequest(req, res, null, null, 'Something went wrong with your request.')
- * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
- * @param {Response} res Express response object.
- * @param {any} payload The response content.
- * @param {string} message Description of the response.
- * @param {number} statusCode The HTTP status code for the response (default: 200).
- * @param {string} error Description of any errors encountered.
- * @returns {Response<response>}
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
  */
 export const respondBadRequest = (
     req: Request,
@@ -135,7 +131,41 @@ export const respondBadRequest = (
     message: string|null = 'There was an issue in the format of your request. Please check and try again.',
     statusCode = 400,
     error: unknown = null,
-): Response<response> => {
+): Response<IStandardResponse> => {
+    return res
+        .status(statusCode)
+        .header('Content-Type', 'application/json')
+        .json({
+            status: statusCode,
+            payload,
+            message,
+            error,
+        })
+}
+
+/**
+ * Standard response formatter for 401 responses.
+ *
+ * The user is unauthenticated and requires login before proceeding.
+ * @category Utils
+ * @subcategory Response Utils
+ * @example
+ *  return respondUnauthenticated(req, res, null, null, 'You are not logged in.')
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
+ */
+export const respondUnauthenticated = (
+    req: Request,
+    res: Response,
+    payload: any = null,
+    message: string|null = 'You are not logged in.',
+    statusCode = 401,
+    error: unknown = null,
+): Response<IStandardResponse> => {
     return res
         .status(statusCode)
         .header('Content-Type', 'application/json')
@@ -159,13 +189,12 @@ export const respondBadRequest = (
  * @subcategory Response Utils
  * @example
  *  return respondNotFound(req, res, null, null, 'The requested resource could not be found.')
- * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
- * @param {Response} res Express response object.
- * @param {any} payload The response content.
- * @param {string} message Description of the response.
- * @param {number} statusCode The HTTP status code for the response (default: 200).
- * @param {string} error Description of any errors encountered.
- * @returns {Response<response>}
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
  */
 export const respondNotFound = (
     req: Request,
@@ -174,7 +203,41 @@ export const respondNotFound = (
     message: string|null = 'The requested resource could not be found.',
     statusCode = 404,
     error: unknown = null,
-): Response<response> => {
+): Response<IStandardResponse> => {
+    return res
+        .status(statusCode)
+        .header('Content-Type', 'application/json')
+        .json({
+            status: statusCode,
+            payload,
+            message,
+            error,
+        })
+}
+
+/**
+ * Standard response formatter for 409 responses.
+ *
+ * The request has a conflict and was rejected.
+ * @category Utils
+ * @subcategory Response Utils
+ * @example
+ *  return respondConflict(req, res, null, null, 'The requested username is already taken.')
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
+ */
+export const respondConflict = (
+    req: Request,
+    res: Response,
+    payload: any = null,
+    message: string|null = 'The requested resource is not available.',
+    statusCode = 409,
+    error: unknown = null,
+): Response<IStandardResponse> => {
     return res
         .status(statusCode)
         .header('Content-Type', 'application/json')
@@ -194,13 +257,12 @@ export const respondNotFound = (
  * @subcategory Response Utils
  * @example
  *  return respondServerError(req, res, { options: [1, 2] })
- * @param {Request} req Express request object. Unused, included for the purpose of interoperability.
- * @param {Response} res Express response object.
- * @param {any} payload The response content.
- * @param {string} message Description of the response.
- * @param {number} statusCode The HTTP status code for the response (default: 200).
- * @param {string} error Description of any errors encountered.
- * @returns {Response<response>}
+ * @param req Express request object. Unused, included for the purpose of interoperability.
+ * @param res Express response object.
+ * @param payload The response content.
+ * @param message Description of the response.
+ * @param statusCode The HTTP status code for the response (default: 200).
+ * @param error Description of any errors encountered.
  */
 export const respondServerError = (
     req: Request,
@@ -209,7 +271,7 @@ export const respondServerError = (
     message: string|null = 'There was an issue processing your request.',
     statusCode = 500,
     error: unknown = null,
-): Response<response> => {
+): Response<IStandardResponse> => {
     return res
         .status(statusCode)
         .header('Content-Type', 'application/json')
