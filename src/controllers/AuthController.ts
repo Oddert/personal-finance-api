@@ -1,5 +1,8 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { v4 as uuid } from 'uuid'
+
+import { IUserRequest } from '../types/Auth.types'
 
 import { respondConflict, respondNotFound, respondOk, respondServerError, respondUnauthenticated } from '../utils/responses'
 
@@ -8,22 +11,6 @@ import TokenExclude from '../models/TokenExclude'
 
 import { createAccessToken, createRefreshToken } from '../security/token'
 import { getHashedPassword, verifyHashedPassword } from '../security/hash'
-import { IUserRequest } from '../types/Auth.types'
-
-const representUser = (user: any) => {
-    return {
-        id: user.id,
-        created_on: user.createdOn,
-        updated_on: user.updatedOn,
-        username: user.username,
-        first_name: user.firstName,
-        last_name: user.lastName,
-        languages: user.languages,
-        default_lang: user.defaultLang,
-        currencies: user.currencies,
-        default_currency: user.defaultCurrency,
-    }
-}
 
 export const registerUser = async (req: Request, res: Response) => {
     try {
@@ -45,13 +32,14 @@ export const registerUser = async (req: Request, res: Response) => {
             updatedOn: now,
             username: req.body.username.toLowerCase(),
             password: hashedPassword,
+            id: uuid(),
         }
         
         const user = await User.query().insertAndFetch(body)
         const accessToken = createAccessToken(user.username)
         const refreshToken = createRefreshToken(user.username)
 
-        return respondOk(req, res, { accessToken, refreshToken, user: representUser(user) })
+        return respondOk(req, res, { accessToken, refreshToken, user: user.toJson() })
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
@@ -97,7 +85,8 @@ export const getUserExists = async (req: Request, res: Response) => {
 export const getUserDetails = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query().where('username', 'LIKE', `${req.user.sub}`).first()
-        return respondOk(req, res, { user: user ? representUser(user) : undefined })
+        return respondOk(req, res, { user: user ? user : undefined })
+        // return respondOk(req, res, { user: user ? user.toJson() : undefined })
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
