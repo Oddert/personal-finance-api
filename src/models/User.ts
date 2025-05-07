@@ -1,14 +1,15 @@
 import { ColumnNameMappers,Model } from 'objection'
 
 export default class User extends Model {
-    id?: number
+    id: string
     created_on: Date | string
     updated_on: Date | string
     static created_on: Date | string
     static updated_on: Date | string
     username: string
     password: string
-    display_name: string
+    first_name: string
+    last_name: string
     languages: string
     default_lang: string
     currencies: string
@@ -29,52 +30,37 @@ export default class User extends Model {
         this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
     }
 
+    toJson() {
+        return {
+            id: this.id,
+            created_on: this.created_on,
+            updated_on: this.updated_on,
+            username: this.username,
+            first_name: this.first_name,
+            last_name: this.last_name,
+            languages: this.languages,
+            default_lang: this.default_lang,
+            currencies: this.currencies,
+            default_currency: this.default_currency,
+        }
+    }
+
     static get jsonSchema() {
         return {
             type: 'object',
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 username: { type: 'string' },
                 password: { type: 'string' },
-                display_name: { type: 'string' },
+                first_name: { type: 'string' },
+                last_name: { type: 'string' },
                 languages: { type: 'string' },
                 default_lang: { type: 'string' },
                 currencies: { type: 'string' },
                 default_currency: { type: 'string' },
             }
         }
-    }
-    
-    static columnNameMappers: ColumnNameMappers = {
-        parse(obj) {
-            return {
-                id: obj.id,
-                createdOn: obj.created_on,
-                updatedOn: obj.updated_on,
-                username: obj.username,
-                displayName: obj.display_name,
-                languages: obj.languages,
-                defaultLang: obj.default_lang,
-                currencies: obj.currencies,
-                defaultCurrency: obj.default_currency,
-                password: obj.password,
-            }
-        },
-        format(obj) {
-            return {
-                id: obj.id,
-                created_on: obj.createdOn,
-                updated_on: obj.updatedOn,
-                username: obj.username,
-                display_name: obj.displayName,
-                languages: obj.languages,
-                default_lang: obj.defaultLang,
-                currencies: obj.currencies,
-                default_currency: obj.defaultCurrency,
-                password: obj.password,
-            }
-        },
     }
 }

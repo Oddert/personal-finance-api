@@ -132,3 +132,4 @@ dist
 # Excluding seed data due to sensitivity of data
 private-seeds*
 *.db3
+private-seeds/
