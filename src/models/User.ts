@@ -63,37 +63,4 @@ export default class User extends Model {
             }
         }
     }
-    
-    static columnNameMappers: ColumnNameMappers = {
-        parse(obj) {
-            return {
-                id: obj.id,
-                createdOn: obj.created_on,
-                updatedOn: obj.updated_on,
-                username: obj.username,
-                firstName: obj.first_name,
-                lastName: obj.last_name,
-                languages: obj.languages,
-                defaultLang: obj.default_lang,
-                currencies: obj.currencies,
-                defaultCurrency: obj.default_currency,
-                password: obj.password,
-            }
-        },
-        format(obj) {
-            return {
-                id: obj.id,
-                created_on: obj.createdOn,
-                updated_on: obj.updatedOn,
-                username: obj.username,
-                first_name: obj.firstName,
-                last_name: obj.lastName,
-                languages: obj.languages,
-                default_lang: obj.defaultLang,
-                currencies: obj.currencies,
-                default_currency: obj.defaultCurrency,
-                password: obj.password,
-            }
-        },
-    }
 }

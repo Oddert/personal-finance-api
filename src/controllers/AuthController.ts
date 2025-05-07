@@ -85,8 +85,7 @@ export const getUserExists = async (req: Request, res: Response) => {
 export const getUserDetails = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query().where('username', 'LIKE', `${req.user.sub}`).first()
-        return respondOk(req, res, { user: user ? user : undefined })
-        // return respondOk(req, res, { user: user ? user.toJson() : undefined })
+        return respondOk(req, res, { user: user ? user.toJson() : undefined })
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
