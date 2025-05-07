@@ -4,8 +4,8 @@ import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import cron from 'node-cron'
+import path from 'path'
 
-import root from './routes/root'
 import auth from './routes/AuthRoutes'
 import budget from './routes/BudgetRoutes'
 import category from './routes/CategoryRoutes'
@@ -19,9 +19,19 @@ import { clearExpiredRefreshTokens } from './controllers/CronController'
 
 dotenv.config()
 
-const PORT = process.env.PORT || '8080'
+const PORT = process.env.PORT || '3000'
 
 const app = express()
+
+const routes = [
+    { path: '/auth', router: auth },
+    { path: '/budget', router: budget },
+    { path: '/category', router: category },
+    { path: '/card', router: card },
+    { path: '/matcher', router: matcher },
+    { path: '/scenario', router: scenario },
+    { path: '/transaction', router: transaction },
+]
 
 cron.schedule('0 1 * * *', clearExpiredRefreshTokens)
 clearExpiredRefreshTokens()
@@ -30,29 +40,33 @@ app.use(
     morgan('[morgan] :method :url :status :res[content-length] - :response-time ms')
 )
 
-app.use(express.static('./'))
-
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser(process.env.SESSION_SECRET))
 app.use(express.json())
 app.use(cors())
 
-app.use('/', root)
-app.use('/auth', auth)
-app.use('/budget', budget)
-app.use('/category', category)
-app.use('/card', card)
-app.use('/matcher', matcher)
-app.use('/scenario', scenario)
-app.use('/transaction', transaction)
+console.log('[index] serving static content from: ')
+console.log(path.join(__dirname, './static/'))
+
+app.use('/', express.static(path.join(__dirname, './static/')))
+
+console.log('[index] mounting routes')
+for (const route of routes) {
+    console.log('[index] mounted route: ', route.path)
+    app.use(route.path, route.router)
+}
 
 if (process.env.NODE_ENV === 'development') {
     app.use('/debug', debug)
+    console.log('[index] development mode: mounted debug routes')
 }
 
+console.log('[index] PORT: ', PORT)
+console.log('[index] routes mounted, starting server process...')
 const server = app.listen(
     PORT,
     () => `[${new Date().toLocaleString('en-GB')}] Server initialised on PORT: ${PORT}`
 )
 
+console.log('[index] finalising')
 export default server

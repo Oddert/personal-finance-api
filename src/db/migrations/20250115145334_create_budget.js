@@ -9,8 +9,8 @@ exports.up = function(knex) {
         table.string('name').notNullable()
         table.string('short_desc').defaultTo('')
         table.string('long_desc').defaultTo('')
-        table.date('created_on')
-        table.date('updated_on')
+        table.datetime('created_on')
+        table.datetime('updated_on')
     })
 }
 

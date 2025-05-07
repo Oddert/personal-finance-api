@@ -4,6 +4,7 @@ import {
     getMatcherCategory,
     getSeeds,
     getTokenExclude,
+    getUsers,
     resetServer,
 } from '../controllers/DebugController'
 	
@@ -20,5 +21,8 @@ router.route('/create-seeds')
 
 router.route('/token-exclude')
     .get(getTokenExclude)
+
+router.route('/users')
+    .get(getUsers)
 
 export default router

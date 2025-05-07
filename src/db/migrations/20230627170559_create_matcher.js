@@ -9,8 +9,8 @@ exports.up = function(knex) {
         table.string('match')
         table.string('match_type')
         table.boolean('case_sensitive')
-        table.date('created_on')
-        table.date('updated_on')
+        table.datetime('created_on')
+        table.datetime('updated_on')
     })
 }
 
