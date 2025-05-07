@@ -8,7 +8,8 @@ export default class User extends Model {
     static updated_on: Date | string
     username: string
     password: string
-    display_name: string
+    first_name: string
+    last_name: string
     languages: string
     default_lang: string
     currencies: string
@@ -38,7 +39,8 @@ export default class User extends Model {
                 updated_on: { type: 'string' },
                 username: { type: 'string' },
                 password: { type: 'string' },
-                display_name: { type: 'string' },
+                first_name: { type: 'string' },
+                last_name: { type: 'string' },
                 languages: { type: 'string' },
                 default_lang: { type: 'string' },
                 currencies: { type: 'string' },
@@ -54,7 +56,8 @@ export default class User extends Model {
                 createdOn: obj.created_on,
                 updatedOn: obj.updated_on,
                 username: obj.username,
-                displayName: obj.display_name,
+                firstName: obj.first_name,
+                lastName: obj.last_name,
                 languages: obj.languages,
                 defaultLang: obj.default_lang,
                 currencies: obj.currencies,
@@ -68,7 +71,8 @@ export default class User extends Model {
                 created_on: obj.createdOn,
                 updated_on: obj.updatedOn,
                 username: obj.username,
-                display_name: obj.displayName,
+                first_name: obj.firstName,
+                last_name: obj.lastName,
                 languages: obj.languages,
                 default_lang: obj.defaultLang,
                 currencies: obj.currencies,
