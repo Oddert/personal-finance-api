@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Transaction extends Model {
-    id?: 'integer'
+    id?: string
     card_id?: number
     date?: Date
     transaction_type?: string
@@ -18,7 +18,7 @@ export default class Transaction extends Model {
     currency?: string
     static created_on: Date | string
     static updated_on: Date | string
-    category_id?: 'integer'
+    category_id?: string
 
     static get tableName() {
         return 'transaction'
@@ -39,7 +39,7 @@ export default class Transaction extends Model {
         return {
             type: 'object',
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 date: { type: 'number' },
                 transaction_type: { type: 'string', minLength: 1, maxLength: 5 },
                 description: { type: ['string', 'null'] },
@@ -48,7 +48,7 @@ export default class Transaction extends Model {
                 ballance: { type: 'number' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
-                category_id: { type: 'number' },
+                category_id: { type: 'string' },
                 currency: { type: 'string' },
             }
         }

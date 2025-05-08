@@ -5,9 +5,9 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class CategoryMatcher extends Model {
-    id?: 'integer'
-    category?: 'integer'
-    matcher_id?: 'integer'
+    id?: string
+    category?: string
+    matcher_id?: string
 
     static get tableName() {
         return 'category_matcher'
@@ -18,9 +18,9 @@ export default class CategoryMatcher extends Model {
             type: 'object',
             required: ['category', 'matcher_id'],
             properties: {
-                id: { type: 'number' },               
-                category: { type: 'number' },               
-                matcher_id: { type: 'number' },               
+                id: { type: 'string' },               
+                category: { type: 'string' },               
+                matcher_id: { type: 'string' },               
             }
         }
     }

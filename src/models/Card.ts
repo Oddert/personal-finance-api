@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Card extends Model {
-    id?: number
+    id?: string
     isDefault: boolean
     cardName: string
     cardType: string
@@ -52,7 +52,7 @@ export default class Card extends Model {
                 'updatedOn',
             ],
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 isDefault: { type: 'boolean' },
                 cardName: { type: 'string' },
                 cardType: { type: 'string' },

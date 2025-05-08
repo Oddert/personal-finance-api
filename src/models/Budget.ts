@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Budget extends Model {
-    id?: number
+    id?: string
     name: string
     shortDescription: string
     longDescription: string
@@ -41,7 +41,7 @@ export default class Budget extends Model {
             type: 'object',
             required: ['name', 'shortDescription', 'longDescription', 'createdOn', 'updatedOn'],
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 name: { type: 'string', minLength: 3 },
                 shortDescription: { type: 'string' },
                 longDescription: { type: 'string' },

@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Budget extends Model {
-    id?: number
+    id?: string
     static created_on: Date | string
     static updated_on: Date | string
 
@@ -42,8 +42,8 @@ export default class Budget extends Model {
                 'varHighPc',
             ],
             properties: {
-                id: { type: 'number' },
-                budgetId: { type: 'number' },
+                id: { type: 'string' },
+                budgetId: { type: 'string' },
                 colour: { type: 'string' },
                 categoryId: { type: 'number' },
                 label: { type: 'string', minLength: 3 },

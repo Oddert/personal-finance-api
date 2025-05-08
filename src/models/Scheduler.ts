@@ -1,7 +1,7 @@
 import { Model } from 'objection'
 
 export default class Scheduler extends Model {
-    id?: number
+    id?: string
     created_on: Date | string
     updated_on: Date | string
     static created_on: Date | string
@@ -11,7 +11,7 @@ export default class Scheduler extends Model {
     start_date?: Date | string
     day?: number
     nth_day?: number
-    transactor_id: number
+    transactor_id: string
 
 
     static get tableName() {
@@ -33,7 +33,7 @@ export default class Scheduler extends Model {
         return {
             type: 'object',
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 start_date: { type: ['string', 'null'] },
@@ -41,7 +41,7 @@ export default class Scheduler extends Model {
                 step: { type: ['number', 'null'] },
                 day: { type: ['number', 'null'] },
                 nth_day: { type: ['number', 'null'] },
-                transactor_id: { type: ['number', 'null'] },
+                transactor_id: { type: ['string', 'null'] },
             }
         }
     }
