@@ -9,11 +9,11 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
  * @returns { Promise<void> } 
  */
 exports.seed = async function(knex) {
-    // Deletes Al existing entries
+    // Deletes All existing entries
     await knex('card').delete()
     await knex('card').insert([
         {
-            id: 1,
+            id: 'be913800-df3b-4285-803a-88e971fde8f3',
             is_default: true,
             card_name: 'Main debit account.',
             card_type: 'DEBIT',

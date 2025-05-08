@@ -5,7 +5,7 @@ import { requiresAuth } from '../security/middleware'
 
 import {
     createSingleTransaction,
-    getTransaction,
+    getTransactions,
     getSingleTransactions,
     updateSingleTransaction,
     deleteSingleTransaction,
@@ -22,7 +22,7 @@ import {
 const router = Router()
 
 router.route('/')
-    .get(requiresAuth, getTransaction)
+    .get(requiresAuth, getTransactions)
     .post(
         requiresAuth,
         checkSchema(createTransactionSchema),
