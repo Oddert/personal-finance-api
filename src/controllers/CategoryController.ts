@@ -17,12 +17,12 @@ export const getCategories = async (req: IUserRequest, res: Response) => {
                 .orderBy('label', 'ASC')
                 .withGraphFetched('matchers')
 
-            return respondOk({ res, payload: { categories } })
+            return respondOk({ req, res, payload: { categories } })
         }
         const categories = await Category.query().where('user_id', '=', req.user.id)
-        return respondOk({ res, payload: { categories } })
+        return respondOk({ req, res, payload: { categories } })
     } catch(error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -34,12 +34,12 @@ export const getSingleCategory = async (req: IUserRequest, res: Response) => {
             : await Category.query().findById(req.params.id).where('user_id', '=', req.user.id)
 
         if (!category) {
-            return respondNotFound({ res, payload: { id: req.params.id } })
+            return respondNotFound({ req, res, payload: { id: req.params.id } })
         }
-        return respondOk({ res, payload: { category } })
+        return respondOk({ req, res, payload: { category } })
     } catch(error: any) {
         console.log(error)
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -52,9 +52,9 @@ export const createSingleCategory = async (req: IUserRequest, res: Response) => 
             ? await Category.query().insertGraphAndFetch(body)
             : await Category.query().insertAndFetch(body)
 
-        return respondCreated({ res, payload: { category } })
+        return respondCreated({ req, res, payload: { category } })
     } catch(error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -67,6 +67,7 @@ export const updateSingleCategory = async (req: IUserRequest, res: Response) => 
 
             if (!category) {
                 return respondBadRequest({
+                    req,
                     res,
                     message: 'Something went wrong processing your request',
                     error: 'Category of ID "" does not exist.',
@@ -112,9 +113,9 @@ export const updateSingleCategory = async (req: IUserRequest, res: Response) => 
             ? await Category.query().patchAndFetchById(req.params.id, body).where('user_id', '=', req.user.id).withGraphFetched('matchers')
             : await Category.query().patchAndFetchById(req.params.id, body).where('user_id', '=', req.user.id)
 
-        return respondCreated({ res, payload: { category }, message: 'Category updated successfully' })
+        return respondCreated({ req, res, payload: { category }, message: 'Category updated successfully' })
     } catch(error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -130,9 +131,9 @@ export const deleteSingleCategory = async (req: IUserRequest, res: Response) => 
             .deleteById(req.params.id)
             .where('user_id', '=', req.user.id)
 
-        return respondOk({ res, message: 'Delete operation successful.', statusCode: 204 })
+        return respondOk({ req, res, message: 'Delete operation successful.', statusCode: 204 })
     } catch(error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -147,9 +148,10 @@ export const createManyCategories = async (req: IUserRequest, res: Response) => 
             createdMatchers.push(createdCategory)
         }
 
-        return respondCreated({ res, payload: { createdMatchers }, message: 'Matchers created successfully' })
+        return respondCreated({ req, res, payload: { createdMatchers }, message: 'Matchers created successfully' })
     } catch(error: any) {
         return respondBadRequest({
+            req,
             res,
             message: 'Something went wrong processing your request',
             error: error.message,

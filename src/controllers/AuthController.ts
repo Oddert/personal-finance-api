@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { v4 as uuid } from 'uuid'
 
@@ -12,12 +12,12 @@ import TokenExclude from '../models/TokenExclude'
 import { createAccessToken, createRefreshToken } from '../security/token'
 import { getHashedPassword, verifyHashedPassword } from '../security/hash'
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: IUserRequest, res: Response) => {
     try {
         const checkExisting = await User.query().where('username', 'LIKE', `${req.body.username.toLowerCase()}`)
 
         if (checkExisting.length > 0) {
-            return respondConflict({ res, message: 'The username requested is already taken.' })
+            return respondConflict({ req, res, message: req.t('auth.messages.usernameTaken') })
         }
 
         const hashedPassword = await getHashedPassword(req.body.password)
@@ -39,77 +39,95 @@ export const registerUser = async (req: Request, res: Response) => {
         const accessToken = createAccessToken(user.username)
         const refreshToken = createRefreshToken(user.username)
 
-        return respondOk({ res, payload: { accessToken, refreshToken, user: user.toJson() } })
+        return respondOk({ req, res, payload: { accessToken, refreshToken, user: user.toJson() } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, error: error.message })
     }
 }
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: IUserRequest, res: Response) => {
     try {
-        const user = await User.query().where('username', 'LIKE', `${req.body.username.toLowerCase()}`).first()
+        const user = await User.query()
+            .where('username', 'LIKE', `${req.body.username.toLowerCase()}`)
+            .first()
 
         if (!user) {
-            return respondNotFound({ res, message: `No found for username "${req.body.username}".` })
+            return respondNotFound({
+                req,
+                res,
+                message: req.t(
+                    'auth.messages.noUserForName',
+                    { username: req.body.username },
+                )
+            })
         }
 
         const verifyPassword = verifyHashedPassword(req.body.password, user.password)
 
         if (!verifyPassword) {
-            return respondUnauthenticated({ res, message: 'Username of password is not correct.', error: 'Not logged in' })
+            return respondUnauthenticated({
+                req,
+                res,
+                message: req.t('auth.messsages.usernameOrPasswordWrong'),
+            })
         }
 
         const accessToken = createAccessToken(user.username)
         const refreshToken = createRefreshToken(user.username)
 
-        return respondOk({ res, payload: { accessToken, refreshToken } })
+        return respondOk({ req, res, payload: { accessToken, refreshToken } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, error: error.message })
     }
 }
 
-export const getUserExists = async (req: Request, res: Response) => {
+export const getUserExists = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query().where('username', 'LIKE', `${req.params.username.toLowerCase()}`).first()
 
         if (user) {
-            return respondOk({ res, payload: { exists: true } })
+            return respondOk({ req, res, payload: { exists: true } })
         }
 
-        return respondOk({ res, payload: { exists: false } })
+        return respondOk({ req, res, payload: { exists: false } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, error: error.message })
     }
 }
 
 export const getUserDetails = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query().where('username', 'LIKE', `${req.user.username}`).first()
-        return respondOk({ res, payload: { user: user ? user.toJson() : undefined } })
+        return respondOk({ req, res, payload: { user: user ? user.toJson() : undefined } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, error: error.message })
     }
 }
 
-export const refreshToken = async (req: Request, res: Response) => {
+export const refreshToken = async (req: IUserRequest, res: Response) => {
     try {
         const token = req.body.refreshToken
 
         if (!token) {
-            throw new Error('No refresh token provided in request.')
+            throw new Error(req.t('auth.messages.noRefreshToken'))
         }
         
         const JWT_SECRET = process.env.JWT_SECRET || ''
         const decodedToken = jwt.verify(token, JWT_SECRET)
         
         if (typeof decodedToken === 'string' || !decodedToken?.jti || !decodedToken.sub) {
-            throw new Error ('Unable to decode access token, token type is invalid.')
+            throw new Error (req.t('securityErrors.unableToDecodeAccessToken'))
         }
         
         const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
 
         if (excludeRecord) {
-            return respondUnauthenticated({ res, message: 'Refresh token has already been used.', error: 'Token Revoked' })
+            return respondUnauthenticated({
+                req,
+                res,
+                message: req.t('securityMessages.refreshTokenUsed'),
+                error: req.t('securityErrors.tokenRevoked'),
+            })
         }
         
         const body = {
@@ -121,8 +139,8 @@ export const refreshToken = async (req: Request, res: Response) => {
         const accessToken = createAccessToken(decodedToken.sub)
         const refreshToken = createRefreshToken(decodedToken.sub)
 
-        return respondOk({ res, payload: { accessToken, refreshToken } })
+        return respondOk({ req, res, payload: { accessToken, refreshToken } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, error: error.message })
     }
 }

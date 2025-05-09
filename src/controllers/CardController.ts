@@ -10,18 +10,18 @@ import Card from '../models/Card'
 export const getCards = async (req: IUserRequest, res: Response) => {
     try {
         const cards = await Card.query().where('user_id', '=', req.user.id)
-        return respondOk({ res, payload: { cards } })
+        return respondOk({ req, res, payload: { cards } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
 export const getSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         const card = await Card.query().findById(req.params.id).where('user_id', '=', req.user.id)
-        return respondOk({ res, payload: { card } })
+        return respondOk({ req, res, payload: { card } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -37,9 +37,9 @@ export const createSingleCard = async (req: IUserRequest, res: Response) => {
             id: uuid(),
         }
         const card = await Card.query().insertAndFetch(body)
-        return respondOk({ res, payload: { card } })
+        return respondOk({ req, res, payload: { card } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -48,7 +48,7 @@ export const updateSingleCard = async (req: IUserRequest, res: Response) => {
         const stagedCard = await Card.query().findById(req.params.id).where('user_id', '=', req.user.id)
     
         if (!stagedCard) {
-            return respondNotFound({ res, message: `No card with id "${req.params.id}" found.` })
+            return respondNotFound({ req, res, message: `No card with id "${req.params.id}" found.` })
         }
     
         const body = {
@@ -69,9 +69,9 @@ export const updateSingleCard = async (req: IUserRequest, res: Response) => {
     
         const card = await Card.query().patchAndFetchById(req.params.id, body)
             
-        return respondOk({ res, payload: { card } })
+        return respondOk({ req, res, payload: { card } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -79,9 +79,9 @@ export const deleteSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         await Card.query().deleteById(req.params.id).where('user_id', '=', req.user.id)
 
-        return respondOk({ res, message: 'Card deleted successfully', statusCode: 204 })
+        return respondOk({ req, res, message: 'Card deleted successfully', statusCode: 204 })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -95,8 +95,8 @@ export const setActiveCard = async (req: IUserRequest, res: Response) => {
 
         await Card.query().patchAndFetchById(req.params.id, { isDefault: true })
 
-        return respondCreated({ res, message: 'Card set as default' })
+        return respondCreated({ req, res, message: 'Card set as default' })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }

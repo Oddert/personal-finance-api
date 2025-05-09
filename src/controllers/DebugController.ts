@@ -1,4 +1,6 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
+
+import { IUserRequest } from '../types/Auth.types'
 
 import { respondServerError, respondOk } from '../utils/responses'
 
@@ -12,28 +14,28 @@ import Transaction from '../models/Transaction'
 import TokenExclude from '../models/TokenExclude'
 import User from '../models/User'
 
-export const resetServer = async (req: Request, res: Response) => {
+export const resetServer = async (req: IUserRequest, res: Response) => {
     try {
         // const result = knex('category_matcher')
-        return respondOk({ res })
+        return respondOk({ req, res })
     } catch(err: any) {
-        return respondServerError({ res, error: err.message })
+        return respondServerError({ req, res, error: err.message })
     }
 }
 
-export const getMatcherCategory = async (req: Request, res: Response) => {
+export const getMatcherCategory = async (req: IUserRequest, res: Response) => {
     try {
         const result = await CategoryMatcher.query()
-        return respondOk({ res, payload: { result } })
+        return respondOk({ req, res, payload: { result } })
     } catch(err: any) {
-        return respondServerError({ res, error: err.message })
+        return respondServerError({ req, res, error: err.message })
     }
 }
 
 /**
  * Retrieves a list of all data from all tables in a format ready to be used as seed data.
  */
-export const getSeeds = async (req: Request, res: Response) => {
+export const getSeeds = async (req: IUserRequest, res: Response) => {
     try {
         const matchers = (await Matcher.query()).map((datum) => ({
             ...datum,
@@ -53,6 +55,7 @@ export const getSeeds = async (req: Request, res: Response) => {
         const scheduler = await Scheduler.query()
         const transaction = await Transaction.query()
         return respondOk({
+            req,
             res,
             payload: {
                 matchers,
@@ -65,21 +68,21 @@ export const getSeeds = async (req: Request, res: Response) => {
             }
         })
     } catch (error: any) {
-        respondServerError({ res, error: error.message })
+        respondServerError({ req, res, error: error.message })
     }
 }
 
 /**
  * Returns all token exclude records for debugging JWT refresh logic.
  */
-export const getTokenExclude = async (req: Request, res: Response) => {
+export const getTokenExclude = async (req: IUserRequest, res: Response) => {
     try {
         const tokenExcludeRaw = await TokenExclude.query()
         const tokenExclude: any[] = tokenExcludeRaw.map((token) => ({ jti: token.jti, expires: new Date(token.expires).toISOString() }))
 
-        return respondOk({ res, payload: {tokenExclude} })
+        return respondOk({ req, res, payload: {tokenExclude} })
     } catch (error: any) {
-        respondServerError({ res, message: error.name,  error: error.message })
+        respondServerError({ req, res, message: error.name,  error: error.message })
 
     }
 }
@@ -87,13 +90,13 @@ export const getTokenExclude = async (req: Request, res: Response) => {
 /**
  * Returns all token exclude records for debugging JWT refresh logic.
  */
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: IUserRequest, res: Response) => {
     try {
         const users = await User.query()
 
-        return respondOk({ res, payload: {users} })
+        return respondOk({ req, res, payload: {users} })
     } catch (error: any) {
-        respondServerError({ res, message: error.name,  error: error.message })
+        respondServerError({ req, res, message: error.name,  error: error.message })
 
     }
 }

@@ -1,4 +1,5 @@
 import { Response } from 'express'
+import { IUserRequest } from '../types/Auth.types'
 
 export interface IStandardResponse {
     message?: string    
@@ -8,6 +9,7 @@ export interface IStandardResponse {
 }
 
 export interface IResponseFormatterArgs {
+    req: IUserRequest,
     res: Response;
     payload?: any;
     message?: string|null;
@@ -28,9 +30,10 @@ export interface IResponseFormatterArgs {
  * @param error Description of any errors encountered.
  */
 export const respondOk = ({
+    req,
     res,
     payload = null,
-    message = 'Request processed successfully.',
+    message = null,
     statusCode = 200,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -40,7 +43,7 @@ export const respondOk = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.processedOk') : message,
             error,
         })
 }
@@ -60,9 +63,10 @@ export const respondOk = ({
  * @param error Description of any errors encountered.
  */
 export const respondCreated = ({
+    req,
     res,
     payload = null,
-    message = 'Create request processed successfully.',
+    message = null,
     statusCode = 201,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -72,7 +76,7 @@ export const respondCreated = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.createdOK') : message,
             error,
         })
 }
@@ -94,9 +98,10 @@ export const respondCreated = ({
  * @param error Description of any errors encountered.
  */
 export const respondMultipleChoices = ({
+    req,
     res,
     payload = null,
-    message = 'The request has more than one possible response.',
+    message = null,
     statusCode = 300,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -106,7 +111,7 @@ export const respondMultipleChoices = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.multipleChoices') : message,
             error,
         })
 }
@@ -126,9 +131,10 @@ export const respondMultipleChoices = ({
  * @param error Description of any errors encountered.
  */
 export const respondBadRequest = ({
+    req,
     res,
     payload = null,
-    message = 'There was an issue in the format of your request. Please check and try again.',
+    message = null,
     statusCode = 400,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -138,7 +144,7 @@ export const respondBadRequest = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.badRequest') : message,
             error,
         })
 }
@@ -158,9 +164,10 @@ export const respondBadRequest = ({
  * @param error Description of any errors encountered.
  */
 export const respondUnauthenticated = ({
+    req,
     res,
     payload = null,
-    message = 'You are not logged in.',
+    message = null,
     statusCode = 401,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -170,7 +177,7 @@ export const respondUnauthenticated = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.notLoggedIn') : message,
             error,
         })
 }
@@ -194,9 +201,10 @@ export const respondUnauthenticated = ({
  * @param error Description of any errors encountered.
  */
 export const respondNotFound = ({
+    req,
     res,
     payload = null,
-    message = 'The requested resource could not be found.',
+    message = null,
     statusCode = 404,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -206,7 +214,7 @@ export const respondNotFound = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.notFound') : message,
             error,
         })
 }
@@ -226,9 +234,10 @@ export const respondNotFound = ({
  * @param error Description of any errors encountered.
  */
 export const respondConflict = ({
+    req,
     res,
     payload = null,
-    message = 'The requested resource is not available.',
+    message = null,
     statusCode = 409,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -238,7 +247,7 @@ export const respondConflict = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.conflict') : message,
             error,
         })
 }
@@ -258,9 +267,10 @@ export const respondConflict = ({
  * @param error Description of any errors encountered.
  */
 export const respondServerError = ({
+    req,
     res,
     payload = null,
-    message = 'There was an issue processing your request.',
+    message = null,
     statusCode = 500,
     error = null,
 }: IResponseFormatterArgs): Response<IStandardResponse> => {
@@ -270,7 +280,7 @@ export const respondServerError = ({
         .json({
             status: statusCode,
             payload,
-            message,
+            message: message === null ? req.t('genericMessages.conflict') : message,
             error,
         })
 }

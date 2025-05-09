@@ -28,7 +28,7 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
                 .withGraphFetched('transactors.[schedulers]')
                 .orderBy('title', 'DESC')
     
-            return respondOk({ res, payload: { scenarios } })
+            return respondOk({ req, res, payload: { scenarios } })
         }
         
         const scenarios = await Scenario.query()
@@ -36,9 +36,9 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
             .withGraphFetched('transactors.[schedulers]')
             .orderBy('title', 'DESC')
             
-        return respondOk({ res, payload: { scenarios } })
+        return respondOk({ req, res, payload: { scenarios } })
     } catch (error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -50,9 +50,9 @@ export const createSingleScenario = async (req: IUserRequest, res: Response) => 
             ? await Scenario.query().insertGraphAndFetch(body)
             : await Scenario.query().insertAndFetch(body)
 
-        return respondCreated({ res, payload: { scenario } })
+        return respondCreated({ req, res, payload: { scenario } })
     } catch (error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -63,9 +63,9 @@ export const getSingleScenario = async (req: IUserRequest, res: Response) => {
             .findById(req.params.id)
             .withGraphFetched('transactors.[schedulers]')
 
-        return respondOk({ res, payload: { scenario } })
+        return respondOk({ req, res, payload: { scenario } })
     } catch (error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -75,9 +75,9 @@ export const updateSingleScenario = async (req: IUserRequest, res: Response) => 
         const body = { ...req.body, updated_on: now }
         const scenario = await Scenario.query().where('user_id', '=', req.user.id).patchAndFetchById(req.params.id, body)
 
-        return respondCreated({ res, payload: { scenario }, message: 'Scenario updated successfully' })
+        return respondCreated({ req, res, payload: { scenario }, message: 'Scenario updated successfully' })
     } catch (error: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -87,9 +87,9 @@ export const deleteSingleScenario = async (req: IUserRequest, res: Response) => 
             .where('user_id', '=', req.user.id)
             .deleteById(req.params.id)
 
-        return respondOk({ res, message: 'Delete operation successful.', statusCode: 204 })
+        return respondOk({ req, res, message: 'Delete operation successful.', statusCode: 204 })
     } catch(err: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: err.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: err.message })
     }
 }
 
@@ -105,9 +105,9 @@ export const createManyScenarios = async (req: IUserRequest, res: Response) => {
             createdScenarios.push(createdTransaction)
         }
 
-        return respondCreated({ res, payload: { createdScenarios }, message: 'Transactions created successfully' })
+        return respondCreated({ req, res, payload: { createdScenarios }, message: 'Transactions created successfully' })
     } catch(err: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: err.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: err.message })
     }
 }
 
@@ -123,8 +123,8 @@ export const deleteManyScenarios = async (req: IUserRequest, res: Response) => {
             deletedScenarios.push(deleted)
         }
         
-        return respondOk({ res, message: 'Delete operation successful.', statusCode: 204 })
+        return respondOk({ req, res, message: 'Delete operation successful.', statusCode: 204 })
     } catch(err: any) {
-        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: err.message })
+        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: err.message })
     }
 }

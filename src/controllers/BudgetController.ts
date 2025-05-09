@@ -11,9 +11,9 @@ import BudgetRow from '../models/BudgetRow'
 export const getBudgets = async (req: IUserRequest, res: Response) => {
     try {
         const budgets = await Budget.query().where('budget.user_id', '=', req.user.id).withGraphJoined('budgetRows')
-        return respondOk({ res, payload: { budgets } })
+        return respondOk({ req, res, payload: { budgets } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -23,18 +23,18 @@ export const getSingleBudget = async (req: IUserRequest, res: Response) => {
             .findById(req.params.id)
             .where('budget.user_id', '=', req.user.id)
             .withGraphJoined('budgetRows')
-        return respondOk({ res, payload: { budget } })
+        return respondOk({ req, res, payload: { budget } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
 export const getBudgetRows = async (req: IUserRequest, res: Response) => {
     try {
         const budgetRows = await BudgetRow.query().where('user_id', '=', req.user.id).withGraphJoined('budget')
-        return respondOk({ res, payload: { budgetRows } })
+        return respondOk({ req, res, payload: { budgetRows } })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -49,9 +49,9 @@ export const createSingleBudget = async (req: IUserRequest, res: Response) => {
             id: uuid(),
             userId: req.user.id,
         }
-        console.log(body)
+
         const stagedBudget = await Budget.query().insertAndFetch(body)
-        console.log({stagedBudget})
+
         for (const row of req.body.budgetRows) {
             const rowWithId = { ...row, budgetId: stagedBudget.id, id: uuid(), userId: req.user.id }
             await BudgetRow.query().insertAndFetch(rowWithId)
@@ -59,13 +59,13 @@ export const createSingleBudget = async (req: IUserRequest, res: Response) => {
 
         if (stagedBudget.id) {
             const budget = await Budget.query().findById(stagedBudget.id).withGraphJoined('budgetRows')
-            return respondCreated({ res, payload: { budget } })
+            return respondCreated({ req, res, payload: { budget } })
         }
 
-        return respondServerError({ res, message: 'Something went wrong processing your request' })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request' })
     } catch (error: any) {
         console.log(error)
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -77,7 +77,7 @@ export const updateSingleBudget = async (req: IUserRequest, res: Response) => {
             .withGraphFetched('budgetRows')
 
         if (!stagedBudget) {
-            return respondNotFound({ res, message: `No budget with id "${req.params.id}" found.` })
+            return respondNotFound({ req, res, message: `No budget with id "${req.params.id}" found.` })
         }
 
         const body = {
@@ -90,9 +90,9 @@ export const updateSingleBudget = async (req: IUserRequest, res: Response) => {
         }
 
         const budget = await Budget.query().patchAndFetchById(req.params.id, body)
-        return respondCreated({ res, payload: { budget }, message: 'Budget updated successfully' })
+        return respondCreated({ req, res, payload: { budget }, message: 'Budget updated successfully' })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -100,9 +100,9 @@ export const deleteSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
         await Budget.query().deleteById(req.params.id).where('user_id', '=', req.user.id)
 
-        return respondOk({ res, message: 'Budget deleted successfully', statusCode: 204 })
+        return respondOk({ req, res, message: 'Budget deleted successfully', statusCode: 204 })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -116,8 +116,8 @@ export const setActiveBudget = async (req: IUserRequest, res: Response) => {
 
         await Budget.query().patchAndFetchById(req.params.id, { isDefault: true })
 
-        return respondCreated({ res, message: 'Budget set as default' })
+        return respondCreated({ req, res, message: 'Budget set as default' })
     } catch (error: any) {
-        return respondServerError({ res, message: 'Something went wrong processing your request', error: error.message })
+        return respondServerError({ req, res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
