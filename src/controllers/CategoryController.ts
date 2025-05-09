@@ -112,7 +112,7 @@ export const updateSingleCategory = async (req: IUserRequest, res: Response) => 
             ? await Category.query().patchAndFetchById(req.params.id, body).where('user_id', '=', req.user.id).withGraphFetched('matchers')
             : await Category.query().patchAndFetchById(req.params.id, body).where('user_id', '=', req.user.id)
 
-        return respondOk({ res, payload: { category }, message: 'Category updated successfully', statusCode: 201 })
+        return respondCreated({ res, payload: { category }, message: 'Category updated successfully' })
     } catch(error: any) {
         return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }

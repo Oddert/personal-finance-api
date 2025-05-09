@@ -16,27 +16,21 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
     const authHeader = req.header('Authorization')
 
     if (!authHeader) {
-        return respondUnauthenticated(
-            req,
+        return respondUnauthenticated({
             res,
-            null,
-            'Your logged in has expired, please login and try again.',
-            401,
-            'No Authorization header found in request.',
-        )
+            message: 'Your logged in has expired, please login and try again.',
+            error: 'No "Authorization" header found in request.',
+        })
     }
     
     const token = authHeader.split(' ')
     
     if (token.length !== 2) {
-        return respondUnauthenticated(
-            req,
+        return respondUnauthenticated({
             res,
-            null,
-            'Your logged in has expired, please login and try again.',
-            401,
-            'Authorization header in request is malformed.',
-        )
+            message: 'Your logged in has expired, please login and try again.',
+            error: '"Authorization" header in request is malformed.',
+        })
     }
     
     try {
@@ -48,7 +42,7 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         }
         
         if (!decodedToken?.exp || decodedToken.exp <= new Date().getTime()) {
-            return respondUnauthenticated(req, res, null, 'Access token has expired.', 401, 'Token Expired')
+            return respondUnauthenticated({ res, message: 'Access token has expired.', error: 'Token Expired' })
         }
 
         if (!decodedToken.jti) {
@@ -62,7 +56,7 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
 
         if (excludeRecord) {
-            return respondUnauthenticated(req, res, null, 'Access token has already been used.', 401, 'Token Revoked')
+            return respondUnauthenticated({ res, message: 'Access token has already been used.', error: 'Token Revoked' })
         }
 
         const user = await User.query().where('username', '=', decodedToken.sub).first()
@@ -70,13 +64,10 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         req.user = user?.toJson()
         next()
     } catch (error: any) {
-        return respondUnauthenticated(
-            req,
+        return respondUnauthenticated({
             res,
-            null,
-            'Your logged in has expired, please login and try again.',
-            401,
-            error?.message || 'Authorization token is invalid.',
-        )
+            message: 'Your logged in has expired, please login and try again.',
+            error: error?.message || '"Authorization" token is invalid.',
+        })
     }
 }
