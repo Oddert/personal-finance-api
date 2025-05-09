@@ -19,8 +19,8 @@ exports.seed = async function(knex) {
             name: 'Standard',
             short_desc: 'My typical day-to-day budget.',
             long_desc: 'A sample budget provided with fake data based on real activity with identifying details removed.',
-            created_on: new Date().toISOString(),
-            updated_on: new Date().toISOString(),
+            created_on: new Date(),
+            updated_on: new Date(),
         }
     ])
     // await knex('budget_row').del()

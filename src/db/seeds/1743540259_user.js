@@ -13,8 +13,8 @@ exports.seed = async function(knex) {
     await knex('user').insert([
         {
             id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
-            created_on: new Date('2025-04-27T14:25:48.950Z'),
-            updated_on: new Date('2025-04-27T14:25:48.950Z'),
+            created_on: new Date(),
+            updated_on: new Date(),
             username: 'sample@example.com',
             password: getHashedPassword('Password1'),
             first_name: 'Example',
