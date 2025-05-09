@@ -1,0 +1,36 @@
+{
+    "auth": {
+        "messages": {
+            "noRefreshToken": "No refresh token provided in request.",
+            "noUserForName": "No user found for username \"{{username}}\".",
+            "usernameTaken": "The username requested is already taken.",
+            "usernameOrPasswordWrong": "Username or password is not correct."
+        }
+    },
+    "genericMessages": {
+        "badRequest": "There was an issue in the format of your request. Please check and try again.",
+        "conflict": "The requested resource is not available.",
+        "createdOK": "Resource created successfully.",
+        "multipleChoices": "The request has more than one possible response.",
+        "notLoggedIn": "You are not logged in.",
+        "notFound": "The requested resource could not be found.",
+        "processedOk": "Request processed successfully.",
+        "serverError": "There was an issue processing your request.",
+        "somethingWentWrong": "Something went wrong processing your request"
+    },
+    "securityErrors": {
+        "authHeaderMalformed": "\"Authorization\" header in request is malformed. Please supply a valid JWT.",
+        "jtiMalformed": "Token format is invalid, the key \"jti\" is missing.",
+        "noAuthHeader": "No \"Authorization\" header found in request.",
+        "subMalformed": "Token format is invalid, the key \"sub\" is missing.",
+        "tokenExpired": "Token Expired",
+        "tokenRevoked": "Token Revoked",
+        "unableToDecodeAccessToken": "Unable to decode access token, token type is invalid."
+    },
+    "securityMessages": {
+        "accessTokenExpired": "Access token has expired.",
+        "accessTokenUsed": "Access token has already been used.",
+        "loginExpired": "Your logged in has expired, please login and try again.",
+        "refreshTokenUsed": "Access token has already been used."
+    }
+}
