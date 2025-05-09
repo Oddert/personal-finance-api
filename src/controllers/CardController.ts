@@ -79,7 +79,7 @@ export const deleteSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         await Card.query().deleteById(req.params.id).where('user_id', '=', req.user.id)
 
-        return respondCreated(req, res, null, 'Card deleted successfully')
+        return respondOk(req, res, null, 'Card deleted successfully', 204)
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }

@@ -122,11 +122,11 @@ export const updateSingleTransaction = async (req: IUserRequest, res: Response) 
 
 export const deleteSingleTransaction = async (req: IUserRequest, res: Response) => {
     try {
-        const deleted = await Transaction.query()
+        await Transaction.query()
             .where('user_id', '=', req.user.id)
             .deleteById(req.params.id)
 
-        return respondOk(req, res, { deleted }, 'Delete operation successful.', 204)
+        return respondOk(req, res, null, 'Delete operation successful.', 204)
     } catch(err: any) {
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }

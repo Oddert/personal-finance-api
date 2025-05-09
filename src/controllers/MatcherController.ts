@@ -61,9 +61,9 @@ export const updateSingleMatcher = async (req: IUserRequest, res: Response) => {
 export const deleteSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         await Matcher.relatedQuery('categories').where('user_id', '=', req.user.id).for(req.params.id).unrelate()
-        const deleted = await Matcher.query()
+        await Matcher.query()
             .deleteById(req.params.id)
-        return respondOk(req, res, { deleted }, 'Delete operation successful.', 204)
+        return respondOk(req, res, null, 'Delete operation successful.', 204)
     } catch(err: any) {
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }

@@ -129,11 +129,11 @@ export const deleteSingleCategory = async (req: IUserRequest, res: Response) => 
         // await category?.$relatedQuery('transactions').unrelate()
         await Transaction.query().where('category_id', req.params.id).unrelate()
     
-        const deleted = await Category.query()
+        await Category.query()
             .deleteById(req.params.id)
             .where('user_id', '=', req.user.id)
 
-        return respondOk(req, res, { deleted }, 'Delete operation successful.', 204)
+        return respondOk(req, res, null, 'Delete operation successful.', 204)
     } catch(err: any) {
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }

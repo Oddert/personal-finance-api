@@ -83,11 +83,11 @@ export const updateSingleScenario = async (req: IUserRequest, res: Response) => 
 
 export const deleteSingleScenario = async (req: IUserRequest, res: Response) => {
     try {
-        const deleted = await Scenario.query()
+        await Scenario.query()
             .where('user_id', '=', req.user.id)
             .deleteById(req.params.id)
 
-        return respondOk(req, res, { deleted }, 'Delete operation successful.', 201)
+        return respondOk(req, res, null, 'Delete operation successful.', 204)
     } catch(err: any) {
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }
@@ -123,7 +123,7 @@ export const deleteManyScenarios = async (req: IUserRequest, res: Response) => {
             deletedScenarios.push(deleted)
         }
         
-        return respondOk(req, res, { deletedScenarios }, 'Delete operation successful.', 201)
+        return respondOk(req, res, null, 'Delete operation successful.', 204)
     } catch(err: any) {
         return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
     }
