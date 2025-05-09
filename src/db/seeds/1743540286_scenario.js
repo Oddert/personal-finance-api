@@ -10,6 +10,7 @@ exports.seed = async function(knex) {
     await knex('scenario').insert([
         {
             id: scenarioUuid,
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             created_on: new Date().toISOString(),
             updated_on: new Date().toISOString(),

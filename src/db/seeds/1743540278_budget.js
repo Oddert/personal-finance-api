@@ -14,6 +14,7 @@ exports.seed = async function(knex) {
     await knex('budget').insert([
         {
             id: budgetUuid,
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             name: 'Standard',
             short_desc: 'My typical day-to-day budget.',
@@ -26,6 +27,7 @@ exports.seed = async function(knex) {
     await knex('budget_row').insert([
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '486f9685-cc57-45f4-a2e7-fc505840de6a',
             colour: '#509af3',
             budget_id: budgetUuid,
@@ -36,6 +38,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '4b8614e2-4f8d-41e2-8d62-7163eefa6812',
             colour: '#4c9a2a',
             budget_id: budgetUuid,
@@ -46,6 +49,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: 'b6945bdd-04b6-4df9-9530-1e1a9ce273c3',
             colour: '#ee204d',
             budget_id: budgetUuid,
@@ -56,6 +60,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '1c82556b-ba33-4e91-ab68-3ace780d4452',
             colour: '#008080',
             budget_id: budgetUuid,
@@ -66,6 +71,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '7364d968-1058-48dc-bdbb-c8268a97bdf5',
             colour: '#ecf0f1',
             budget_id: budgetUuid,
@@ -76,6 +82,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '0864b74e-6c5b-416d-a8c3-75d5fa8fb514',
             colour: '#fb8d1a',
             budget_id: budgetUuid,
@@ -86,6 +93,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '8ca3ae7e-1dc8-4e76-ad1e-ba6518a18778',
             colour: '#d8737f',
             budget_id: budgetUuid,
@@ -96,6 +104,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: 'edd2e45e-9812-4f7c-bed3-8076af572b1a',
             colour: '#f1c40f',
             budget_id: budgetUuid,
@@ -106,6 +115,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '7096c6d4-2280-4334-a817-4c2e4ab848e9',
             colour: '#d3dd18',
             budget_id: budgetUuid,
@@ -116,6 +126,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '2ec895de-e28e-44a1-94d9-f2ded36203cc',
             colour: '#5650de',
             budget_id: budgetUuid,
@@ -126,6 +137,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '348a943b-1b9c-4d92-a6a4-15d3693cba72',
             colour: '#eca252',
             budget_id: budgetUuid,
@@ -136,6 +148,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '0e128ac1-d0be-4009-8fae-89795875199d',
             colour: '#e84a5f',
             budget_id: budgetUuid,
@@ -146,6 +159,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: 'e947cb52-fd88-438f-acb8-b320d78f410f',
             colour: '#0d1017',
             budget_id: budgetUuid,
@@ -156,6 +170,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '14d16a6e-56e1-41f3-aa45-dbbdf2ccb972',
             colour: '#34495e',
             budget_id: budgetUuid,
@@ -166,6 +181,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: 'd90584a7-4c3c-4b0e-8eee-494a16837189',
             colour: '#8857e6',
             budget_id: budgetUuid,
@@ -176,6 +192,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '59dedd58-2e3e-4615-8e1a-ff82657e3885',
             colour: '#2f1629',
             budget_id: budgetUuid,
@@ -186,6 +203,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '34346c5a-c67c-40e5-bf23-ed8ad127af40',
             colour: '#16a085',
             budget_id: budgetUuid,
@@ -196,6 +214,7 @@ exports.seed = async function(knex) {
         },
         {
             id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             category_id: '11002146-43f2-45a8-91f8-f718b5f34de3',
             colour: '#fb701a',
             budget_id: budgetUuid,

@@ -1,6 +1,9 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
+import { v4 as uuid } from 'uuid'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+import { IUserRequest } from '../types/Auth.types'
 
 import { respondBadRequest, respondCreated, respondOk } from '../utils/responses'
 
@@ -8,7 +11,7 @@ import Scenario from '../models/Scenario'
 
 dayjs.extend(customParseFormat)
 
-export const getScenarios = async (req: Request, res: Response) => {
+export const getScenarios = async (req: IUserRequest, res: Response) => {
     try {
         const startDate = typeof req.query?.from === 'string'
             ? dayjs(req.query.from, 'DD/MM/YYYY').valueOf()
@@ -20,6 +23,7 @@ export const getScenarios = async (req: Request, res: Response) => {
 
         if (req.query?.from || req.query?.to) {
             const scenarios = await Scenario.query()
+                .where('user_id', '=', req.user.id)
                 .whereBetween('start_date', [startDate, endDate])
                 .withGraphFetched('transactors.[schedulers]')
                 .orderBy('title', 'DESC')
@@ -28,6 +32,7 @@ export const getScenarios = async (req: Request, res: Response) => {
         }
         
         const scenarios = await Scenario.query()
+            .where('user_id', '=', req.user.id)
             .withGraphFetched('transactors.[schedulers]')
             .orderBy('title', 'DESC')
             
@@ -37,9 +42,9 @@ export const getScenarios = async (req: Request, res: Response) => {
     }
 }
 
-export const createSingleScenario = async (req: Request, res: Response) => {
+export const createSingleScenario = async (req: IUserRequest, res: Response) => {
     try {
-        const body = { ...req.body }
+        const body = { ...req.body, id: uuid() }
 
         const scenario = req.body.transactors
             ? await Scenario.query().insertGraphAndFetch(body)
@@ -51,9 +56,10 @@ export const createSingleScenario = async (req: Request, res: Response) => {
     }
 }
 
-export const getSingleScenario = async (req: Request, res: Response) => {
+export const getSingleScenario = async (req: IUserRequest, res: Response) => {
     try {
         const scenario = await Scenario.query()
+            .where('user_id', '=', req.user.id)
             .findById(req.params.id)
             .withGraphFetched('transactors.[schedulers]')
 
@@ -63,11 +69,11 @@ export const getSingleScenario = async (req: Request, res: Response) => {
     }
 }
 
-export const updateSingleScenario = async (req: Request, res: Response) => {
+export const updateSingleScenario = async (req: IUserRequest, res: Response) => {
     try {
         const now = new Date().toISOString()
         const body = { ...req.body, updated_on: now }
-        const scenario = await Scenario.query().patchAndFetchById(req.params.id, body)
+        const scenario = await Scenario.query().where('user_id', '=', req.user.id).patchAndFetchById(req.params.id, body)
 
         return respondCreated(req, res, { scenario }, 'Scenario updated successfully', 201)
     } catch (error: any) {
@@ -75,10 +81,11 @@ export const updateSingleScenario = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteSingleScenario = async (req: Request, res: Response) => {
+export const deleteSingleScenario = async (req: IUserRequest, res: Response) => {
     try {
         const deleted = await Scenario.query()
-            .deleteById(Number(req.params.id))
+            .where('user_id', '=', req.user.id)
+            .deleteById(req.params.id)
 
         return respondOk(req, res, { deleted }, 'Delete operation successful.', 201)
     } catch(err: any) {
@@ -86,13 +93,13 @@ export const deleteSingleScenario = async (req: Request, res: Response) => {
     }
 }
 
-export const createManyScenarios = async (req: Request, res: Response) => {
+export const createManyScenarios = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString()
         const createdScenarios = []
 
         for (const transaction of req.body.transactions) {
-            const body = { ...transaction, created_on: date, updated_on: date }
+            const body = { ...transaction, created_on: date, updated_on: date, id: uuid() }
     
             const createdTransaction = await Scenario.query().insertGraphAndFetch(body)
             createdScenarios.push(createdTransaction)
@@ -104,13 +111,14 @@ export const createManyScenarios = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteManyScenarios = async (req: Request, res: Response) => {
+export const deleteManyScenarios = async (req: IUserRequest, res: Response) => {
     try {
         const deletedScenarios = []
 
         for (const scenarioId of req.body.scenarios) {
             const deleted = await Scenario.query()
-                .deleteById(Number(scenarioId))
+                .where('user_id', '=', req.user.id)
+                .deleteById(scenarioId)
 
             deletedScenarios.push(deleted)
         }

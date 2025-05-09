@@ -1,6 +1,9 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
+import { v4 as uuid } from 'uuid'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+import { IUserRequest } from '../types/Auth.types'
 
 import { respondBadRequest, respondCreated, respondNotFound, respondOk } from '../utils/responses'
 
@@ -8,7 +11,7 @@ import Transaction from '../models/Transaction'
 
 dayjs.extend(customParseFormat)
 
-export const getTransactions = async (req: Request, res: Response) => {
+export const getTransactions = async (req: IUserRequest, res: Response) => {
     try {
         const startDate = typeof req.query?.from === 'string'
             ? dayjs(req.query.from).valueOf()
@@ -19,9 +22,10 @@ export const getTransactions = async (req: Request, res: Response) => {
             : dayjs(undefined).valueOf()
 
         if (req.query.includeCategory) {
-            if (req.query.cardId) {
+            if (req.query.cardId && typeof req.query.cardId === 'string') {
                 const transactions = await Transaction.query()
-                    .where('card_id', '=', Number(req.query.cardId))
+                    .where('user_id', '=', req.user.id)
+                    .where('card_id', '=', req.query.cardId)
                     .whereBetween('date', [startDate, endDate])
                     .withGraphFetched('assignedCategory')
                     .orderBy('date', 'DESC')
@@ -29,6 +33,7 @@ export const getTransactions = async (req: Request, res: Response) => {
             }
 
             const transactions = await Transaction.query()
+                .where('user_id', '=', req.user.id)
                 .whereBetween('date', [startDate, endDate])
                 .withGraphFetched('assignedCategory')
                 .orderBy('date', 'DESC')
@@ -36,16 +41,18 @@ export const getTransactions = async (req: Request, res: Response) => {
             return respondOk(req, res, { transactions })
         }
 
-        if (req.query.cardId) {
+        if (req.query.cardId && typeof req.query.cardId === 'string') {
             const transactions = await Transaction.query()
+                .where('user_id', '=', req.user.id)
                 .whereBetween('date', [startDate, endDate])
-                .where('card_id', '=', Number(req.query.cardId))
+                .where('card_id', '=', req.query.cardId)
                 .orderBy('date', 'DESC')
 
             return respondOk(req, res, { transactions })
         }
 
         const transactions = await Transaction.query()
+            .where('user_id', '=', req.user.id)
             .whereBetween('date', [startDate, endDate])
             .orderBy('date', 'DESC')
         return respondOk(req, res, { transactions })
@@ -55,11 +62,11 @@ export const getTransactions = async (req: Request, res: Response) => {
     }
 }
 
-export const getSingleTransactions = async (req: Request, res: Response) => {
+export const getSingleTransactions = async (req: IUserRequest, res: Response) => {
     try {
         const transaction = req.query.includeCategory
-            ? await Transaction.query().findById(req.params.id).withGraphFetched('assignedCategory')
-            : await Transaction.query().findById(req.params.id)
+            ? await Transaction.query().findById(req.params.id).where('user_id', '=', req.user.id).withGraphFetched('assignedCategory')
+            : await Transaction.query().findById(req.params.id).where('user_id', '=', req.user.id)
 
         if (!transaction) {
             return respondNotFound(req, res, { id: req.params.id })
@@ -70,10 +77,10 @@ export const getSingleTransactions = async (req: Request, res: Response) => {
     }
 }
 
-export const createSingleTransaction = async (req: Request, res: Response) => {
+export const createSingleTransaction = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString()
-        const body = { ...req.body, created_on: date, updated_on: date }
+        const body = { ...req.body, created_on: date, updated_on: date, userId: req.user.id, id: uuid() }
         
         // TODO: Research why the beforeInsert hooks are not working and replace: 
         if (req.body.assignedCategory) {
@@ -100,12 +107,12 @@ export const createSingleTransaction = async (req: Request, res: Response) => {
     }
 }
 
-export const updateSingleTransaction = async (req: Request, res: Response) => {
+export const updateSingleTransaction = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString()
-        const body = {...req.body, updated_on: date }
+        const body = { ...req.body, updated_on: date }
 
-        const transaction = await Transaction.query().patchAndFetchById(req.params.id, body)
+        const transaction = await Transaction.query().where('user_id', '=', req.user.id).patchAndFetchById(req.params.id, body)
 
         return respondCreated(req, res, { transaction }, 'Transaction updated successfully', 201)
     } catch(err: any) {
@@ -113,10 +120,11 @@ export const updateSingleTransaction = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteSingleTransaction = async (req: Request, res: Response) => {
+export const deleteSingleTransaction = async (req: IUserRequest, res: Response) => {
     try {
         const deleted = await Transaction.query()
-            .deleteById(Number(req.params.id))
+            .where('user_id', '=', req.user.id)
+            .deleteById(req.params.id)
 
         return respondOk(req, res, { deleted }, 'Delete operation successful.', 204)
     } catch(err: any) {
@@ -124,13 +132,13 @@ export const deleteSingleTransaction = async (req: Request, res: Response) => {
     }
 }
 
-export const createManyTransactions = async (req: Request, res: Response) => {
+export const createManyTransactions = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString()
         const createdTransactions = []
 
         for (const transaction of req.body.transactions) {
-            const body = { ...transaction, created_on: date, updated_on: date }
+            const body = { ...transaction, created_on: date, updated_on: date, userId: req.user.id, id: uuid() }
             if (typeof transaction.date === 'string') {
                 body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf()
             }
@@ -145,7 +153,7 @@ export const createManyTransactions = async (req: Request, res: Response) => {
     }
 }
 
-export const updateManyTransactions = async (req: Request, res: Response) => {
+export const updateManyTransactions = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString()
         const updatedTransactions = []
@@ -156,7 +164,7 @@ export const updateManyTransactions = async (req: Request, res: Response) => {
                 body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf()
             }
             
-            const updatedTransaction = await Transaction.query().patchAndFetchById(transaction.id, body)
+            const updatedTransaction = await Transaction.query().where('user_id', '=', req.user.id).patchAndFetchById(transaction.id, body)
             updatedTransactions.push(updatedTransaction)
         }
         

@@ -1,47 +1,59 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
+import { v4 as uuid } from 'uuid'
+
+import { IUserRequest } from '../types/Auth.types'
 
 import { respondCreated, respondNotFound, respondOk, respondServerError } from '../utils/responses'
 
 import Budget from '../models/Budget'
 import BudgetRow from '../models/BudgetRow'
 
-export const getBudgets = async (req: Request, res: Response) => {
+export const getBudgets = async (req: IUserRequest, res: Response) => {
     try {
-        const budgets = await Budget.query().withGraphJoined('budgetRows')
+        const budgets = await Budget.query().where('budget.user_id', '=', req.user.id).withGraphJoined('budgetRows')
         return respondOk(req, res, { budgets })
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
 }
 
-export const getSingleBudget = async (req: Request, res: Response) => {
+export const getSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
-        const budget = await Budget.query().findById(req.params.id).withGraphJoined('budgetRows')
+        const budget = await Budget.query()
+            .findById(req.params.id)
+            .where('budget.user_id', '=', req.user.id)
+            .withGraphJoined('budgetRows')
         return respondOk(req, res, { budget })
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
 }
 
-export const getBudgetRows = async (req: Request, res: Response) => {
+export const getBudgetRows = async (req: IUserRequest, res: Response) => {
     try {
-        const budgetRows = await BudgetRow.query().withGraphJoined('budget')
+        const budgetRows = await BudgetRow.query().where('user_id', '=', req.user.id).withGraphJoined('budget')
         return respondOk(req, res, { budgetRows })
     } catch (error: any) {
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
 }
 
-export const createSingleBudget = async (req: Request, res: Response) => {
+export const createSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
         const now = new Date().toISOString()
-        const body = { ...req.body, isDefault: Boolean(req.body.isDefault), createdOn: now, updatedOn: now }
-        delete body.id
+        const body = {
+            ...req.body,
+            isDefault: Boolean(req.body.isDefault),
+            createdOn: now,
+            updatedOn: now,
+            id: uuid(),
+            userId: req.user.id,
+        }
+        console.log(body)
         const stagedBudget = await Budget.query().insertAndFetch(body)
-        
+        console.log({stagedBudget})
         for (const row of req.body.budgetRows) {
-            const rowWithId = { ...row, budgetId: stagedBudget.id }
-            delete rowWithId.id
+            const rowWithId = { ...row, budgetId: stagedBudget.id, id: uuid(), userId: req.user.id }
             await BudgetRow.query().insertAndFetch(rowWithId)
         }
 
@@ -52,13 +64,17 @@ export const createSingleBudget = async (req: Request, res: Response) => {
 
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500)
     } catch (error: any) {
+        console.log(error)
         return respondServerError(req, res, null, 'Something went wrong processing your request', 500, error.message)
     }
 }
 
-export const updateSingleBudget = async (req: Request, res: Response) => {
+export const updateSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
-        const stagedBudget = await Budget.query().findById(req.params.id).withGraphFetched('budgetRows')
+        const stagedBudget = await Budget.query()
+            .findById(req.params.id)
+            .where('user_id', '=', req.user.id)
+            .withGraphFetched('budgetRows')
 
         if (!stagedBudget) {
             return respondNotFound(req, res, null, `No budget with id "${req.params.id}" found.`)
@@ -80,9 +96,9 @@ export const updateSingleBudget = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteSingleBudget = async (req: Request, res: Response) => {
+export const deleteSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
-        await Budget.query().deleteById(req.params.id)
+        await Budget.query().deleteById(req.params.id).where('user_id', '=', req.user.id)
 
         return respondCreated(req, res, null, 'Budget deleted successfully')
     } catch (error: any) {
@@ -90,9 +106,9 @@ export const deleteSingleBudget = async (req: Request, res: Response) => {
     }
 }
 
-export const setActiveBudget = async (req: Request, res: Response) => {
+export const setActiveBudget = async (req: IUserRequest, res: Response) => {
     try {
-        const actives = await Budget.query().where('is_default', true)
+        const actives = await Budget.query().where('is_default', true).where('user_id', '=', req.user.id)
 
         for (const activeBudget of actives) {
             activeBudget.$query().patch({ isDefault: false })

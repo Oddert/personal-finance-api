@@ -27,7 +27,7 @@ router.route('/')
     )
 
 router.route('/:id')
-    .get(getSingleCategory)
+    .get(requiresAuth, getSingleCategory)
     .put(
         requiresAuth, 
         checkSchema(updateCategorySchema),

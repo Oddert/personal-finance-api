@@ -53,6 +53,7 @@ export default class Card extends Model {
             ],
             properties: {
                 id: { type: 'string' },
+                userId: { type: 'string' },
                 isDefault: { type: 'boolean' },
                 cardName: { type: 'string' },
                 cardType: { type: 'string' },
@@ -78,6 +79,7 @@ export default class Card extends Model {
         parse(obj) {
             return {
                 id: obj.id,
+                userId: obj.user_id,
                 isDefault: obj.is_default,
                 cardName: obj.card_name,
                 cardType: obj.card_type,
@@ -95,6 +97,7 @@ export default class Card extends Model {
         format(obj) {
             return {
                 id: obj.id,
+                user_id: obj.userId,
                 is_default: obj.isDefault,
                 card_name: obj.cardName,
                 card_type: obj.cardType,
