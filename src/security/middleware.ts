@@ -5,6 +5,7 @@ import { IUserRequest } from '../types/Auth.types'
 
 import { respondUnauthenticated } from '../utils/responses'
 import TokenExclude from '../models/TokenExclude'
+import User from '../models/User'
 
 /**
  * Middleware to protect routes requiring authorisation.
@@ -51,7 +52,11 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         }
 
         if (!decodedToken.jti) {
-            throw new Error('Token format is invalid, jti is missing.')
+            throw new Error('Token format is invalid, the key "jti" is missing.')
+        }
+
+        if (!decodedToken.sub) {
+            throw new Error('Token format is invalid, the key "sub" is missing.')
         }
 
         const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
@@ -60,7 +65,9 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
             return respondUnauthenticated(req, res, null, 'Access token has already been used.', 401, 'Token Revoked')
         }
 
-        req.user = decodedToken
+        const user = await User.query().where('username', '=', decodedToken.sub).first()
+
+        req.user = user?.toJson()
         next()
     } catch (error: any) {
         return respondUnauthenticated(

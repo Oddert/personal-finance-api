@@ -8,7 +8,7 @@ import Transaction from '../models/Transaction'
 
 dayjs.extend(customParseFormat)
 
-export const getTransaction = async (req: Request, res: Response) => {
+export const getTransactions = async (req: Request, res: Response) => {
     try {
         const startDate = typeof req.query?.from === 'string'
             ? dayjs(req.query.from).valueOf()
@@ -27,10 +27,12 @@ export const getTransaction = async (req: Request, res: Response) => {
                     .orderBy('date', 'DESC')
                 return respondOk(req, res, { transactions })
             }
+
             const transactions = await Transaction.query()
                 .whereBetween('date', [startDate, endDate])
                 .withGraphFetched('assignedCategory')
                 .orderBy('date', 'DESC')
+
             return respondOk(req, res, { transactions })
         }
 
@@ -39,6 +41,7 @@ export const getTransaction = async (req: Request, res: Response) => {
                 .whereBetween('date', [startDate, endDate])
                 .where('card_id', '=', Number(req.query.cardId))
                 .orderBy('date', 'DESC')
+
             return respondOk(req, res, { transactions })
         }
 
