@@ -12,9 +12,9 @@ export const getMatchers = async (req: IUserRequest, res: Response) => {
     console.log(req.user)
     try {
         const matchers = await Matcher.query().where('user_id', '=', req.user.id)
-        return respondOk(req, res, { matchers })
-    } catch(err: any) {
-        return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
+        return respondOk({ res, payload: { matchers } })
+    } catch(error: any) {
+        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -22,11 +22,11 @@ export const getSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         const matcher = await Matcher.query().findById(req.params.id).where('user_id', '=', req.user.id)
         if (!matcher) {
-            return respondNotFound(req, res, { id: req.params.id }, 'No Matcher found for ID.')
+            return respondNotFound({ res, payload: { id: req.params.id }, message: 'No Matcher found for ID.' })
         }
-        return respondOk(req, res, { matcher })
-    } catch(err: any) {
-        return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
+        return respondOk({ res, payload: { matcher } })
+    } catch(error: any) {
+        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -39,9 +39,9 @@ export const createSingleMatcher = async (req: IUserRequest, res: Response) => {
         if (req.body?.categoryId) {
             await Category.relatedQuery('matchers').for(req.body.categoryId).relate(matcher)
         }
-        return respondCreated(req, res, { matcher })
-    } catch(err: any) {
-        return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
+        return respondCreated({ res, payload: { matcher } })
+    } catch(error: any) {
+        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -52,9 +52,9 @@ export const updateSingleMatcher = async (req: IUserRequest, res: Response) => {
             .where('user_id', '=', req.user.id)
             .patchAndFetchById(req.params.id, body)
         matcher.created_on = new Date(matcher.created_on).toISOString()
-        return respondOk(req, res, { matcher }, 'Matcher updated successfully', 201)
-    } catch(err: any) {
-        return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
+        return respondCreated({ res, payload: { matcher }, message: 'Matcher updated successfully' })
+    } catch(error: any) {
+        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -63,9 +63,9 @@ export const deleteSingleMatcher = async (req: IUserRequest, res: Response) => {
         await Matcher.relatedQuery('categories').where('user_id', '=', req.user.id).for(req.params.id).unrelate()
         await Matcher.query()
             .deleteById(req.params.id)
-        return respondOk(req, res, null, 'Delete operation successful.', 204)
-    } catch(err: any) {
-        return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
+        return respondOk({ res, message: 'Delete operation successful.', statusCode: 204 })
+    } catch(error: any) {
+        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }
 }
 
@@ -80,8 +80,8 @@ export const createManyMatchers = async (req: IUserRequest, res: Response) => {
             createdMatchers.push(createdMatcher)
         }
 
-        return respondCreated(req, res, { createdMatchers }, 'Matchers created successfully', 201)
-    } catch(err: any) {
-        return respondBadRequest(req, res, null, 'Something went wrong processing your request', 500, err.message)
+        return respondCreated({ res, payload: { createdMatchers }, message: 'Matchers created successfully' })
+    } catch(error: any) {
+        return respondBadRequest({ res, message: 'Something went wrong processing your request', error: error.message })
     }
 }

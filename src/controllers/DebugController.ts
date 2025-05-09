@@ -15,18 +15,18 @@ import User from '../models/User'
 export const resetServer = async (req: Request, res: Response) => {
     try {
         // const result = knex('category_matcher')
-        return respondOk(req, res)
+        return respondOk({ res })
     } catch(err: any) {
-        return respondServerError(req, res, null, null, 500, err.message)
+        return respondServerError({ res, error: err.message })
     }
 }
 
 export const getMatcherCategory = async (req: Request, res: Response) => {
     try {
         const result = await CategoryMatcher.query()
-        return respondOk(req, res, { result })
+        return respondOk({ res, payload: { result } })
     } catch(err: any) {
-        return respondServerError(req, res, null, null, 500, err.message)
+        return respondServerError({ res, error: err.message })
     }
 }
 
@@ -52,17 +52,20 @@ export const getSeeds = async (req: Request, res: Response) => {
         }))
         const scheduler = await Scheduler.query()
         const transaction = await Transaction.query()
-        return respondOk(req, res, {
-            matchers,
-            categories,
-            category_matcher,
-            scenario,
-            transactor,
-            scheduler,
-            transaction,
+        return respondOk({
+            res,
+            payload: {
+                matchers,
+                categories,
+                category_matcher,
+                scenario,
+                transactor,
+                scheduler,
+                transaction,
+            }
         })
     } catch (error: any) {
-        respondServerError(req, res, null, null, 500, error.message)
+        respondServerError({ res, error: error.message })
     }
 }
 
@@ -74,9 +77,9 @@ export const getTokenExclude = async (req: Request, res: Response) => {
         const tokenExcludeRaw = await TokenExclude.query()
         const tokenExclude: any[] = tokenExcludeRaw.map((token) => ({ jti: token.jti, expires: new Date(token.expires).toISOString() }))
 
-        return respondOk(req, res, {tokenExclude})
+        return respondOk({ res, payload: {tokenExclude} })
     } catch (error: any) {
-        respondServerError(req, res, error.name, null, 500, error.message)
+        respondServerError({ res, message: error.name,  error: error.message })
 
     }
 }
@@ -88,9 +91,9 @@ export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await User.query()
 
-        return respondOk(req, res, {users})
+        return respondOk({ res, payload: {users} })
     } catch (error: any) {
-        respondServerError(req, res, error.name, null, 500, error.message)
+        respondServerError({ res, message: error.name,  error: error.message })
 
     }
 }
