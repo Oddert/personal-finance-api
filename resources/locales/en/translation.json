@@ -7,6 +7,60 @@
             "usernameOrPasswordWrong": "Username or password is not correct."
         }
     },
+    "budget": {
+        "messages": {
+            "deletedSuccessfully": "Budget deleted successfully.",
+            "notFoundById": "No Budget with ID \"{{budgetId}}\" found.",
+            "setAsDefault": "Budget set as default.",
+            "updatedSuccessfully": "Budget updated successfully."
+        }
+    },
+    "card": {
+        "messages": {
+            "deletedSuccessfully": "Card deleted successfully.",
+            "notFoundById": "No Card with ID \"{{cardId}}\" found.",
+            "setAsDefault": "Card set as default.",
+            "updatedSuccessfully": "Card updated successfully."
+        }
+    },
+    "category": {
+        "messages": {
+            "categoriesCreated": "Categories created successfully.",
+            "deletedSuccessfully": "Category deleted successfully.",
+            "notFoundById": "No Category with ID \"{{categoryId}}\" found.",
+            "setAsDefault": "Category set as default.",
+            "updatedSuccessfully": "Category updated successfully."
+        }
+    },
+    "matcher": {
+        "messages": {
+            "deletedSuccessfully": "Matcher deleted successfully.",
+            "matchersCreated": "Matchers created successfully.",
+            "notFoundById": "No Matcher with ID \"{{matcherId}}\" found.",
+            "setAsDefault": "Matcher set as default.",
+            "updatedSuccessfully": "Matcher updated successfully."
+        }
+    },
+    "scenario": {
+        "messages": {
+            "deletedSuccessfully": "Scenario deleted successfully.",
+            "scenariosCreated": "Scenarios created successfully.",
+            "notFoundById": "No Scenario with ID \"{{scenarioId}}\" found.",
+            "setAsDefault": "Scenario set as default.",
+            "updatedSuccessfully": "Scenario updated successfully."
+        }
+    },
+    "transaction": {
+        "messages": {
+            "createdSuccessfully": "Transaction created successfully.",
+            "deletedSuccessfully": "Transaction deleted successfully.",
+            "notFoundById": "No Transaction with ID \"{{transactionId}}\" found.",
+            "setAsDefault": "Transaction set as default.",
+            "updatedSuccessfully": "Transaction updated successfully.",
+            "transactionsCreated": "Transactions created successfully.",
+            "transactionsUpdate": "Transactions updated successfully."
+        }
+    },
     "genericMessages": {
         "badRequest": "There was an issue in the format of your request. Please check and try again.",
         "conflict": "The requested resource is not available.",
