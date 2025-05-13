@@ -28,7 +28,6 @@ export const getCategories = async (req: IUserRequest, res: Response) => {
 
 export const getSingleCategory = async (req: IUserRequest, res: Response) => {
     try {
-        console.log(req.params, req.user)
         const category = req.query.includeMatchers
             ? await Category.query()
                 .findById(req.params.id)
@@ -48,7 +47,6 @@ export const getSingleCategory = async (req: IUserRequest, res: Response) => {
 
         return respondOk({ req, res, payload: { category } })
     } catch(error: any) {
-        console.log(error)
         return respondBadRequest({ req, res, error: error.message })
     }
 }

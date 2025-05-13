@@ -71,7 +71,6 @@ export const createSingleBudget = async (req: IUserRequest, res: Response) => {
 
         return respondServerError({ req, res })
     } catch (error: any) {
-        console.log(error)
         return respondServerError({ req, res, error: error.message })
     }
 }

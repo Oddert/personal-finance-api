@@ -9,7 +9,6 @@ import Matcher from '../models/Matcher'
 import Category from '../models/Category'
 
 export const getMatchers = async (req: IUserRequest, res: Response) => {
-    console.log(req.user)
     try {
         const matchers = await Matcher.query().where('user_id', '=', req.user.id)
         return respondOk({ req, res, payload: { matchers } })
