@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Budget extends Model {
-    id?: number
+    id?: string
     static created_on: Date | string
     static updated_on: Date | string
 
@@ -42,10 +42,11 @@ export default class Budget extends Model {
                 'varHighPc',
             ],
             properties: {
-                id: { type: 'number' },
-                budgetId: { type: 'number' },
+                id: { type: 'string' },
+                userId: { type: 'string' },
+                budgetId: { type: 'string' },
                 colour: { type: 'string' },
-                categoryId: { type: 'number' },
+                categoryId: { type: 'string' },
                 label: { type: 'string', minLength: 3 },
                 value: { type: 'number' },
                 varLowPc: { type: 'number' },
@@ -72,6 +73,7 @@ export default class Budget extends Model {
         parse(obj) {
             return {
                 id: obj.id,
+                userId: obj.user_id,
                 budgetId: obj.budget_id,
                 categoryId: obj.category_id,
                 colour: obj.colour,
@@ -84,6 +86,7 @@ export default class Budget extends Model {
         format(obj) {
             return {
                 id: obj.id,
+                user_id: obj.userId,
                 budget_id: obj.budgetId,
                 category_id: obj.categoryId,
                 colour: obj.colour,

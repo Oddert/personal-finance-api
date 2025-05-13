@@ -5,7 +5,9 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Budget extends Model {
-    id?: number
+    id?: string
+    card_id: string
+    user_id: string
     name: string
     shortDescription: string
     longDescription: string
@@ -41,7 +43,9 @@ export default class Budget extends Model {
             type: 'object',
             required: ['name', 'shortDescription', 'longDescription', 'createdOn', 'updatedOn'],
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
+                card_id: { type: 'string' },
+                user_id: { type: 'string' },
                 name: { type: 'string', minLength: 3 },
                 shortDescription: { type: 'string' },
                 longDescription: { type: 'string' },
@@ -70,6 +74,7 @@ export default class Budget extends Model {
         parse(obj) {
             return {
                 id: obj.id,
+                userId: obj.user_id,
                 name: obj.name,
                 shortDescription: obj.short_desc,
                 longDescription: obj.long_desc,
@@ -81,6 +86,8 @@ export default class Budget extends Model {
         format(obj) {
             return {
                 id: obj.id,
+                card_id: obj.cardId,
+                user_id: obj.userId,
                 name: obj.name,
                 short_desc: obj.shortDescription,
                 long_desc: obj.longDescription,

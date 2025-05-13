@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken'
 import { IUserRequest } from '../types/Auth.types'
 
 import { respondUnauthenticated } from '../utils/responses'
+
 import TokenExclude from '../models/TokenExclude'
+import User from '../models/User'
 
 /**
  * Middleware to protect routes requiring authorisation.
@@ -15,27 +17,23 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
     const authHeader = req.header('Authorization')
 
     if (!authHeader) {
-        return respondUnauthenticated(
+        return respondUnauthenticated({
             req,
             res,
-            null,
-            'Your logged in has expired, please login and try again.',
-            401,
-            'No Authorization header found in request.',
-        )
+            message: req.t('securityMessages.loginExpired'),
+            error: req.t('securityErrors.noAuthHeader'),
+        })
     }
     
     const token = authHeader.split(' ')
     
     if (token.length !== 2) {
-        return respondUnauthenticated(
+        return respondUnauthenticated({
             req,
             res,
-            null,
-            'Your logged in has expired, please login and try again.',
-            401,
-            'Authorization header in request is malformed.',
-        )
+            message: req.t('securityMessages.loginExpired'),
+            error: req.t('securityErrors.authHeaderMalformed'),
+        })
     }
     
     try {
@@ -43,33 +41,37 @@ export const requiresAuth = async (req: IUserRequest, res: Response, next: NextF
         const decodedToken = jwt.verify(token[1], JWT_SECRET)
 
         if (typeof decodedToken === 'string') {
-            throw new Error ('Unable to decode access token, token type is invalid.')
+            throw new Error (req.t('securityErrors.unableToDecodeAccessToken'))
         }
         
         if (!decodedToken?.exp || decodedToken.exp <= new Date().getTime()) {
-            return respondUnauthenticated(req, res, null, 'Access token has expired.', 401, 'Token Expired')
+            return respondUnauthenticated({ req, res, message: req.t('securityMessages.accessTokenExpired'), error: req.t('securityErrors.tokenExpired') })
         }
 
         if (!decodedToken.jti) {
-            throw new Error('Token format is invalid, jti is missing.')
+            throw new Error(req.t('securityErrors.jtiMalformed'))
+        }
+
+        if (!decodedToken.sub) {
+            throw new Error(req.t('securityErrors.subMalformed'))
         }
 
         const excludeRecord = await TokenExclude.query().where('jti', '=', decodedToken.jti).first()
 
         if (excludeRecord) {
-            return respondUnauthenticated(req, res, null, 'Access token has already been used.', 401, 'Token Revoked')
+            return respondUnauthenticated({ req, res, message: req.t('securityMessages.accessTokenUsed'), error: req.t('securityErrors.tokenRevoked') })
         }
 
-        req.user = decodedToken
+        const user = await User.query().where('username', '=', decodedToken.sub).first()
+
+        req.user = user?.toJson()
         next()
     } catch (error: any) {
-        return respondUnauthenticated(
+        return respondUnauthenticated({
             req,
             res,
-            null,
-            'Your logged in has expired, please login and try again.',
-            401,
-            error?.message || 'Authorization token is invalid.',
-        )
+            message: req.t('securityMessages.loginExpired'),
+            error: error?.message || req.t('securityErrors.authHeaderMalformed'),
+        })
     }
 }

@@ -2,6 +2,9 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
+import i18next from 'i18next'
+import Backend from 'i18next-node-fs-backend'
+import i18nextMiddleware from 'i18next-express-middleware'
 import morgan from 'morgan'
 import cron from 'node-cron'
 import path from 'path'
@@ -16,6 +19,13 @@ import scenario from './routes/ScenarioRoutes'
 import transaction from './routes/TransactionRoutes'
 
 import { clearExpiredRefreshTokens } from './controllers/CronController'
+
+declare module 'express-serve-static-core' {
+    interface Request {
+      user?: any;
+      t: (key: string, args?: { [key: string]: string }) => string
+    }
+  }
 
 dotenv.config()
 
@@ -32,6 +42,21 @@ const routes = [
     { path: '/scenario', router: scenario },
     { path: '/transaction', router: transaction },
 ]
+
+console.log('[index] serving translations from: ', path.join(__dirname, '../resources/locales/{{lng}}/{{ns}}.json'))
+
+i18next
+    .use(Backend)
+    .use(i18nextMiddleware.LanguageDetector)
+    .init({
+        backend: {
+            loadPath: path.join(__dirname, '../resources/locales/{{lng}}/{{ns}}.json')
+        },
+        fallbackLng: 'en',
+        preload: ['en', 'en-CA', 'en-GB']
+    })
+
+app.use(i18nextMiddleware.handle(i18next))
 
 cron.schedule('0 1 * * *', clearExpiredRefreshTokens)
 clearExpiredRefreshTokens()

@@ -1,7 +1,7 @@
 import { Model } from 'objection'
 
 export default class Scenario extends Model {
-    id?: number
+    id?: string
     start_date?: Date | string
     end_date?: Date | string
     static start_date: Date | string
@@ -38,7 +38,7 @@ export default class Scenario extends Model {
         return {
             type: 'object',
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 start_date: { type: ['string', 'null'] },

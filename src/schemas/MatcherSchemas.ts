@@ -1,4 +1,6 @@
-export const createMatcherSchema = {
+import { Schema } from 'express-validator'
+
+export const createMatcherSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
     match: {
         isString: true,
         exists: { errorMessage: 'Field "match" is required.' },
@@ -30,9 +32,9 @@ export const createMatcherSchema = {
     },
 }
 
-export const updateMatcherSchema = { ...createMatcherSchema }
+export const updateMatcherSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = { ...createMatcherSchema }
 
-export const createManyMatchersSchema = {
+export const createManyMatchersSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
     'matchers.*.match': {
         isString: true,
         exists: { errorMessage: 'Field "match" is required.' },

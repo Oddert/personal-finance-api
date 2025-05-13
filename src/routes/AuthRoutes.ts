@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { checkSchema } from 'express-validator'
 
 import {
     getUserDetails,
@@ -8,18 +9,24 @@ import {
     registerUser,
 } from '../controllers/AuthController'
 
+import {
+    logInSchema,
+    refreshTokenSchema,
+    signUpSchema,
+} from '../schemas/AuthSchemas'
+
 import { requiresAuth } from '../security/middleware'
 
 const router = Router()
 
 router.route('/signup')
-    .post(registerUser)
+    .post(checkSchema(signUpSchema), registerUser)
 
 router.route('/login')
-    .post(loginUser)
+    .post(checkSchema(logInSchema), loginUser)
 
 router.route('/refresh-token')
-    .post(refreshToken)
+    .post(checkSchema(refreshTokenSchema), refreshToken)
 
 router.route('/user-exists/:username')
     .get(getUserExists)

@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Matcher extends Model {
-    id?: number
+    id?: string
     match?: string
     match_type?: string
     case_sensitive?: boolean
@@ -40,7 +40,7 @@ export default class Matcher extends Model {
             type: 'object',
             required: ['match', 'match_type', 'case_sensitive'],
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 match: { type: 'string', minLength: 1 },
                 match_type: { type: 'string', minLength: 1 },
                 case_sensitive: { type: 'boolean' },

@@ -1,4 +1,6 @@
-export const createCategorySchema = {
+import { Schema } from 'express-validator'
+
+export const createCategorySchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
     label: {
         isString: true,
         exists: { errorMessage: 'Field "label" is required.' },
@@ -32,9 +34,9 @@ export const createCategorySchema = {
     },
 }
 
-export const updateCategorySchema = { ...createCategorySchema }
+export const updateCategorySchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = { ...createCategorySchema }
 
-export const createManyCategoriesSchema = {
+export const createManyCategoriesSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
     'categories.*.label': {
         isString: true,
         exists: { errorMessage: 'Field "label" is required.' },

@@ -1,4 +1,6 @@
-export const createTransactionSchema = {
+import { Schema } from 'express-validator'
+
+export const createTransactionSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
     date: {
         isString: true,
         exists: { errorMessage: 'Field "date" is required.' },
@@ -48,9 +50,9 @@ export const createTransactionSchema = {
     },
 }
 
-export const updateTransactionSchema = { ...createTransactionSchema }
+export const updateTransactionSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = { ...createTransactionSchema }
 
-export const createManyTransactionSchema = {
+export const createManyTransactionSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
     'transactions.*.date': {
         isString: true,
         exists: { errorMessage: 'Field "date" is required.' },

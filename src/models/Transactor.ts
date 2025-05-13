@@ -1,7 +1,7 @@
 import { Model } from 'objection'
 
 export default class Transactor extends Model {
-    id?: number
+    id?: string
     created_on: Date | string
     updated_on: Date | string
     static created_on: Date | string
@@ -9,7 +9,7 @@ export default class Transactor extends Model {
     description: string
     is_addition: boolean
     value: number
-    scenario_id: number
+    scenario_id: string
 
     static get tableName() {
         return 'transactor'
@@ -30,12 +30,12 @@ export default class Transactor extends Model {
         return {
             type: 'object',
             properties: {
-                id: { type: 'number' },
+                id: { type: 'string' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 description: { type: 'string' },
                 value: { type: 'number' },
-                scenario_id: { type: 'number' },
+                scenario_id: { type: 'string' },
             }
         }
     }

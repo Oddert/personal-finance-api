@@ -12,21 +12,40 @@ import {
     updateSingleScenario,
 } from '../controllers/ScenarioController'
 
+import { scenarioCreateManySchema, scenarioCreateSchema, scenarioDeleteManySchema } from '../schemas/ScenarioSchemas'
+import { checkSchema } from 'express-validator'
+
 const router = Router()
 
 router.route('/')
     .get(requiresAuth, getScenarios)
-    .post(requiresAuth, createSingleScenario)
+    .post(
+        checkSchema(scenarioCreateSchema),
+        requiresAuth,
+        createSingleScenario
+    )
 
 router.route('/:id')
     .get(requiresAuth, getSingleScenario)
-    .put(requiresAuth, updateSingleScenario)
+    .put(
+        checkSchema(scenarioCreateSchema),
+        requiresAuth,
+        updateSingleScenario
+    )
     .delete(requiresAuth, deleteSingleScenario)
 
 router.route('/create-many')
-    .post(requiresAuth, createManyScenarios)
+    .post(
+        checkSchema(scenarioCreateManySchema),
+        requiresAuth,
+        createManyScenarios
+    )
 
 router.route('/delete-many')
-    .post(requiresAuth, deleteManyScenarios)
+    .post(
+        checkSchema(scenarioDeleteManySchema),
+        requiresAuth,
+        deleteManyScenarios
+    )
 
 export default router

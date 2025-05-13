@@ -5,7 +5,7 @@ import knex from '../db/knex'
 Model.knex(knex)
 
 export default class Transaction extends Model {
-    id?: 'integer'
+    id?: string
     card_id?: number
     date?: Date
     transaction_type?: string
@@ -18,7 +18,7 @@ export default class Transaction extends Model {
     currency?: string
     static created_on: Date | string
     static updated_on: Date | string
-    category_id?: 'integer'
+    category_id?: string
 
     static get tableName() {
         return 'transaction'
@@ -39,16 +39,17 @@ export default class Transaction extends Model {
         return {
             type: 'object',
             properties: {
-                id: { type: 'number' },
-                date: { type: 'number' },
+                id: { type: 'string' },
+                date: { type: ['number', 'string'] },
                 transaction_type: { type: 'string', minLength: 1, maxLength: 5 },
                 description: { type: ['string', 'null'] },
+                user_id: { type: 'string' },
                 debit: { type: 'number' },
                 credit: { type: 'number' },
                 ballance: { type: 'number' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
-                category_id: { type: 'number' },
+                category_id: { type: 'string' },
                 currency: { type: 'string' },
             }
         }
@@ -74,6 +75,7 @@ export default class Transaction extends Model {
                 id: obj.id,
                 currency: obj.currency,
                 cardId: obj.card_id,
+                userId: obj.user_id,
                 date: obj.date,
                 transactionType: obj.transaction_type,
                 description: obj.description,
@@ -90,6 +92,7 @@ export default class Transaction extends Model {
                 id: obj.id,
                 currency: obj.currency,
                 card_id: obj.cardId,
+                user_id: obj.userId,
                 date: obj.date,
                 transaction_type: obj.transactionType,
                 description: obj.description,
