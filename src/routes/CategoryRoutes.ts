@@ -1,5 +1,5 @@
-import { Router } from 'express'
-import { checkSchema } from 'express-validator'
+import { Router } from 'express';
+import { checkSchema } from 'express-validator';
 
 import {
     createManyCategories,
@@ -8,38 +8,37 @@ import {
     getCategories,
     getSingleCategory,
     updateSingleCategory,
-} from '../controllers/CategoryController'
+} from '../controllers/CategoryController';
 import {
     createCategorySchema,
     createManyCategoriesSchema,
     updateCategorySchema,
-} from '../schemas/CategorySchema'
-import { requiresAuth } from '../security/middleware'
+} from '../schemas/CategorySchema';
+import { requiresAuth } from '../security/middleware';
 
-const router = Router()
+const router = Router();
 
-router.route('/')
+router
+    .route('/')
     .get(requiresAuth, getCategories)
     .post(
         requiresAuth,
         checkSchema(createCategorySchema),
         createSingleCategory,
-    )
+    );
 
-router.route('/:id')
+router
+    .route('/:id')
     .get(requiresAuth, getSingleCategory)
-    .put(
-        requiresAuth, 
-        checkSchema(updateCategorySchema),
-        updateSingleCategory,
-    )
-    .delete(requiresAuth, deleteSingleCategory)
+    .put(requiresAuth, checkSchema(updateCategorySchema), updateSingleCategory)
+    .delete(requiresAuth, deleteSingleCategory);
 
-router.route('/create-many')
+router
+    .route('/create-many')
     .post(
-        requiresAuth, 
+        requiresAuth,
         checkSchema(createManyCategoriesSchema),
         createManyCategories,
-    )
+    );
 
-export default router
+export default router;

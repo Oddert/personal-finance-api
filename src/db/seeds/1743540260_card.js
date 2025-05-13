@@ -1,16 +1,15 @@
 const dayjs = require('dayjs');
-const customParseFormat = require('dayjs/plugin/customParseFormat');
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 /* eslint-disable quotes */
 /**
  * @param { import("knex").Knex } knex
- * @returns { Promise<void> } 
+ * @returns { Promise<void> }
  */
-exports.seed = async function(knex) {
+exports.seed = async function (knex) {
     // Deletes All existing entries
-    await knex('card').delete()
+    await knex('card').delete();
     await knex('card').insert([
         {
             id: 'be913800-df3b-4285-803a-88e971fde8f3',
@@ -27,6 +26,6 @@ exports.seed = async function(knex) {
             cover_image: '',
             created_on: new Date(),
             updated_on: new Date(),
-        }
-    ])
-}
+        },
+    ]);
+};

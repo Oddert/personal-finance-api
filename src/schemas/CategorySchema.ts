@@ -1,10 +1,13 @@
-import { Schema } from 'express-validator'
+import { Schema } from 'express-validator';
 
-export const createCategorySchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
+export const createCategorySchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
     label: {
         isString: true,
         exists: { errorMessage: 'Field "label" is required.' },
-        errorMessage: '"label" is invalid. Please ensure match is a string of at least 3 characters.',
+        errorMessage:
+            '"label" is invalid. Please ensure match is a string of at least 3 characters.',
         isLength: {
             options: {
                 min: 3,
@@ -14,9 +17,11 @@ export const createCategorySchema: Schema<'exists' | 'isString' | 'isLength' | '
     description: {
         isString: true,
         optional: true,
-        errorMessage: '"description" is invalid. Please ensure description is a string of at least 3 characters.',
+        errorMessage:
+            '"description" is invalid. Please ensure description is a string of at least 3 characters.',
         isLength: {
-            errorMessage: 'Length error. "description" must be at least 3 characters long.',
+            errorMessage:
+                'Length error. "description" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
@@ -25,22 +30,28 @@ export const createCategorySchema: Schema<'exists' | 'isString' | 'isLength' | '
     colour: {
         isString: true,
         exists: { errorMessage: 'Field "colour" is required.' },
-        errorMessage: '"colour" is invalid. Please ensure match is a string of at least 3 characters.',
+        errorMessage:
+            '"colour" is invalid. Please ensure match is a string of at least 3 characters.',
         isLength: {
             options: {
                 min: 3,
             },
         },
     },
-}
+};
 
-export const updateCategorySchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = { ...createCategorySchema }
+export const updateCategorySchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = { ...createCategorySchema };
 
-export const createManyCategoriesSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
+export const createManyCategoriesSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
     'categories.*.label': {
         isString: true,
         exists: { errorMessage: 'Field "label" is required.' },
-        errorMessage: '"label" is invalid. Please ensure match is a string of at least 3 characters.',
+        errorMessage:
+            '"label" is invalid. Please ensure match is a string of at least 3 characters.',
         isLength: {
             options: {
                 min: 3,
@@ -50,9 +61,11 @@ export const createManyCategoriesSchema: Schema<'exists' | 'isString' | 'isLengt
     'categories.*.description': {
         isString: true,
         optional: true,
-        errorMessage: '"description" is invalid. Please ensure description is a string of at least 3 characters.',
+        errorMessage:
+            '"description" is invalid. Please ensure description is a string of at least 3 characters.',
         isLength: {
-            errorMessage: 'Length error. "description" must be at least 3 characters long.',
+            errorMessage:
+                'Length error. "description" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
@@ -61,11 +74,12 @@ export const createManyCategoriesSchema: Schema<'exists' | 'isString' | 'isLengt
     'categories.*.colour': {
         isString: true,
         exists: { errorMessage: 'Field "colour" is required.' },
-        errorMessage: '"colour" is invalid. Please ensure match is a string of at least 3 characters.',
+        errorMessage:
+            '"colour" is invalid. Please ensure match is a string of at least 3 characters.',
         isLength: {
             options: {
                 min: 3,
             },
         },
     },
-}
+};

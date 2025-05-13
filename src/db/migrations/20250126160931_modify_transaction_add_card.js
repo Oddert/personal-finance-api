@@ -2,18 +2,18 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+exports.up = function (knex) {
     return knex.schema.alterTable('transaction', (table) => {
-        table.integer('card_id').references('card.id')
-    })
+        table.integer('card_id').references('card.id');
+    });
 };
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+exports.down = function (knex) {
     return knex.schema.alterTable('transaction', (table) => {
-        table.dropColumn('card_id')
-    })
+        table.dropColumn('card_id');
+    });
 };

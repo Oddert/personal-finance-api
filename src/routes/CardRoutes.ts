@@ -1,7 +1,7 @@
-import { Router } from 'express'
-import { checkSchema } from 'express-validator'
+import { Router } from 'express';
+import { checkSchema } from 'express-validator';
 
-import { requiresAuth } from '../security/middleware'
+import { requiresAuth } from '../security/middleware';
 
 import {
     createSingleCard,
@@ -10,25 +10,23 @@ import {
     getSingleCard,
     setActiveCard,
     updateSingleCard,
-} from '../controllers/CardController'
+} from '../controllers/CardController';
 
-import {
-    cardCreateSchema,
-    cardUpdateSchema,
-} from '../schemas/CardSchema'
+import { cardCreateSchema, cardUpdateSchema } from '../schemas/CardSchema';
 
-const router = Router()
+const router = Router();
 
-router.route('/')
+router
+    .route('/')
     .get(requiresAuth, getCards)
-    .post(checkSchema(cardCreateSchema), requiresAuth, createSingleCard)
+    .post(checkSchema(cardCreateSchema), requiresAuth, createSingleCard);
 
-router.route('/:id')
+router
+    .route('/:id')
     .get(requiresAuth, getSingleCard)
     .put(checkSchema(cardUpdateSchema), requiresAuth, updateSingleCard)
-    .delete(requiresAuth, deleteSingleCard)
+    .delete(requiresAuth, deleteSingleCard);
 
-router.route('/preferences/:id')
-    .put(requiresAuth, setActiveCard)
+router.route('/preferences/:id').put(requiresAuth, setActiveCard);
 
-export default router
+export default router;

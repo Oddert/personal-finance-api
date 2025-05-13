@@ -1,16 +1,18 @@
-import { Model } from 'objection'
+import { Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
 export default class CategoryMatcher extends Model {
-    id?: string
-    category?: string
-    matcher_id?: string
+    id?: string;
+
+    category?: string;
+
+    matcher_id?: string;
 
     static get tableName() {
-        return 'category_matcher'
+        return 'category_matcher';
     }
 
     static get jsonSchema() {
@@ -18,16 +20,16 @@ export default class CategoryMatcher extends Model {
             type: 'object',
             required: ['category', 'matcher_id'],
             properties: {
-                id: { type: 'string' },               
-                category: { type: 'string' },               
-                matcher_id: { type: 'string' },               
-            }
-        }
+                id: { type: 'string' },
+                category: { type: 'string' },
+                matcher_id: { type: 'string' },
+            },
+        };
     }
 
     static get relationMappings() {
-        const Category = __dirname + '/Category' // require('./User')
-        const Matcher = __dirname + '/Matcher' // require('./User')
+        const Category = __dirname + '/Category'; // require('./User')
+        const Matcher = __dirname + '/Matcher'; // require('./User')
         return {
             categories: {
                 relation: Model.BelongsToOneRelation,
@@ -35,7 +37,7 @@ export default class CategoryMatcher extends Model {
                 join: {
                     from: 'category_matcher.category_id',
                     to: 'category.id',
-                }
+                },
             },
             matchers: {
                 relation: Model.BelongsToOneRelation,
@@ -43,8 +45,8 @@ export default class CategoryMatcher extends Model {
                 join: {
                     from: 'category_matcher.matcher_id',
                     to: 'category.id',
-                }
+                },
             },
-        }
+        };
     }
 }

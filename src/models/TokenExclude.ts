@@ -1,28 +1,26 @@
-import { Model } from 'objection'
+import { Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
 export default class TokenExclude extends Model {
-    jti: string
-    expires: Date | number
+    jti: string;
+
+    expires: Date | number;
 
     static get tableName() {
-        return 'token_exclude'
+        return 'token_exclude';
     }
 
     static get jsonSchema() {
         return {
             type: 'object',
-            required: [
-                'jti',
-                'expires',
-            ],
+            required: ['jti', 'expires'],
             properties: {
                 jti: { type: 'string' },
                 expires: { type: 'number' },
             },
-        }
+        };
     }
 }

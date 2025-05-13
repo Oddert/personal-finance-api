@@ -1,10 +1,13 @@
-import { Schema } from 'express-validator'
+import { Schema } from 'express-validator';
 
-export const createTransactionSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
+export const createTransactionSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
     date: {
         isString: true,
         exists: { errorMessage: 'Field "date" is required.' },
-        errorMessage: '"date" is invalid. Please ensure date is a string of at least 6 characters.',
+        errorMessage:
+            '"date" is invalid. Please ensure date is a string of at least 6 characters.',
         isLength: {
             options: {
                 min: 6,
@@ -14,9 +17,11 @@ export const createTransactionSchema: Schema<'exists' | 'isString' | 'isLength' 
     transaction_type: {
         isString: true,
         exists: { errorMessage: 'Field "transaction_type" is required.' },
-        errorMessage: '"transaction_type" is invalid. Please ensure match_type is a 3 character string.',
+        errorMessage:
+            '"transaction_type" is invalid. Please ensure match_type is a 3 character string.',
         isLength: {
-            errorMessage: 'Length error. "match_type" must be 3 characters long.',
+            errorMessage:
+                'Length error. "match_type" must be 3 characters long.',
             options: {
                 min: 3,
                 max: 3,
@@ -26,7 +31,8 @@ export const createTransactionSchema: Schema<'exists' | 'isString' | 'isLength' 
     description: {
         isString: true,
         optional: true,
-        errorMessage: '"description" is invalid. Please ensure description is a string.',
+        errorMessage:
+            '"description" is invalid. Please ensure description is a string.',
     },
     debit: {
         isNumeric: true,
@@ -46,17 +52,23 @@ export const createTransactionSchema: Schema<'exists' | 'isString' | 'isLength' 
     category: {
         isNumeric: true,
         optional: true,
-        errorMessage: '"category" is invalid. Please ensure category is a valid integer ID.',
+        errorMessage:
+            '"category" is invalid. Please ensure category is a valid integer ID.',
     },
-}
+};
 
-export const updateTransactionSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = { ...createTransactionSchema }
+export const updateTransactionSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = { ...createTransactionSchema };
 
-export const createManyTransactionSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
+export const createManyTransactionSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
     'transactions.*.date': {
         isString: true,
         exists: { errorMessage: 'Field "date" is required.' },
-        errorMessage: '"date" is invalid. Please ensure date is a string of at least 6 characters.',
+        errorMessage:
+            '"date" is invalid. Please ensure date is a string of at least 6 characters.',
         isLength: {
             options: {
                 min: 6,
@@ -66,9 +78,11 @@ export const createManyTransactionSchema: Schema<'exists' | 'isString' | 'isLeng
     'transactions.*.transaction_type': {
         isString: true,
         exists: { errorMessage: 'Field "transaction_type" is required.' },
-        errorMessage: '"transaction_type" is invalid. Please ensure match_type is a 3 character string.',
+        errorMessage:
+            '"transaction_type" is invalid. Please ensure match_type is a 3 character string.',
         isLength: {
-            errorMessage: 'Length error. "match_type" must be 3 characters long.',
+            errorMessage:
+                'Length error. "match_type" must be 3 characters long.',
             options: {
                 min: 3,
                 max: 3,
@@ -78,7 +92,8 @@ export const createManyTransactionSchema: Schema<'exists' | 'isString' | 'isLeng
     'transactions.*.description': {
         isString: true,
         optional: true,
-        errorMessage: '"description" is invalid. Please ensure description is a string.',
+        errorMessage:
+            '"description" is invalid. Please ensure description is a string.',
     },
     'transactions.*.debit': {
         isNumeric: true,
@@ -98,6 +113,7 @@ export const createManyTransactionSchema: Schema<'exists' | 'isString' | 'isLeng
     'transactions.*.category': {
         isNumeric: true,
         optional: true,
-        errorMessage: '"category" is invalid. Please ensure category is a valid integer ID.',
+        errorMessage:
+            '"category" is invalid. Please ensure category is a valid integer ID.',
     },
-}
+};

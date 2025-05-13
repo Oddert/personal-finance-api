@@ -1,56 +1,69 @@
-import { ColumnNameMappers, Model } from 'objection'
+import { ColumnNameMappers, Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
 export default class Card extends Model {
-    id?: string
-    isDefault: boolean
-    cardName: string
-    cardType: string
-    bankName: string
-    sortCode: number
-    cardNumber: number
-    expires: number
-    description: string
-    icon: string
-    coverImage: string
-    createdOn: string
-    updatedOn: string
-    static created_on: Date | string
-    static updated_on: Date | string
+    id?: string;
+
+    isDefault: boolean;
+
+    cardName: string;
+
+    cardType: string;
+
+    bankName: string;
+
+    sortCode: number;
+
+    cardNumber: number;
+
+    expires: number;
+
+    description: string;
+
+    icon: string;
+
+    coverImage: string;
+
+    createdOn: string;
+
+    updatedOn: string;
+
+    static created_on: Date | string;
+
+    static updated_on: Date | string;
 
     static get tableName() {
-        return 'card'
+        return 'card';
     }
 
     static beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $afterFind() {
-        this.created_on = this.created_on ? new Date(this.created_on).toISOString() : ''
-        this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
+        this.created_on = this.created_on
+            ? new Date(this.created_on).toISOString()
+            : '';
+        this.updated_on = this.updated_on
+            ? new Date(this.updated_on).toISOString()
+            : '';
     }
 
     static get jsonSchema() {
         return {
             type: 'object',
-            required: [
-                'cardName',
-                'bankName',
-                'createdOn',
-                'updatedOn',
-            ],
+            required: ['cardName', 'bankName', 'createdOn', 'updatedOn'],
             properties: {
                 id: { type: 'string' },
                 userId: { type: 'string' },
@@ -67,12 +80,12 @@ export default class Card extends Model {
                 createdOn: { type: 'string' },
                 updatedOn: { type: 'string' },
             },
-        }
+        };
     }
 
     static get relationMappings() {
         // const BudgetRow = __dirname + '/BudgetRow'
-        return {}
+        return {};
     }
 
     static columnNameMappers: ColumnNameMappers = {
@@ -92,7 +105,7 @@ export default class Card extends Model {
                 coverImage: obj.cover_image,
                 createdOn: obj.created_on,
                 updatedOn: obj.updated_on,
-            }
+            };
         },
         format(obj) {
             return {
@@ -110,7 +123,7 @@ export default class Card extends Model {
                 cover_image: obj.coverImage,
                 created_on: obj.createdOn,
                 updated_on: obj.updatedOn,
-            }
+            };
         },
-    }
+    };
 }

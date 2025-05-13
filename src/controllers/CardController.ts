@@ -1,36 +1,41 @@
-import {  Response } from 'express'
-import { v4 as uuid } from 'uuid'
+import { Response } from 'express';
+import { v4 as uuid } from 'uuid';
 
-import { IUserRequest } from '../types/Auth.types'
+import { IUserRequest } from '../types/Auth.types';
 
-import { respondCreated, respondNotFound, respondOk, respondServerError } from '../utils/responses'
+import {
+    respondCreated,
+    respondNotFound,
+    respondOk,
+    respondServerError,
+} from '../utils/responses';
 
-import Card from '../models/Card'
+import Card from '../models/Card';
 
 export const getCards = async (req: IUserRequest, res: Response) => {
     try {
-        const cards = await Card.query().where('user_id', '=', req.user.id)
-        return respondOk({ req, res, payload: { cards } })
+        const cards = await Card.query().where('user_id', '=', req.user.id);
+        return respondOk({ req, res, payload: { cards } });
     } catch (error: any) {
-        return respondServerError({ req, res, error: error.message })
+        return respondServerError({ req, res, error: error.message });
     }
-}
+};
 
 export const getSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         const card = await Card.query()
             .findById(req.params.id)
-            .where('user_id', '=', req.user.id)
+            .where('user_id', '=', req.user.id);
 
-        return respondOk({ req, res, payload: { card } })
+        return respondOk({ req, res, payload: { card } });
     } catch (error: any) {
-        return respondServerError({ req, res, error: error.message })
+        return respondServerError({ req, res, error: error.message });
     }
-}
+};
 
 export const createSingleCard = async (req: IUserRequest, res: Response) => {
     try {
-        const now = new Date().toISOString()
+        const now = new Date().toISOString();
         const body = {
             ...req.body,
             isDefault: Boolean(req.body.isDefault),
@@ -38,28 +43,30 @@ export const createSingleCard = async (req: IUserRequest, res: Response) => {
             updatedOn: now,
             userId: req.user.id,
             id: uuid(),
-        }
-        const card = await Card.query().insertAndFetch(body)
-        return respondOk({ req, res, payload: { card } })
+        };
+        const card = await Card.query().insertAndFetch(body);
+        return respondOk({ req, res, payload: { card } });
     } catch (error: any) {
-        return respondServerError({ req, res, error: error.message })
+        return respondServerError({ req, res, error: error.message });
     }
-}
+};
 
 export const updateSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         const stagedCard = await Card.query()
             .findById(req.params.id)
-            .where('user_id', '=', req.user.id)
-    
+            .where('user_id', '=', req.user.id);
+
         if (!stagedCard) {
             return respondNotFound({
                 req,
                 res,
-                message: req.t('card.messages.notFoundById', { cardId: req.params.id }),
-            })
+                message: req.t('card.messages.notFoundById', {
+                    cardId: req.params.id,
+                }),
+            });
         }
-    
+
         const body = {
             ...stagedCard,
             updatedOn: new Date().toISOString(),
@@ -74,50 +81,58 @@ export const updateSingleCard = async (req: IUserRequest, res: Response) => {
             description: req.body?.description || stagedCard.description,
             icon: req.body?.icon || stagedCard.icon,
             coverImage: req.body?.coverImage || stagedCard.coverImage,
-        }
-    
-        const card = await Card.query().patchAndFetchById(req.params.id, body)
-            
+        };
+
+        const card = await Card.query().patchAndFetchById(req.params.id, body);
+
         return respondOk({
             req,
             res,
             message: req.t('card.messages.updatedSuccessfully'),
             payload: { card },
-        })
+        });
     } catch (error: any) {
-        return respondServerError({ req, res, error: error.message })
+        return respondServerError({ req, res, error: error.message });
     }
-}
+};
 
 export const deleteSingleCard = async (req: IUserRequest, res: Response) => {
     try {
-        await Card.query().deleteById(req.params.id).where('user_id', '=', req.user.id)
+        await Card.query()
+            .deleteById(req.params.id)
+            .where('user_id', '=', req.user.id);
 
         return respondOk({
             req,
             res,
             message: req.t('card.messages.deletedSuccessfully'),
             statusCode: 204,
-        })
+        });
     } catch (error: any) {
-        return respondServerError({ req, res, error: error.message })
+        return respondServerError({ req, res, error: error.message });
     }
-}
+};
 
 export const setActiveCard = async (req: IUserRequest, res: Response) => {
     try {
         const actives = await Card.query()
             .where('is_default', true)
-            .where('user_id', '=', req.user.id)
+            .where('user_id', '=', req.user.id);
 
         for (const activeCard of actives) {
-            activeCard.$query().patch({ isDefault: false })
+            activeCard.$query().patch({ isDefault: false });
         }
 
-        await Card.query().patchAndFetchById(req.params.id, { isDefault: true })
+        await Card.query().patchAndFetchById(req.params.id, {
+            isDefault: true,
+        });
 
-        return respondCreated({ req, res, message: req.t('card.messages.setAsDefault') })
+        return respondCreated({
+            req,
+            res,
+            message: req.t('card.messages.setAsDefault'),
+        });
     } catch (error: any) {
-        return respondServerError({ req, res, error: error.message })
+        return respondServerError({ req, res, error: error.message });
     }
-}
+};

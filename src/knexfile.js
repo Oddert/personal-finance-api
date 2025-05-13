@@ -1,9 +1,9 @@
 const dayjs = require('dayjs');
 const { types } = require('pg');
-const { builtins } = require ('pg-types');
+const { builtins } = require('pg-types');
 
 const parseFn = (val) => {
-  return val === null ? null : dayjs(val).format('YYYY-MM-DD HH:mm:ss');
+    return val === null ? null : dayjs(val).format('YYYY-MM-DD HH:mm:ss');
 };
 
 types.setTypeParser(builtins.TIMESTAMPTZ, parseFn);
@@ -16,15 +16,15 @@ const config = {
     development: {
         client: 'sqlite3',
         connection: {
-            filename: __dirname + '/db/personal-finance.dev.db3'
+            filename: __dirname + '/db/personal-finance.dev.db3',
         },
         useNullAsDefault: true,
         migrations: {
-            directory: __dirname + '/db/migrations'
+            directory: __dirname + '/db/migrations',
         },
         seeds: {
-            directory: __dirname + '/db/seeds'
-        }
+            directory: __dirname + '/db/seeds',
+        },
     },
     staging: {
         client: 'pg',
@@ -37,11 +37,11 @@ const config = {
         },
         useNullAsDefault: true,
         migrations: {
-            directory: __dirname + '/db/migrations'
+            directory: __dirname + '/db/migrations',
         },
         seeds: {
-            directory: __dirname + '/db/private-seeds'
-        }
+            directory: __dirname + '/db/private-seeds',
+        },
     },
     production: {
         client: 'pg',
@@ -54,16 +54,16 @@ const config = {
         },
         pool: {
             min: 2,
-            max: 10
+            max: 10,
         },
         useNullAsDefault: true,
         migrations: {
-            directory: __dirname + '/db/migrations'
+            directory: __dirname + '/db/migrations',
         },
         seeds: {
-            directory: __dirname + '/db/private-seeds'
-        }
+            directory: __dirname + '/db/private-seeds',
+        },
     },
-}
+};
 
-module.exports = config
+module.exports = config;

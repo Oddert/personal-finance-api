@@ -1,37 +1,61 @@
-import { Model } from 'objection'
+import { Model } from 'objection';
 
 export default class Scenario extends Model {
-    id?: string
-    start_date?: Date | string
-    end_date?: Date | string
-    static start_date: Date | string
-    static end_date: Date | string
-    created_on: Date | string
-    updated_on: Date | string
-    static created_on: Date | string
-    static updated_on: Date | string
-    title: string
-    description: string
-    start_ballance?: number
-    transactors?: any[]
+    id?: string;
+
+    start_date?: Date | string;
+
+    end_date?: Date | string;
+
+    static start_date: Date | string;
+
+    static end_date: Date | string;
+
+    created_on: Date | string;
+
+    updated_on: Date | string;
+
+    static created_on: Date | string;
+
+    static updated_on: Date | string;
+
+    title: string;
+
+    description: string;
+
+    start_ballance?: number;
+
+    transactors?: any[];
 
     static get tableName() {
-        return 'scenario'
+        return 'scenario';
     }
 
     $beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
-        this.start_date = this.start_date ? new Date(this.start_date).toISOString() : ''
-        this.end_date = this.end_date ? new Date(this.end_date).toISOString() : ''
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
+        this.start_date = this.start_date
+            ? new Date(this.start_date).toISOString()
+            : '';
+        this.end_date = this.end_date
+            ? new Date(this.end_date).toISOString()
+            : '';
     }
 
     $afterFind() {
-        this.created_on = this.created_on ? new Date(this.created_on).toISOString() : ''
-        this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
-        this.start_date = this.start_date ? new Date(this.start_date).toISOString() : ''
-        this.end_date = this.end_date ? new Date(this.end_date).toISOString() : ''
+        this.created_on = this.created_on
+            ? new Date(this.created_on).toISOString()
+            : '';
+        this.updated_on = this.updated_on
+            ? new Date(this.updated_on).toISOString()
+            : '';
+        this.start_date = this.start_date
+            ? new Date(this.start_date).toISOString()
+            : '';
+        this.end_date = this.end_date
+            ? new Date(this.end_date).toISOString()
+            : '';
     }
 
     static get jsonSchema() {
@@ -47,11 +71,11 @@ export default class Scenario extends Model {
                 description: { type: 'string' },
                 start_ballance: { type: ['number', 'null'] },
             },
-        }
+        };
     }
 
     static get relationMappings() {
-        const Transactor = __dirname + '/Transactor'
+        const Transactor = __dirname + '/Transactor';
         return {
             transactors: {
                 relation: Model.HasManyRelation,
@@ -60,7 +84,7 @@ export default class Scenario extends Model {
                     from: 'scenario.id',
                     to: 'transactor.scenario_id',
                 },
-            }
-        }
+            },
+        };
     }
 }

@@ -1,7 +1,7 @@
-import { Router } from 'express'
-import { checkSchema } from 'express-validator'
+import { Router } from 'express';
+import { checkSchema } from 'express-validator';
 
-import { requiresAuth } from '../security/middleware'
+import { requiresAuth } from '../security/middleware';
 
 import {
     createSingleBudget,
@@ -11,28 +11,28 @@ import {
     getSingleBudget,
     setActiveBudget,
     updateSingleBudget,
-} from '../controllers/BudgetController'
+} from '../controllers/BudgetController';
 
 import {
     budgetCreateSchema,
     budgetUpdateSchema,
-} from '../schemas/BudgetSchemas'
+} from '../schemas/BudgetSchemas';
 
-const router = Router()
+const router = Router();
 
-router.route('/')
+router
+    .route('/')
     .get(requiresAuth, getBudgets)
-    .post(checkSchema(budgetCreateSchema),requiresAuth, createSingleBudget)
+    .post(checkSchema(budgetCreateSchema), requiresAuth, createSingleBudget);
 
-router.route('/:id')
+router
+    .route('/:id')
     .get(requiresAuth, getSingleBudget)
     .put(checkSchema(budgetUpdateSchema), requiresAuth, updateSingleBudget)
-    .delete(requiresAuth, deleteSingleBudget)
+    .delete(requiresAuth, deleteSingleBudget);
 
-router.route('/preferences/:id')
-    .put(requiresAuth, setActiveBudget)
+router.route('/preferences/:id').put(requiresAuth, setActiveBudget);
 
-router.route('/rows')
-    .get(requiresAuth, getBudgetRows)
+router.route('/rows').get(requiresAuth, getBudgetRows);
 
-export default router
+export default router;

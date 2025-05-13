@@ -1,18 +1,18 @@
-import { Response } from 'express'
-import { IUserRequest } from '../types/Auth.types'
+import { Response } from 'express';
+import { IUserRequest } from '../types/Auth.types';
 
 export interface IStandardResponse {
-    message?: string    
-    error?: string
-    status: number
-    payload?: any
+    message?: string;
+    error?: string;
+    status: number;
+    payload?: any;
 }
 
 export interface IResponseFormatterArgs {
-    req: IUserRequest,
+    req: IUserRequest;
     res: Response;
     payload?: any;
-    message?: string|null;
+    message?: string | null;
     statusCode?: number;
     error?: unknown;
 }
@@ -43,10 +43,13 @@ export const respondOk = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.processedOk') : message,
+            message:
+                message === null
+                    ? req.t('genericMessages.processedOk')
+                    : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 201 responses.
@@ -76,10 +79,11 @@ export const respondCreated = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.createdOK') : message,
+            message:
+                message === null ? req.t('genericMessages.createdOK') : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 300 band responses.
@@ -111,10 +115,13 @@ export const respondMultipleChoices = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.multipleChoices') : message,
+            message:
+                message === null
+                    ? req.t('genericMessages.multipleChoices')
+                    : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 400 band responses.
@@ -144,10 +151,13 @@ export const respondBadRequest = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.badRequest') : message,
+            message:
+                message === null
+                    ? req.t('genericMessages.badRequest')
+                    : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 401 responses.
@@ -177,10 +187,13 @@ export const respondUnauthenticated = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.notLoggedIn') : message,
+            message:
+                message === null
+                    ? req.t('genericMessages.notLoggedIn')
+                    : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 400 band responses.
@@ -189,7 +202,7 @@ export const respondUnauthenticated = ({
  *
  * In the browser, this means the URL is not recognized.
  *
- * In an API, this can also mean that the endpoint is valid but the resource itself does not exist. 
+ * In an API, this can also mean that the endpoint is valid but the resource itself does not exist.
  * @category Utils
  * @subcategory Response Utils
  * @example
@@ -214,10 +227,11 @@ export const respondNotFound = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.notFound') : message,
+            message:
+                message === null ? req.t('genericMessages.notFound') : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 409 responses.
@@ -247,10 +261,11 @@ export const respondConflict = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.conflict') : message,
+            message:
+                message === null ? req.t('genericMessages.conflict') : message,
             error,
-        })
-}
+        });
+};
 
 /**
  * Standard response formatter for 500 band responses.
@@ -280,7 +295,8 @@ export const respondServerError = ({
         .json({
             status: statusCode,
             payload,
-            message: message === null ? req.t('genericMessages.conflict') : message,
+            message:
+                message === null ? req.t('genericMessages.conflict') : message,
             error,
-        })
-}
+        });
+};

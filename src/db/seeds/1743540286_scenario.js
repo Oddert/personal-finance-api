@@ -1,17 +1,17 @@
-const { v4: uuid } = require('uuid')
-const dayjs = require('dayjs')
-const customParseFormat = require('dayjs/plugin/customParseFormat')
+const { v4: uuid } = require('uuid');
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
 
-dayjs.extend(customParseFormat)
+dayjs.extend(customParseFormat);
 
 /**
  * @param { import("knex").Knex } knex
- * @returns { Promise<void> } 
+ * @returns { Promise<void> }
  */
-exports.seed = async function(knex) {
+exports.seed = async function (knex) {
     // Deletes ALL existing entries
     const scenarioUuid = uuid();
-    await knex('scenario').del()
+    await knex('scenario').del();
     await knex('scenario').insert([
         {
             id: scenarioUuid,
@@ -25,9 +25,8 @@ exports.seed = async function(knex) {
             description: 'Business as usual',
             start_ballance: 1943,
         },
-        
-    ])
-    await knex('transactor').del()  
+    ]);
+    await knex('transactor').del();
     await knex('transactor').insert([
         {
             id: '1fb5481f-a257-48e3-beed-2c099a63006b',
@@ -137,8 +136,8 @@ exports.seed = async function(knex) {
             value: 25.5,
             is_addition: false,
         },
-    ])
-    await knex('scheduler').del()
+    ]);
+    await knex('scheduler').del();
     await knex('scheduler').insert([
         {
             id: 1,
@@ -280,5 +279,5 @@ exports.seed = async function(knex) {
             created_on: new Date(),
             updated_on: new Date(),
         },
-    ])
-}
+    ]);
+};

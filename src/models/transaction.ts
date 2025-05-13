@@ -1,38 +1,55 @@
-import { ColumnNameMappers, Model } from 'objection'
+import { ColumnNameMappers, Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
 export default class Transaction extends Model {
-    id?: string
-    card_id?: number
-    date?: Date
-    transaction_type?: string
-    description?: string
-    debit?: number
-    credit?: number
-    ballance?: number
-    created_on: Date | string
-    updated_on: Date | string
-    currency?: string
-    static created_on: Date | string
-    static updated_on: Date | string
-    category_id?: string
+    id?: string;
+
+    card_id?: number;
+
+    date?: Date;
+
+    transaction_type?: string;
+
+    description?: string;
+
+    debit?: number;
+
+    credit?: number;
+
+    ballance?: number;
+
+    created_on: Date | string;
+
+    updated_on: Date | string;
+
+    currency?: string;
+
+    static created_on: Date | string;
+
+    static updated_on: Date | string;
+
+    category_id?: string;
 
     static get tableName() {
-        return 'transaction'
+        return 'transaction';
     }
 
     static beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static afterFind() {
-        this.created_on = this.created_on ? new Date(this.created_on).toISOString() : ''
-        this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
+        this.created_on = this.created_on
+            ? new Date(this.created_on).toISOString()
+            : '';
+        this.updated_on = this.updated_on
+            ? new Date(this.updated_on).toISOString()
+            : '';
     }
 
     static get jsonSchema() {
@@ -41,7 +58,11 @@ export default class Transaction extends Model {
             properties: {
                 id: { type: 'string' },
                 date: { type: ['number', 'string'] },
-                transaction_type: { type: 'string', minLength: 1, maxLength: 5 },
+                transaction_type: {
+                    type: 'string',
+                    minLength: 1,
+                    maxLength: 5,
+                },
                 description: { type: ['string', 'null'] },
                 user_id: { type: 'string' },
                 debit: { type: 'number' },
@@ -51,12 +72,12 @@ export default class Transaction extends Model {
                 updated_on: { type: 'string' },
                 category_id: { type: 'string' },
                 currency: { type: 'string' },
-            }
-        }
+            },
+        };
     }
 
     static get relationMappings() {
-        const Category = __dirname + '/Category' // require('./User')
+        const Category = __dirname + '/Category'; // require('./User')
         return {
             assignedCategory: {
                 relation: Model.BelongsToOneRelation,
@@ -64,11 +85,11 @@ export default class Transaction extends Model {
                 join: {
                     from: 'transaction.category_id',
                     to: 'category.id',
-                }
-            }
-        }
+                },
+            },
+        };
     }
-    
+
     static columnNameMappers: ColumnNameMappers = {
         parse(obj) {
             return {
@@ -85,7 +106,7 @@ export default class Transaction extends Model {
                 createdOn: obj.created_on,
                 updatedOn: obj.updated_on,
                 categoryId: obj.category_id,
-            }
+            };
         },
         format(obj) {
             return {
@@ -102,7 +123,7 @@ export default class Transaction extends Model {
                 created_on: obj.createdOn,
                 updated_on: obj.updatedOn,
                 category_id: obj.categoryId,
-            }
+            };
         },
-    }
+    };
 }
