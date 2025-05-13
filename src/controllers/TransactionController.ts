@@ -58,7 +58,7 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
         return respondOk({ req, res, payload: { transactions } })
 
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: req.t('genericMessages.somethingWentWrong'), error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -73,7 +73,7 @@ export const getSingleTransactions = async (req: IUserRequest, res: Response) =>
         }
         return respondOk({ req, res, payload: { transaction } })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -101,9 +101,9 @@ export const createSingleTransaction = async (req: IUserRequest, res: Response) 
             ? await Transaction.query().insertGraphAndFetch(body)
             : await Transaction.query().insertAndFetch(body)
         
-        return respondCreated({ req, res, payload: { transaction }, message: 'Transaction created successfully' })
+        return respondCreated({ req, res, payload: { transaction }, message: req.t('transaction.messages.createdSuccessfully') })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -114,9 +114,9 @@ export const updateSingleTransaction = async (req: IUserRequest, res: Response) 
 
         const transaction = await Transaction.query().where('user_id', '=', req.user.id).patchAndFetchById(req.params.id, body)
 
-        return respondCreated({ req, res, payload: { transaction }, message: 'Transaction updated successfully' })
+        return respondCreated({ req, res, payload: { transaction }, message: req.t('transaction.messages.updatedSuccessfully') })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -126,9 +126,9 @@ export const deleteSingleTransaction = async (req: IUserRequest, res: Response) 
             .where('user_id', '=', req.user.id)
             .deleteById(req.params.id)
 
-        return respondOk({ req, res, message: 'Delete operation successful.', statusCode: 204 })
+        return respondOk({ req, res, message: req.t('transaction.messages.deletedSuccessfully'), statusCode: 204 })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -147,9 +147,9 @@ export const createManyTransactions = async (req: IUserRequest, res: Response) =
             createdTransactions.push(createdTransaction)
         }
 
-        return respondCreated({ req, res, payload: { createdTransactions }, message: 'Transactions created successfully' })
+        return respondCreated({ req, res, payload: { createdTransactions }, message: req.t('transaction.messages.transactionsCreated') })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -168,8 +168,8 @@ export const updateManyTransactions = async (req: IUserRequest, res: Response) =
             updatedTransactions.push(updatedTransaction)
         }
         
-        return respondCreated({ req, res, payload: { updatedTransactions }, message: 'Transactions updated successfully' })
+        return respondCreated({ req, res, payload: { updatedTransactions }, message: req.t('transaction.messages.transactionsUpdate') })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }

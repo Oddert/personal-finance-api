@@ -14,7 +14,7 @@ export const getMatchers = async (req: IUserRequest, res: Response) => {
         const matchers = await Matcher.query().where('user_id', '=', req.user.id)
         return respondOk({ req, res, payload: { matchers } })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -22,11 +22,15 @@ export const getSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         const matcher = await Matcher.query().findById(req.params.id).where('user_id', '=', req.user.id)
         if (!matcher) {
-            return respondNotFound({ req, res, payload: { id: req.params.id }, message: 'No Matcher found for ID.' })
+            return respondNotFound({
+                req,
+                res,
+                message: req.t('matcher.messages.notFoundById', { matcherId: req.params.id }),
+            })
         }
         return respondOk({ req, res, payload: { matcher } })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -41,7 +45,7 @@ export const createSingleMatcher = async (req: IUserRequest, res: Response) => {
         }
         return respondCreated({ req, res, payload: { matcher } })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -52,20 +56,35 @@ export const updateSingleMatcher = async (req: IUserRequest, res: Response) => {
             .where('user_id', '=', req.user.id)
             .patchAndFetchById(req.params.id, body)
         matcher.created_on = new Date(matcher.created_on).toISOString()
-        return respondCreated({ req, res, payload: { matcher }, message: 'Matcher updated successfully' })
+        return respondCreated({
+            req,
+            res,
+            payload: { matcher },
+            message: req.t('matcher.messages.updatedSuccessfully'),
+        })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
 export const deleteSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
-        await Matcher.relatedQuery('categories').where('user_id', '=', req.user.id).for(req.params.id).unrelate()
+        await Matcher.relatedQuery('categories')
+            .where('user_id', '=', req.user.id)
+            .for(req.params.id)
+            .unrelate()
+
         await Matcher.query()
             .deleteById(req.params.id)
-        return respondOk({ req, res, message: 'Delete operation successful.', statusCode: 204 })
+
+        return respondOk({
+            req,
+            res,
+            message: req.t('matcher.messages.deletedSuccessfully'),
+            statusCode: 204,
+        })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -80,8 +99,13 @@ export const createManyMatchers = async (req: IUserRequest, res: Response) => {
             createdMatchers.push(createdMatcher)
         }
 
-        return respondCreated({ req, res, payload: { createdMatchers }, message: 'Matchers created successfully' })
+        return respondCreated({
+            req,
+            res,
+            payload: { createdMatchers },
+            message: req.t('matcher.messages.matchersCreated'),
+        })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }

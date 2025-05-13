@@ -22,7 +22,7 @@ export const getCategories = async (req: IUserRequest, res: Response) => {
         const categories = await Category.query().where('user_id', '=', req.user.id)
         return respondOk({ req, res, payload: { categories } })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -30,16 +30,26 @@ export const getSingleCategory = async (req: IUserRequest, res: Response) => {
     try {
         console.log(req.params, req.user)
         const category = req.query.includeMatchers
-            ? await Category.query().findById(req.params.id).where('user_id', '=', req.user.id).withGraphFetched('matchers')
-            : await Category.query().findById(req.params.id).where('user_id', '=', req.user.id)
+            ? await Category.query()
+                .findById(req.params.id)
+                .where('user_id', '=', req.user.id)
+                .withGraphFetched('matchers')
+            : await Category.query()
+                .findById(req.params.id)
+                .where('user_id', '=', req.user.id)
 
         if (!category) {
-            return respondNotFound({ req, res, payload: { id: req.params.id } })
+            return respondNotFound({
+                req,
+                res,
+                message: req.t('category.messages.notFoundById', { categoryId: req.params.id }),
+            })
         }
+
         return respondOk({ req, res, payload: { category } })
     } catch(error: any) {
         console.log(error)
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -54,7 +64,7 @@ export const createSingleCategory = async (req: IUserRequest, res: Response) => 
 
         return respondCreated({ req, res, payload: { category } })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -63,14 +73,15 @@ export const updateSingleCategory = async (req: IUserRequest, res: Response) => 
         const body = { ...req.body, updated_on: new Date().toISOString() }
         
         if (req.body.matchers) {
-            const category = await Category.query().findById(req.params.id).where('user_id', '=', req.user.id)
+            const category = await Category.query()
+                .findById(req.params.id)
+                .where('user_id', '=', req.user.id)
 
             if (!category) {
                 return respondBadRequest({
                     req,
                     res,
-                    message: 'Something went wrong processing your request',
-                    error: 'Category of ID "" does not exist.',
+                    error: req.t('category.messages.notFoundById', { categoryId: req.params.id }),
                 })
             }
 
@@ -98,7 +109,10 @@ export const updateSingleCategory = async (req: IUserRequest, res: Response) => 
             //      if not found; create and relate
             for (const matcher of req.body.matchers) {
                 if (matcher?.id) {
-                    const foundMatcher = await Matcher.query().findById(matcher.id).where('user_id', '=', req.user.id)
+                    const foundMatcher = await Matcher.query()
+                        .findById(matcher.id)
+                        .where('user_id', '=', req.user.id)
+    
                     if (foundMatcher) {
                         category.$relatedQuery('matchers').relate(matcher.id)
                     } else {
@@ -110,18 +124,31 @@ export const updateSingleCategory = async (req: IUserRequest, res: Response) => 
         }
 
         const category = req.params.includeMatchers
-            ? await Category.query().patchAndFetchById(req.params.id, body).where('user_id', '=', req.user.id).withGraphFetched('matchers')
-            : await Category.query().patchAndFetchById(req.params.id, body).where('user_id', '=', req.user.id)
+            ? await Category.query()
+                .patchAndFetchById(req.params.id, body)
+                .where('user_id', '=', req.user.id)
+                .withGraphFetched('matchers')
+            : await Category.query()
+                .patchAndFetchById(req.params.id, body)
+                .where('user_id', '=', req.user.id)
 
-        return respondCreated({ req, res, payload: { category }, message: 'Category updated successfully' })
+        return respondCreated({
+            req,
+            res,
+            payload: { category },
+            message: 'category.messages.updatedSuccessfully',
+        })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
 export const deleteSingleCategory = async (req: IUserRequest, res: Response) => {
     try {
-        const category = await Category.query().findById(req.params.id).where('user_id', '=', req.user.id)
+        const category = await Category.query()
+            .findById(req.params.id)
+            .where('user_id', '=', req.user.id)
+    
         await category?.$relatedQuery('matchers').unrelate()
         // BUG: 'category' must be an integer?? -> relation un-mapping seems to work differently with HasMany vs ManyToMany
         // await category?.$relatedQuery('transactions').unrelate()
@@ -131,9 +158,14 @@ export const deleteSingleCategory = async (req: IUserRequest, res: Response) => 
             .deleteById(req.params.id)
             .where('user_id', '=', req.user.id)
 
-        return respondOk({ req, res, message: 'Delete operation successful.', statusCode: 204 })
+        return respondOk({
+            req,
+            res,
+            message: 'category.messages.deletedSuccessfully',
+            statusCode: 204,
+        })
     } catch(error: any) {
-        return respondBadRequest({ req, res, message: 'Something went wrong processing your request', error: error.message })
+        return respondBadRequest({ req, res, error: error.message })
     }
 }
 
@@ -148,12 +180,16 @@ export const createManyCategories = async (req: IUserRequest, res: Response) => 
             createdMatchers.push(createdCategory)
         }
 
-        return respondCreated({ req, res, payload: { createdMatchers }, message: 'Matchers created successfully' })
+        return respondCreated({
+            req,
+            res,
+            payload: { createdMatchers },
+            message: req.t('category.messages.categoriesCreated'),
+        })
     } catch(error: any) {
         return respondBadRequest({
             req,
             res,
-            message: 'Something went wrong processing your request',
             error: error.message,
         })
     }
