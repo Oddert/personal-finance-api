@@ -58,7 +58,12 @@ i18next
                 '../resources/locales/{{lng}}/{{ns}}.json',
             ),
         },
-        fallbackLng: 'en',
+        detection: {
+            order: ['querystring', 'cookie'],
+            caches: ['cookie'],
+        },
+        saveMissing: true,
+        fallbackLng: ['en'],
         preload: ['en', 'en-CA', 'en-GB'],
     });
 
