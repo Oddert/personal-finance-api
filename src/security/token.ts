@@ -1,7 +1,7 @@
-import dayjs from 'dayjs'
-import jwt from 'jsonwebtoken'
+import dayjs from 'dayjs';
+import jwt from 'jsonwebtoken';
 
-import { v4 as uuid } from 'uuid'
+import { v4 as uuid } from 'uuid';
 
 /**
  * Creates an Access Token for a user.
@@ -12,20 +12,24 @@ import { v4 as uuid } from 'uuid'
  * @returns The user's Access Token
  */
 export const createAccessToken = (username: string, expiresDelta?: number) => {
-    const JWT_SECRET = process.env.JWT_SECRET || ''
-    const JWT_ACCESS_DEFAULT_EXPIRES = Number(process.env.JWT_ACCESS_DEFAULT_EXPIRES) || 30
+    const JWT_SECRET = process.env.JWT_SECRET || '';
+    const JWT_ACCESS_DEFAULT_EXPIRES =
+        Number(process.env.JWT_ACCESS_DEFAULT_EXPIRES) || 30;
 
     const expiresIn = dayjs()
-        .add(expiresDelta ? expiresDelta : JWT_ACCESS_DEFAULT_EXPIRES, 'minutes')
-        .valueOf()
-    
+        .add(
+            expiresDelta ? expiresDelta : JWT_ACCESS_DEFAULT_EXPIRES,
+            'minutes',
+        )
+        .valueOf();
+
     const token = jwt.sign(
         { exp: expiresIn, sub: username, jti: String(uuid()) },
         JWT_SECRET,
-    )
-    
-    return token
-}
+    );
+
+    return token;
+};
 
 /**
  * Creates a Refresh Token for a user.
@@ -36,17 +40,21 @@ export const createAccessToken = (username: string, expiresDelta?: number) => {
  * @returns The user's Refresh Token
  */
 export const createRefreshToken = (username: string, expiresDelta?: number) => {
-    const JWT_SECRET = process.env.JWT_SECRET || ''
-    const JWT_REFRESH_DEFAULT_EXPIRES = Number(process.env.JWT_REFRESH_DEFAULT_EXPIRES) || 1080 // 7 days
+    const JWT_SECRET = process.env.JWT_SECRET || '';
+    const JWT_REFRESH_DEFAULT_EXPIRES =
+        Number(process.env.JWT_REFRESH_DEFAULT_EXPIRES) || 1080; // 7 days
 
     const expiresIn = dayjs()
-        .add(expiresDelta ? expiresDelta : JWT_REFRESH_DEFAULT_EXPIRES, 'minutes')
-        .valueOf()
+        .add(
+            expiresDelta ? expiresDelta : JWT_REFRESH_DEFAULT_EXPIRES,
+            'minutes',
+        )
+        .valueOf();
 
     const token = jwt.sign(
         { exp: expiresIn, sub: username, jti: String(uuid()) },
         JWT_SECRET,
-    )
+    );
 
-    return token
-}
+    return token;
+};

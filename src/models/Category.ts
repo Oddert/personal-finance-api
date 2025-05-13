@@ -1,35 +1,43 @@
-import { Model } from 'objection'
+import { Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
 export default class Category extends Model {
-    id?: string
-    description?: string
-    colour?: string
-    static created_on: Date | string
-    static updated_on: Date | string
+    id?: string;
+
+    description?: string;
+
+    colour?: string;
+
+    static created_on: Date | string;
+
+    static updated_on: Date | string;
 
     static get tableName() {
-        return 'category'
+        return 'category';
     }
 
     static beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static afterFind() {
-        this.created_on = this.created_on ? new Date(this.created_on).toISOString() : ''
-        this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
+        this.created_on = this.created_on
+            ? new Date(this.created_on).toISOString()
+            : '';
+        this.updated_on = this.updated_on
+            ? new Date(this.updated_on).toISOString()
+            : '';
     }
 
     static get jsonSchema() {
@@ -41,14 +49,14 @@ export default class Category extends Model {
                 description: { type: ['string', 'null'] },
                 colour: { type: 'string', minLength: 3 },
                 created_on: { type: 'string' },
-                updated_on: { type: 'string' },                
-            }
-        }
+                updated_on: { type: 'string' },
+            },
+        };
     }
 
     static get relationMappings() {
-        const Transaction = __dirname + '/Transaction'
-        const Matcher = __dirname + '/Matcher'
+        const Transaction = __dirname + '/Transaction';
+        const Matcher = __dirname + '/Matcher';
         return {
             transactions: {
                 relation: Model.HasManyRelation,
@@ -56,7 +64,7 @@ export default class Category extends Model {
                 join: {
                     from: 'category.id',
                     to: 'transaction.category_id',
-                }
+                },
             },
             matchers: {
                 relation: Model.ManyToManyRelation,
@@ -68,8 +76,8 @@ export default class Category extends Model {
                         to: 'category_matcher.matcher_id',
                     },
                     to: 'matcher.id',
-                }
+                },
             },
-        }
+        };
     }
 }

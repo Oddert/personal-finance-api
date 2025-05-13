@@ -1,6 +1,8 @@
-import { Schema } from 'express-validator'
+import { Schema } from 'express-validator';
 
-export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
+export const cardCreateSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
     isDefault: {
         isBoolean: true,
         optional: true,
@@ -9,9 +11,11 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
     cardName: {
         isString: true,
         exists: { errorMessage: 'Field "cardName" is required.' },
-        errorMessage: 'Field "cardName" is invalid. Please ensure it is a string of at least 3 characters.',
+        errorMessage:
+            'Field "cardName" is invalid. Please ensure it is a string of at least 3 characters.',
         isLength: {
-            errorMessage: 'Length error. "cardName" must be at least 3 characters long.',
+            errorMessage:
+                'Length error. "cardName" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
@@ -20,9 +24,11 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
     cardType: {
         isString: true,
         exists: { errorMessage: 'Field "cardType" is required.' },
-        errorMessage: 'Field "cardType" is invalid. Please ensure it is a string of at least 3 characters.',
+        errorMessage:
+            'Field "cardType" is invalid. Please ensure it is a string of at least 3 characters.',
         isLength: {
-            errorMessage: 'Length error. "cardType" must be at least 3 characters long.',
+            errorMessage:
+                'Length error. "cardType" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
@@ -31,9 +37,11 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
     bankName: {
         isString: true,
         exists: { errorMessage: 'Field "bankName" is required.' },
-        errorMessage: 'Field "bankName" is invalid. Please ensure it is a string of at least 3 characters.',
+        errorMessage:
+            'Field "bankName" is invalid. Please ensure it is a string of at least 3 characters.',
         isLength: {
-            errorMessage: 'Length error. "bankName" must be at least 3 characters long.',
+            errorMessage:
+                'Length error. "bankName" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
@@ -42,7 +50,8 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
     sortCode: {
         isNumeric: true,
         exists: { errorMessage: 'Field "cardNumber" is required.' },
-        errorMessage: 'Field "cardNumber" is invalid. Please ensure it is a positive number.',
+        errorMessage:
+            'Field "cardNumber" is invalid. Please ensure it is a positive number.',
         isLength: {
             errorMessage: 'Field "cardNumber" must not be negative.',
             options: {
@@ -53,7 +62,8 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
     cardNumber: {
         isNumeric: true,
         exists: { errorMessage: 'Field "cardNumber" is required.' },
-        errorMessage: 'Field "cardNumber" is invalid. Please ensure it is a positive number.',
+        errorMessage:
+            'Field "cardNumber" is invalid. Please ensure it is a positive number.',
         isLength: {
             errorMessage: 'Field "cardNumber" must not be negative.',
             options: {
@@ -63,7 +73,8 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
     },
     expires: {
         isDate: true,
-        errorMessage: 'Field "expires" is invalid. Please insure it is a valid date.',
+        errorMessage:
+            'Field "expires" is invalid. Please insure it is a valid date.',
         exists: { errorMessage: 'Field "expires" is required.' },
     },
     description: {
@@ -78,9 +89,11 @@ export const cardCreateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
         isString: true,
         optional: true,
     },
-}
+};
 
-export const cardUpdateSchema: Schema<'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'> = {
+export const cardUpdateSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
     ...cardCreateSchema,
     cardName: {
         ...cardCreateSchema.cardName,
@@ -106,4 +119,4 @@ export const cardUpdateSchema: Schema<'exists' | 'isString' | 'isLength' | 'erro
         ...cardCreateSchema.expires,
         optional: true,
     },
-}
+};

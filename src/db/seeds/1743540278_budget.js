@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 /* eslint-disable quotes */
-const { v4: uuid } = require('uuid')
+const { v4: uuid } = require('uuid');
 
 /**
  * @param { import("knex").Knex } knex
- * @returns { Promise<void> } 
+ * @returns { Promise<void> }
  */
-exports.seed = async function(knex) {
+exports.seed = async function (knex) {
     // Deletes ALL existing entries
     // await knex('budget').del()
     const budgetUuid = uuid();
@@ -18,11 +18,12 @@ exports.seed = async function(knex) {
             card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             name: 'Standard',
             short_desc: 'My typical day-to-day budget.',
-            long_desc: 'A sample budget provided with fake data based on real activity with identifying details removed.',
+            long_desc:
+                'A sample budget provided with fake data based on real activity with identifying details removed.',
             created_on: new Date(),
             updated_on: new Date(),
-        }
-    ])
+        },
+    ]);
     // await knex('budget_row').del()
     await knex('budget_row').insert([
         {
@@ -120,7 +121,7 @@ exports.seed = async function(knex) {
             colour: '#d3dd18',
             budget_id: budgetUuid,
             label: 'Phone',
-            value: 16.20,
+            value: 16.2,
             var_low_pc: 10,
             var_high_pc: 10,
         },
@@ -223,5 +224,5 @@ exports.seed = async function(knex) {
             var_low_pc: 0,
             var_high_pc: 0,
         },
-    ])
-}
+    ]);
+};

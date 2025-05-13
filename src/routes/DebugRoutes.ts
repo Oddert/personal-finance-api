@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
 import {
     getMatcherCategory,
@@ -6,23 +6,18 @@ import {
     getTokenExclude,
     getUsers,
     resetServer,
-} from '../controllers/DebugController'
-	
-const router = Router()
+} from '../controllers/DebugController';
 
-router.route('/reset-database')
-    .post(resetServer)
+const router = Router();
 
-router.route('/matcher-category')
-    .get(getMatcherCategory)
+router.route('/reset-database').post(resetServer);
 
-router.route('/create-seeds')
-    .get(getSeeds)
+router.route('/matcher-category').get(getMatcherCategory);
 
-router.route('/token-exclude')
-    .get(getTokenExclude)
+router.route('/create-seeds').get(getSeeds);
 
-router.route('/users')
-    .get(getUsers)
+router.route('/token-exclude').get(getTokenExclude);
 
-export default router
+router.route('/users').get(getUsers);
+
+export default router;

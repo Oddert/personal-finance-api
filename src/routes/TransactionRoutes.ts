@@ -1,7 +1,7 @@
-import { Router } from 'express'
-import { checkSchema } from 'express-validator'
+import { Router } from 'express';
+import { checkSchema } from 'express-validator';
 
-import { requiresAuth } from '../security/middleware'
+import { requiresAuth } from '../security/middleware';
 
 import {
     createSingleTransaction,
@@ -11,45 +11,49 @@ import {
     deleteSingleTransaction,
     createManyTransactions,
     updateManyTransactions,
-} from '../controllers/TransactionController'
+} from '../controllers/TransactionController';
 
 import {
     createManyTransactionSchema,
     createTransactionSchema,
-    updateTransactionSchema
-} from '../schemas/TransactionSchema'
+    updateTransactionSchema,
+} from '../schemas/TransactionSchema';
 
-const router = Router()
+const router = Router();
 
-router.route('/')
+router
+    .route('/')
     .get(requiresAuth, getTransactions)
     .post(
         requiresAuth,
         checkSchema(createTransactionSchema),
         createSingleTransaction,
-    )
-    
-router.route('/create-many')
+    );
+
+router
+    .route('/create-many')
     .post(
         requiresAuth,
         checkSchema(createManyTransactionSchema),
         createManyTransactions,
-    )
+    );
 
-router.route('/update-many')
+router
+    .route('/update-many')
     .put(
         requiresAuth,
         checkSchema(createManyTransactionSchema),
         updateManyTransactions,
-    )
+    );
 
-router.route('/:id')
+router
+    .route('/:id')
     .get(requiresAuth, getSingleTransactions)
     .put(
         requiresAuth,
         checkSchema(updateTransactionSchema),
         updateSingleTransaction,
     )
-    .delete(requiresAuth, deleteSingleTransaction)
+    .delete(requiresAuth, deleteSingleTransaction);
 
-export default router
+export default router;

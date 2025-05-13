@@ -1,47 +1,67 @@
-import { ColumnNameMappers, Model } from 'objection'
+import { ColumnNameMappers, Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
 export default class Budget extends Model {
-    id?: string
-    card_id: string
-    user_id: string
-    name: string
-    shortDescription: string
-    longDescription: string
-    isDefault: boolean
-    createdOn: string
-    updatedOn: string
-    static created_on: Date | string
-    static updated_on: Date | string
+    id?: string;
+
+    card_id: string;
+
+    user_id: string;
+
+    name: string;
+
+    shortDescription: string;
+
+    longDescription: string;
+
+    isDefault: boolean;
+
+    createdOn: string;
+
+    updatedOn: string;
+
+    static created_on: Date | string;
+
+    static updated_on: Date | string;
 
     static get tableName() {
-        return 'budget'
+        return 'budget';
     }
 
     static beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $afterFind() {
-        this.created_on = this.created_on ? new Date(this.created_on).toISOString() : ''
-        this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
+        this.created_on = this.created_on
+            ? new Date(this.created_on).toISOString()
+            : '';
+        this.updated_on = this.updated_on
+            ? new Date(this.updated_on).toISOString()
+            : '';
     }
 
     static get jsonSchema() {
         return {
             type: 'object',
-            required: ['name', 'shortDescription', 'longDescription', 'createdOn', 'updatedOn'],
+            required: [
+                'name',
+                'shortDescription',
+                'longDescription',
+                'createdOn',
+                'updatedOn',
+            ],
             properties: {
                 id: { type: 'string' },
                 card_id: { type: 'string' },
@@ -53,11 +73,11 @@ export default class Budget extends Model {
                 createdOn: { type: 'string' },
                 updatedOn: { type: 'string' },
             },
-        }
+        };
     }
 
     static get relationMappings() {
-        const BudgetRow = __dirname + '/BudgetRow'
+        const BudgetRow = __dirname + '/BudgetRow';
         return {
             budgetRows: {
                 relation: Model.HasManyRelation,
@@ -65,9 +85,9 @@ export default class Budget extends Model {
                 join: {
                     from: 'budget.id',
                     to: 'budget_row.budget_id',
-                }
-            }
-        }
+                },
+            },
+        };
     }
 
     static columnNameMappers: ColumnNameMappers = {
@@ -81,7 +101,7 @@ export default class Budget extends Model {
                 isDefault: obj.is_default,
                 createdOn: obj.created_on,
                 updatedOn: obj.updated_on,
-            }
+            };
         },
         format(obj) {
             return {
@@ -94,7 +114,7 @@ export default class Budget extends Model {
                 is_default: obj.isDefault,
                 created_on: obj.createdOn,
                 updated_on: obj.updatedOn,
-            }
+            };
         },
-    }
+    };
 }

@@ -1,33 +1,39 @@
-import { ColumnNameMappers, Model } from 'objection'
+import { ColumnNameMappers, Model } from 'objection';
 
-import knex from '../db/knex'
+import knex from '../db/knex';
 
-Model.knex(knex)
+Model.knex(knex);
 
-export default class Budget extends Model {
-    id?: string
-    static created_on: Date | string
-    static updated_on: Date | string
+export default class BudgetRow extends Model {
+    id?: string;
+
+    static created_on: Date | string;
+
+    static updated_on: Date | string;
 
     static get tableName() {
-        return 'budget_row'
+        return 'budget_row';
     }
 
     static beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $beforeInsert() {
-        const now = new Date().toISOString()
-        this.created_on = now
-        this.updated_on = now
+        const now = new Date().toISOString();
+        this.created_on = now;
+        this.updated_on = now;
     }
 
     static $afterFind() {
-        this.created_on = this.created_on ? new Date(this.created_on).toISOString() : ''
-        this.updated_on = this.updated_on ? new Date(this.updated_on).toISOString() : ''
+        this.created_on = this.created_on
+            ? new Date(this.created_on).toISOString()
+            : '';
+        this.updated_on = this.updated_on
+            ? new Date(this.updated_on).toISOString()
+            : '';
     }
 
     static get jsonSchema() {
@@ -52,11 +58,11 @@ export default class Budget extends Model {
                 varLowPc: { type: 'number' },
                 varHighPc: { type: 'number' },
             },
-        }
+        };
     }
 
     static get relationMappings() {
-        const Budget = __dirname + '/Budget'
+        const Budget = __dirname + '/Budget';
         return {
             budget: {
                 relation: Model.BelongsToOneRelation,
@@ -64,9 +70,9 @@ export default class Budget extends Model {
                 join: {
                     from: 'budget_row.budget_id',
                     to: 'budget.id',
-                }
-            }
-        }
+                },
+            },
+        };
     }
 
     static columnNameMappers: ColumnNameMappers = {
@@ -81,7 +87,7 @@ export default class Budget extends Model {
                 value: obj.value,
                 varLowPc: obj.var_low_pc,
                 varHighPc: obj.var_high_pc,
-            }
+            };
         },
         format(obj) {
             return {
@@ -94,7 +100,7 @@ export default class Budget extends Model {
                 value: obj.value,
                 var_low_pc: obj.varLowPc,
                 var_high_pc: obj.varHighPc,
-            }
+            };
         },
-    }
+    };
 }

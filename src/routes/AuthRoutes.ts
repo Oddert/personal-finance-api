@@ -1,37 +1,34 @@
-import { Router } from 'express'
-import { checkSchema } from 'express-validator'
+import { Router } from 'express';
+import { checkSchema } from 'express-validator';
 
 import {
     getUserDetails,
     getUserExists,
     loginUser,
-    refreshToken,
+    refreshUserAuthToken,
     registerUser,
-} from '../controllers/AuthController'
+} from '../controllers/AuthController';
 
 import {
     logInSchema,
     refreshTokenSchema,
     signUpSchema,
-} from '../schemas/AuthSchemas'
+} from '../schemas/AuthSchemas';
 
-import { requiresAuth } from '../security/middleware'
+import { requiresAuth } from '../security/middleware';
 
-const router = Router()
+const router = Router();
 
-router.route('/signup')
-    .post(checkSchema(signUpSchema), registerUser)
+router.route('/signup').post(checkSchema(signUpSchema), registerUser);
 
-router.route('/login')
-    .post(checkSchema(logInSchema), loginUser)
+router.route('/login').post(checkSchema(logInSchema), loginUser);
 
-router.route('/refresh-token')
-    .post(checkSchema(refreshTokenSchema), refreshToken)
+router
+    .route('/refresh-token')
+    .post(checkSchema(refreshTokenSchema), refreshUserAuthToken);
 
-router.route('/user-exists/:username')
-    .get(getUserExists)
+router.route('/user-exists/:username').get(getUserExists);
 
-router.route('/user')
-    .get(requiresAuth, getUserDetails)
+router.route('/user').get(requiresAuth, getUserDetails);
 
-export default router
+export default router;

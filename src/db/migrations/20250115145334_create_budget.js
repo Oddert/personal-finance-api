@@ -3,21 +3,21 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+exports.up = function (knex) {
     return knex.schema.createTable('budget', (table) => {
-        table.increments('id').primary()
-        table.string('name').notNullable()
-        table.string('short_desc').defaultTo('')
-        table.string('long_desc').defaultTo('')
-        table.datetime('created_on')
-        table.datetime('updated_on')
-    })
-}
+        table.increments('id').primary();
+        table.string('name').notNullable();
+        table.string('short_desc').defaultTo('');
+        table.string('long_desc').defaultTo('');
+        table.datetime('created_on');
+        table.datetime('updated_on');
+    });
+};
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-    return knex.schema.dropTableIfExists('budget')
-}
+exports.down = function (knex) {
+    return knex.schema.dropTableIfExists('budget');
+};

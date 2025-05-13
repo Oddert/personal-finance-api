@@ -1,6 +1,6 @@
-import { Router } from 'express'
+import { Router } from 'express';
 
-import { requiresAuth } from '../security/middleware'
+import { requiresAuth } from '../security/middleware';
 
 import {
     createManyScenarios,
@@ -10,42 +10,46 @@ import {
     getScenarios,
     getSingleScenario,
     updateSingleScenario,
-} from '../controllers/ScenarioController'
+} from '../controllers/ScenarioController';
 
-import { scenarioCreateManySchema, scenarioCreateSchema, scenarioDeleteManySchema } from '../schemas/ScenarioSchemas'
-import { checkSchema } from 'express-validator'
+import {
+    scenarioCreateManySchema,
+    scenarioCreateSchema,
+    scenarioDeleteManySchema,
+} from '../schemas/ScenarioSchemas';
+import { checkSchema } from 'express-validator';
 
-const router = Router()
+const router = Router();
 
-router.route('/')
+router
+    .route('/')
     .get(requiresAuth, getScenarios)
     .post(
         checkSchema(scenarioCreateSchema),
         requiresAuth,
-        createSingleScenario
-    )
+        createSingleScenario,
+    );
 
-router.route('/:id')
+router
+    .route('/:id')
     .get(requiresAuth, getSingleScenario)
-    .put(
-        checkSchema(scenarioCreateSchema),
-        requiresAuth,
-        updateSingleScenario
-    )
-    .delete(requiresAuth, deleteSingleScenario)
+    .put(checkSchema(scenarioCreateSchema), requiresAuth, updateSingleScenario)
+    .delete(requiresAuth, deleteSingleScenario);
 
-router.route('/create-many')
+router
+    .route('/create-many')
     .post(
         checkSchema(scenarioCreateManySchema),
         requiresAuth,
-        createManyScenarios
-    )
+        createManyScenarios,
+    );
 
-router.route('/delete-many')
+router
+    .route('/delete-many')
     .post(
         checkSchema(scenarioDeleteManySchema),
         requiresAuth,
-        deleteManyScenarios
-    )
+        deleteManyScenarios,
+    );
 
-export default router
+export default router;
