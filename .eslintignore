@@ -1,3 +1,3 @@
-dist/
-src/db/
-src/knexfile.js
+scripts/
+node_module/
+config/

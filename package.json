@@ -15,8 +15,8 @@
     "db:migrate": "cd dist && knex migrate:latest",
     "db:seed": "cd dist && knex seed:run",
     "db:build": "npm run build && npm run db:migrate && npm run db:seed",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint . --config .eslintrc.json",
+    "lint:fix": "eslint . --config .eslintrc.json --fix"
   },
   "author": "Robyn Felicity Heather Veitch",
   "license": "ISC",
@@ -54,15 +54,21 @@
     "@types/morgan": "^1.9.4",
     "@types/node": "^20.3.1",
     "@types/node-cron": "^3.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "chai": "^4.3.7",
     "chai-http": "^4.4.0",
     "concurrently": "^9.1.2",
-    "eslint": "^8.44.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.4.0",
+    "eslint-plugin-react": "^7.37.5",
+    "jsdoc": "^4.0.4",
     "mocha": "^10.2.0",
     "morgan": "^1.10.0",
     "nyc": "^15.1.0",
+    "prettier": "^3.5.3",
     "typescript": "^5.1.3"
   }
 }
