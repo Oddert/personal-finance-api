@@ -12,6 +12,9 @@ import {
 
 import Card from '../models/Card';
 
+/**
+ * Returns all Cards belonging to an authenticated user.
+ */
 export const getCards = async (req: IUserRequest, res: Response) => {
     try {
         const cards = await Card.query().where('user_id', '=', req.user.id);
@@ -21,6 +24,9 @@ export const getCards = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves a single Card. Card must belong to the authenticated user.
+ */
 export const getSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         const card = await Card.query()
@@ -33,6 +39,9 @@ export const getSingleCard = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Creates a single new Card and returns the result.
+ */
 export const createSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         const now = new Date().toISOString();
@@ -51,6 +60,9 @@ export const createSingleCard = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Updates a single Card belonging to the authenticated user.
+ */
 export const updateSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         const stagedCard = await Card.query()
@@ -96,6 +108,9 @@ export const updateSingleCard = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Deletes a single Card by ID. Budget must belong to the authenticated user.
+ */
 export const deleteSingleCard = async (req: IUserRequest, res: Response) => {
     try {
         await Card.query()
@@ -113,6 +128,9 @@ export const deleteSingleCard = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * For the authenticated user, marks all Cards as not default then sets the specified ID as default.
+ */
 export const setActiveCard = async (req: IUserRequest, res: Response) => {
     try {
         const actives = await Card.query()

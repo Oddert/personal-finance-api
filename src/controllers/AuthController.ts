@@ -18,6 +18,9 @@ import TokenExclude from '../models/TokenExclude';
 import { createAccessToken, createRefreshToken } from '../security/token';
 import { getHashedPassword, verifyHashedPassword } from '../security/hash';
 
+/**
+ * Creates a single new user, first checking the username is not taken.
+ */
 export const registerUser = async (req: IUserRequest, res: Response) => {
     try {
         const checkExisting = await User.query().where(
@@ -63,6 +66,9 @@ export const registerUser = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Logs-in an existing user, issuing an access JTW and a refresh token.
+ */
 export const loginUser = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query()
@@ -101,6 +107,9 @@ export const loginUser = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Utility endpoint to check if a username is available.
+ */
 export const getUserExists = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query()
@@ -117,6 +126,9 @@ export const getUserExists = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves full user details for an authenticated user.
+ */
 export const getUserDetails = async (req: IUserRequest, res: Response) => {
     try {
         const user = await User.query()
@@ -132,6 +144,9 @@ export const getUserDetails = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Token refresh endpoint. Consumes a refresh token and issues a new access and refresh JWT.
+ */
 export const refreshUserAuthToken = async (
     req: IUserRequest,
     res: Response,

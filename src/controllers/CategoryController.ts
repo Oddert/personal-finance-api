@@ -14,6 +14,9 @@ import Category from '../models/Category';
 import Matcher from '../models/Matcher';
 import Transaction from '../models/Transaction';
 
+/**
+ * Returns all Categories belonging to  the authenticated user.
+ */
 export const getCategories = async (req: IUserRequest, res: Response) => {
     try {
         if (req.query.includeMatchers) {
@@ -35,6 +38,9 @@ export const getCategories = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves a single Category item by ID with Budget Rows joined. Budget must belong to the authenticated user.
+ */
 export const getSingleCategory = async (req: IUserRequest, res: Response) => {
     try {
         const category = req.query.includeMatchers
@@ -62,6 +68,9 @@ export const getSingleCategory = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Creates a single new Category and returns the result.
+ */
 export const createSingleCategory = async (
     req: IUserRequest,
     res: Response,
@@ -86,6 +95,9 @@ export const createSingleCategory = async (
     }
 };
 
+/**
+ * Updates a single Category belonging to the authenticated user.
+ */
 export const updateSingleCategory = async (
     req: IUserRequest,
     res: Response,
@@ -182,6 +194,9 @@ export const updateSingleCategory = async (
     }
 };
 
+/**
+ * Deletes a single Category by ID. Category must belong to the authenticated user.
+ */
 export const deleteSingleCategory = async (
     req: IUserRequest,
     res: Response,
@@ -213,6 +228,9 @@ export const deleteSingleCategory = async (
     }
 };
 
+/**
+ * Creates one or more Categories at a time and returns the result as an array.
+ */
 export const createManyCategories = async (
     req: IUserRequest,
     res: Response,

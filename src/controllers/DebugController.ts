@@ -14,6 +14,9 @@ import Transaction from '../models/Transaction';
 import TokenExclude from '../models/TokenExclude';
 import User from '../models/User';
 
+/**
+ * @deprecated
+ */
 export const resetServer = async (req: IUserRequest, res: Response) => {
     try {
         // const result = knex('category_matcher')
@@ -23,6 +26,9 @@ export const resetServer = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Returns all Category Matchers.
+ */
 export const getMatcherCategory = async (req: IUserRequest, res: Response) => {
     try {
         const result = await CategoryMatcher.query();
