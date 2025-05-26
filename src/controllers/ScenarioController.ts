@@ -15,6 +15,9 @@ import Scenario from '../models/Scenario';
 
 dayjs.extend(customParseFormat);
 
+/**
+ * Returns all Categories belonging to  the authenticated user.
+ */
 export const getScenarios = async (req: IUserRequest, res: Response) => {
     try {
         const startDate =
@@ -48,6 +51,25 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves a single Scenario item by ID with Budget Rows joined. Budget must belong to the authenticated user.
+ */
+export const getSingleScenario = async (req: IUserRequest, res: Response) => {
+    try {
+        const scenario = await Scenario.query()
+            .where('user_id', '=', req.user.id)
+            .findById(req.params.id)
+            .withGraphFetched('transactors.[schedulers]');
+
+        return respondOk({ req, res, payload: { scenario } });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
+    }
+};
+
+/**
+ * Creates a single new Scenario and returns the result.
+ */
 export const createSingleScenario = async (
     req: IUserRequest,
     res: Response,
@@ -65,19 +87,9 @@ export const createSingleScenario = async (
     }
 };
 
-export const getSingleScenario = async (req: IUserRequest, res: Response) => {
-    try {
-        const scenario = await Scenario.query()
-            .where('user_id', '=', req.user.id)
-            .findById(req.params.id)
-            .withGraphFetched('transactors.[schedulers]');
-
-        return respondOk({ req, res, payload: { scenario } });
-    } catch (error: any) {
-        return respondBadRequest({ req, res, error: error.message });
-    }
-};
-
+/**
+ * Updates a single Scenario belonging to the authenticated user.
+ */
 export const updateSingleScenario = async (
     req: IUserRequest,
     res: Response,
@@ -100,6 +112,9 @@ export const updateSingleScenario = async (
     }
 };
 
+/**
+ * Deletes a single Scenario by ID. Category must belong to the authenticated user.
+ */
 export const deleteSingleScenario = async (
     req: IUserRequest,
     res: Response,
@@ -120,6 +135,9 @@ export const deleteSingleScenario = async (
     }
 };
 
+/**
+ * Creates one or more Scenarios at a time and returns the result as an array.
+ */
 export const createManyScenarios = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString();
@@ -149,6 +167,9 @@ export const createManyScenarios = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Deletes a list of Scenarios belonging to a user.
+ */
 export const deleteManyScenarios = async (req: IUserRequest, res: Response) => {
     try {
         const deletedScenarios = [];

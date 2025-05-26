@@ -16,6 +16,9 @@ import Transaction from '../models/Transaction';
 
 dayjs.extend(customParseFormat);
 
+/**
+ * Returns all Transactions belonging to  the authenticated user.
+ */
 export const getTransactions = async (req: IUserRequest, res: Response) => {
     try {
         const startDate =
@@ -68,6 +71,9 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves a single Transaction item by ID.
+ */
 export const getSingleTransactions = async (
     req: IUserRequest,
     res: Response,
@@ -95,6 +101,9 @@ export const getSingleTransactions = async (
     }
 };
 
+/**
+ * Creates a single new Transaction and returns the result.
+ */
 export const createSingleTransaction = async (
     req: IUserRequest,
     res: Response,
@@ -138,6 +147,9 @@ export const createSingleTransaction = async (
     }
 };
 
+/**
+ * Updates a single Transaction belonging to the authenticated user.
+ */
 export const updateSingleTransaction = async (
     req: IUserRequest,
     res: Response,
@@ -161,6 +173,9 @@ export const updateSingleTransaction = async (
     }
 };
 
+/**
+ * Deletes a single Transaction by ID. Budget must belong to the authenticated user.
+ */
 export const deleteSingleTransaction = async (
     req: IUserRequest,
     res: Response,
@@ -181,6 +196,9 @@ export const deleteSingleTransaction = async (
     }
 };
 
+/**
+ * Creates a batch of transactions from a list and returns the result.
+ */
 export const createManyTransactions = async (
     req: IUserRequest,
     res: Response,
@@ -217,6 +235,9 @@ export const createManyTransactions = async (
     }
 };
 
+/**
+ * Bulk updates a list of Transactions using the patch method and returns the result.
+ */
 export const updateManyTransactions = async (
     req: IUserRequest,
     res: Response,

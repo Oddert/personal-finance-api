@@ -13,6 +13,9 @@ import {
 import Matcher from '../models/Matcher';
 import Category from '../models/Category';
 
+/**
+ * Returns all Matchers belonging to  the authenticated user.
+ */
 export const getMatchers = async (req: IUserRequest, res: Response) => {
     try {
         const matchers = await Matcher.query().where(
@@ -26,11 +29,15 @@ export const getMatchers = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves a single Matcher item by ID. Matcher must belong to the authenticated user.
+ */
 export const getSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         const matcher = await Matcher.query()
             .findById(req.params.id)
             .where('user_id', '=', req.user.id);
+
         if (!matcher) {
             return respondNotFound({
                 req,
@@ -40,12 +47,16 @@ export const getSingleMatcher = async (req: IUserRequest, res: Response) => {
                 }),
             });
         }
+
         return respondOk({ req, res, payload: { matcher } });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
 };
 
+/**
+ * Creates a single new Matcher and returns the result.
+ */
 export const createSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString();
@@ -69,6 +80,9 @@ export const createSingleMatcher = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Updates a single Matcher belonging to the authenticated user.
+ */
 export const updateSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         const body = { ...req.body, updated_on: new Date().toISOString() };
@@ -87,6 +101,9 @@ export const updateSingleMatcher = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Deletes a single Scenario by ID. Budget must belong to the authenticated user.
+ */
 export const deleteSingleMatcher = async (req: IUserRequest, res: Response) => {
     try {
         await Matcher.relatedQuery('categories')
@@ -107,6 +124,9 @@ export const deleteSingleMatcher = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Creates one or more Matchers at a time and returns the result as an array.
+ */
 export const createManyMatchers = async (req: IUserRequest, res: Response) => {
     try {
         const date = new Date().toISOString();

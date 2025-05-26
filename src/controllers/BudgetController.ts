@@ -13,6 +13,9 @@ import {
 import Budget from '../models/Budget';
 import BudgetRow from '../models/BudgetRow';
 
+/**
+ * Returns all Budgets belonging to  the authenticated user.
+ */
 export const getBudgets = async (req: IUserRequest, res: Response) => {
     try {
         const budgets = await Budget.query()
@@ -25,6 +28,9 @@ export const getBudgets = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Retrieves a single Budget item by ID with Budget Rows joined. Budget must belong to the authenticated user.
+ */
 export const getSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
         const budget = await Budget.query()
@@ -38,6 +44,9 @@ export const getSingleBudget = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Gets theBudget Rows for a given user. Does not associate rows with a Budget.
+ */
 export const getBudgetRows = async (req: IUserRequest, res: Response) => {
     try {
         const budgetRows = await BudgetRow.query()
@@ -50,6 +59,9 @@ export const getBudgetRows = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Creates a single new Budget and returns the result.
+ */
 export const createSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
         const now = new Date().toISOString();
@@ -87,6 +99,9 @@ export const createSingleBudget = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Updates a single Budget belonging to the authenticated user.
+ */
 export const updateSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
         const stagedBudget = await Budget.query()
@@ -131,6 +146,9 @@ export const updateSingleBudget = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * Deletes a single Budget by ID. Budget must belong to the authenticated user.
+ */
 export const deleteSingleBudget = async (req: IUserRequest, res: Response) => {
     try {
         await Budget.query()
@@ -148,6 +166,9 @@ export const deleteSingleBudget = async (req: IUserRequest, res: Response) => {
     }
 };
 
+/**
+ * For the authenticated user, marks all Budgets as not default then sets the specified ID as default.
+ */
 export const setActiveBudget = async (req: IUserRequest, res: Response) => {
     try {
         const actives = await Budget.query()
