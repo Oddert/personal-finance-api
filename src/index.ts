@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import * as i18next from 'i18next';
 import Backend from 'i18next-node-fs-backend';
-import i18nextMiddleware from 'i18next-express-middleware';
+import * as i18nextMiddleware from 'i18next-http-middleware';
 import morgan from 'morgan';
 import cron from 'node-cron';
 import path from 'path';
@@ -64,9 +64,10 @@ i18next
         },
         saveMissing: true,
         fallbackLng: ['en'],
-        preload: ['en', 'en-CA', 'en-GB'],
+        preload: ['en'],
     });
 
+// @ts-expect-error incorrect error
 app.use(i18nextMiddleware.handle(i18next));
 
 cron.schedule('0 1 * * *', clearExpiredRefreshTokens);
