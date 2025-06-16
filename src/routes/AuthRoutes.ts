@@ -7,12 +7,14 @@ import {
     loginUser,
     refreshUserAuthToken,
     registerUser,
+    updateUserDetails,
 } from '../controllers/AuthController';
 
 import {
     logInSchema,
     refreshTokenSchema,
     signUpSchema,
+    updateUserSchema,
 } from '../schemas/AuthSchemas';
 
 import { requiresAuth } from '../security/middleware';
@@ -29,6 +31,9 @@ router
 
 router.route('/user-exists/:username').get(getUserExists);
 
-router.route('/user').get(requiresAuth, getUserDetails);
+router
+    .route('/user')
+    .get(requiresAuth, getUserDetails)
+    .put(requiresAuth, checkSchema(updateUserSchema), updateUserDetails);
 
 export default router;

@@ -196,3 +196,40 @@ export const refreshUserAuthToken = async (
         return respondServerError({ req, res, error: error.message });
     }
 };
+
+/**
+ * Allows the user to change non-security related details.
+ */
+export const updateUserDetails = async (req: IUserRequest, res: Response) => {
+    try {
+        const queriedUser = await User.query()
+            .where('username', '=', req.user.username)
+            .first();
+
+        if (!queriedUser) {
+            return respondNotFound({
+                req,
+                res,
+                message: `No user found for username / email "${req.user.username}".`,
+            });
+        }
+
+        const updatedUser = await User.query().patchAndFetchById(
+            queriedUser.id,
+            {
+                username: req.body.username || queriedUser.username,
+                first_name: req.body.firstName || queriedUser.first_name,
+                last_name: req.body.lastName || queriedUser.last_name,
+                languages: req.body.languages || queriedUser.languages,
+                default_lang: req.body.defaultLang || queriedUser.default_lang,
+                currencies: req.body.currencies || queriedUser.currencies,
+                default_currency:
+                    req.body.defaultCurrency || queriedUser.default_currency,
+            },
+        );
+
+        return respondOk({ req, res, payload: { user: updatedUser.toJson() } });
+    } catch (error: any) {
+        return respondServerError({ req, res, error: error.message });
+    }
+};
