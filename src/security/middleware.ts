@@ -82,6 +82,15 @@ export const requiresAuth = async (
             .where('username', '=', decodedToken.sub)
             .first();
 
+        if (!user) {
+            return respondUnauthenticated({
+                req,
+                res,
+                message: req.t('auth.messages.noUserForName'),
+                error: req.t('securityErrors.tokenExpired'),
+            });
+        }
+
         req.user = user?.toJson();
         next();
     } catch (error: any) {
