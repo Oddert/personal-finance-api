@@ -169,6 +169,19 @@ export const refreshUserAuthToken = async (
             throw new Error(req.t('securityErrors.unableToDecodeAccessToken'));
         }
 
+        const user = await User.query()
+            .where('username', '=', decodedToken.sub)
+            .first();
+
+        if (!user) {
+            return respondUnauthenticated({
+                req,
+                res,
+                message: req.t('auth.messages.noUserForName'),
+                error: req.t('securityErrors.tokenExpired'),
+            });
+        }
+
         const excludeRecord = await TokenExclude.query()
             .where('jti', '=', decodedToken.jti)
             .first();
@@ -191,7 +204,11 @@ export const refreshUserAuthToken = async (
         const accessToken = createAccessToken(decodedToken.sub);
         const refreshToken = createRefreshToken(decodedToken.sub);
 
-        return respondOk({ req, res, payload: { accessToken, refreshToken } });
+        return respondOk({
+            req,
+            res,
+            payload: { accessToken, refreshToken, user: user.toJson() },
+        });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -217,7 +234,6 @@ export const updateUserDetails = async (req: IUserRequest, res: Response) => {
         const updatedUser = await User.query().patchAndFetchById(
             queriedUser.id,
             {
-                username: req.body.username || queriedUser.username,
                 first_name: req.body.firstName || queriedUser.first_name,
                 last_name: req.body.lastName || queriedUser.last_name,
                 languages: req.body.languages || queriedUser.languages,
