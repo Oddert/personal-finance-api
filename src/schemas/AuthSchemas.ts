@@ -100,19 +100,6 @@ export const refreshTokenSchema: Schema<
 export const updateUserSchema: Schema<
     'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
 > = {
-    username: {
-        isString: true,
-        errorMessage:
-            'Field "username" is invalid. Please ensure it is a string of at least 3 characters long.',
-        isLength: {
-            errorMessage:
-                'Field "username" must be at least 3 characters long and no longer than 100 characters.',
-            options: {
-                min: 3,
-                max: 100,
-            },
-        },
-    },
     firstName: {
         isString: true,
         errorMessage:
