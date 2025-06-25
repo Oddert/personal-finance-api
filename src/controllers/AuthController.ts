@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
@@ -5,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { IUserRequest } from '../types/Auth.types';
 
 import {
+    respondBadRequest,
     respondConflict,
     respondNotFound,
     respondOk,
@@ -80,7 +82,7 @@ export const loginUser = async (req: IUserRequest, res: Response) => {
                 req,
                 res,
                 message: req.t('auth.messages.noUserForName', {
-                    username: req.body.username,
+                    email: req.body.username,
                 }),
             });
         }
@@ -177,7 +179,9 @@ export const refreshUserAuthToken = async (
             return respondUnauthenticated({
                 req,
                 res,
-                message: req.t('auth.messages.noUserForName'),
+                message: req.t('auth.messages.noUserForName', {
+                    email: decodedToken.sub,
+                }),
                 error: req.t('securityErrors.tokenExpired'),
             });
         }
@@ -227,7 +231,9 @@ export const updateUserDetails = async (req: IUserRequest, res: Response) => {
             return respondNotFound({
                 req,
                 res,
-                message: `No user found for username / email "${req.user.username}".`,
+                message: req.t('auth.messages.noUserForName', {
+                    email: req.user.username,
+                }),
             });
         }
 
@@ -245,6 +251,99 @@ export const updateUserDetails = async (req: IUserRequest, res: Response) => {
         );
 
         return respondOk({ req, res, payload: { user: updatedUser.toJson() } });
+    } catch (error: any) {
+        return respondServerError({ req, res, error: error.message });
+    }
+};
+
+/**
+ * Allows the user to change their password.
+ */
+export const changePassword = async (req: IUserRequest, res: Response) => {
+    try {
+        const queriedUser = await User.query()
+            .where('username', '=', req.user.username)
+            .first();
+
+        if (!queriedUser) {
+            return respondNotFound({
+                req,
+                res,
+                message: req.t('auth.messages.noUserForName', {
+                    email: req.user.username,
+                }),
+            });
+        }
+
+        console.log(req.body.oldPassword, queriedUser);
+
+        const oldPasswordCompare = await verifyHashedPassword(
+            req.body.oldPassword,
+            queriedUser.password,
+        );
+
+        if (!oldPasswordCompare) {
+            return respondBadRequest({
+                req,
+                res,
+                message: req.t('securityMessages.oldPasswordDoesNotMatch'),
+                error: req.t('securityErrors.incorrectPassword'),
+            });
+        }
+
+        const password = await getHashedPassword(req.body.newPassword);
+        const updatedUser = await User.query().patchAndFetchById(
+            queriedUser.id,
+            { password },
+        );
+
+        const accessToken = createAccessToken(updatedUser.username);
+        const refreshToken = createRefreshToken(updatedUser.username);
+
+        console.log(updatedUser);
+
+        return respondOk({
+            req,
+            res,
+            payload: { accessToken, refreshToken, user: updatedUser.toJson() },
+        });
+    } catch (error: any) {
+        return respondServerError({ req, res, error: error.message });
+    }
+};
+
+/**
+ * Allows the user to change their email (username).
+ */
+export const changeEmail = async (req: IUserRequest, res: Response) => {
+    try {
+        const queriedUser = await User.query()
+            .where('username', '=', req.user.username)
+            .first();
+
+        if (!queriedUser) {
+            return respondNotFound({
+                req,
+                res,
+                message: req.t('auth.messages.noUserForName', {
+                    email: req.user.username,
+                }),
+            });
+        }
+
+        const updatedUser = await User.query().patchAndFetchById(
+            queriedUser.id,
+            { username: req.body.newEmail },
+        );
+
+        const accessToken = createAccessToken(updatedUser.username);
+        const refreshToken = createRefreshToken(updatedUser.username);
+
+        return respondOk({
+            req,
+            res,
+            payload: { accessToken, refreshToken, user: updatedUser.toJson() },
+        });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }

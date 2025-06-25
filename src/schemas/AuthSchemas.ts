@@ -160,3 +160,53 @@ export const updateUserSchema: Schema<
 //     .withMessage('Field "username" must consist of alpha-numeric characters only.')
 //     .isLength({ min: 3 })
 //     .withMessage('Field "username" must be at least 3 characters long.')
+
+export const changeEmailSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
+    username: {
+        isString: true,
+        exists: { errorMessage: 'Missing field "username" is required.' },
+        errorMessage:
+            'Field "username" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "username" must be at least 3 characters long and no longer than 100 characters.',
+            options: {
+                min: 3,
+                max: 100,
+            },
+        },
+    },
+};
+
+export const changePasswordSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
+    oldPassword: {
+        isString: true,
+        exists: { errorMessage: 'Missing field "oldPassword" is required.' },
+        errorMessage:
+            'Field "oldPassword" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "oldPassword" must be at least 3 characters long.',
+            options: {
+                min: 3,
+            },
+        },
+    },
+    newPassword: {
+        isString: true,
+        exists: { errorMessage: 'Missing field "newPassword" is required.' },
+        errorMessage:
+            'Field "newPassword" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "newPassword" must be at least 3 characters long.',
+            options: {
+                min: 3,
+            },
+        },
+    },
+};

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 
 import {
+    changePassword,
+    changeEmail,
     getUserDetails,
     getUserExists,
     loginUser,
@@ -11,6 +13,8 @@ import {
 } from '../controllers/AuthController';
 
 import {
+    changeEmailSchema,
+    changePasswordSchema,
     logInSchema,
     refreshTokenSchema,
     signUpSchema,
@@ -35,5 +39,13 @@ router
     .route('/user')
     .get(requiresAuth, getUserDetails)
     .put(requiresAuth, checkSchema(updateUserSchema), updateUserDetails);
+
+router
+    .route('/change-password')
+    .put(requiresAuth, checkSchema(changePasswordSchema), changePassword);
+
+router
+    .route('/change-email')
+    .put(requiresAuth, checkSchema(changeEmailSchema), changeEmail);
 
 export default router;

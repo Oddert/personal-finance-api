@@ -86,7 +86,9 @@ export const requiresAuth = async (
             return respondUnauthenticated({
                 req,
                 res,
-                message: req.t('auth.messages.noUserForName'),
+                message: req.t('auth.messages.noUserForName', {
+                    email: decodedToken.sub,
+                }),
                 error: req.t('securityErrors.tokenExpired'),
             });
         }
