@@ -21,12 +21,12 @@ export const logInSchema: Schema<
         isString: true,
         exists: { errorMessage: 'Missing field "password" is required.' },
         errorMessage:
-            'Field "password" is invalid. Please ensure it is a string of at least 3 characters long.',
+            'Field "password" is invalid. Please ensure it is a string of at least 8 characters long.',
         isLength: {
             errorMessage:
-                'Field "password" must be at least 3 characters long.',
+                'Field "password" must be at least 8 characters long.',
             options: {
-                min: 3,
+                min: 8,
             },
         },
     },
@@ -187,12 +187,12 @@ export const changePasswordSchema: Schema<
         isString: true,
         exists: { errorMessage: 'Missing field "oldPassword" is required.' },
         errorMessage:
-            'Field "oldPassword" is invalid. Please ensure it is a string of at least 3 characters long.',
+            'Field "oldPassword" is invalid. Please ensure it is a string of at least 8 characters long.',
         isLength: {
             errorMessage:
-                'Field "oldPassword" must be at least 3 characters long.',
+                'Field "oldPassword" must be at least 8 characters long.',
             options: {
-                min: 3,
+                min: 8,
             },
         },
     },
@@ -200,12 +200,12 @@ export const changePasswordSchema: Schema<
         isString: true,
         exists: { errorMessage: 'Missing field "newPassword" is required.' },
         errorMessage:
-            'Field "newPassword" is invalid. Please ensure it is a string of at least 3 characters long.',
+            'Field "newPassword" is invalid. Please ensure it is a string of at least 8 characters long.',
         isLength: {
             errorMessage:
-                'Field "newPassword" must be at least 3 characters long.',
+                'Field "newPassword" must be at least 8 characters long.',
             options: {
-                min: 3,
+                min: 8,
             },
         },
     },
