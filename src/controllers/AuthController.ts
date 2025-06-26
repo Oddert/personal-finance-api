@@ -103,7 +103,11 @@ export const loginUser = async (req: IUserRequest, res: Response) => {
         const accessToken = createAccessToken(user.username);
         const refreshToken = createRefreshToken(user.username);
 
-        return respondOk({ req, res, payload: { accessToken, refreshToken } });
+        return respondOk({
+            req,
+            res,
+            payload: { accessToken, refreshToken, user: user.toJson() },
+        });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
