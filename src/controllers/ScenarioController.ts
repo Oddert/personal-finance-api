@@ -45,7 +45,13 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
             .withGraphFetched('transactors.[schedulers]')
             .orderBy('title', 'DESC');
 
-        return respondOk({ req, res, payload: { scenarios } });
+        return respondOk({
+            req,
+            res,
+            payload: {
+                scenarios: scenarios.map((scenario) => scenario.toJson()),
+            },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -61,7 +67,11 @@ export const getSingleScenario = async (req: IUserRequest, res: Response) => {
             .findById(req.params.id)
             .withGraphFetched('transactors.[schedulers]');
 
-        return respondOk({ req, res, payload: { scenario } });
+        return respondOk({
+            req,
+            res,
+            payload: { scenario: scenario?.toJson() },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -81,7 +91,11 @@ export const createSingleScenario = async (
             ? await Scenario.query().insertGraphAndFetch(body)
             : await Scenario.query().insertAndFetch(body);
 
-        return respondCreated({ req, res, payload: { scenario } });
+        return respondCreated({
+            req,
+            res,
+            payload: { scenario: scenario.toJson() },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -96,7 +110,31 @@ export const updateSingleScenario = async (
 ) => {
     try {
         const now = new Date().toISOString();
-        const body = { ...req.body, updated_on: now };
+        const body = {
+            updated_on: now,
+            start_date: req.body.startDate,
+            end_date: req.body.endDate,
+            title: req.body.title,
+            description: req.body.description,
+            start_ballance: req.body.startBallance,
+            transactors: req.body.transactors.map((transactor: any) => ({
+                updated_on: now,
+                description: transactor.description,
+                is_addition: transactor.isAddition,
+                value: transactor.value,
+                scenario_id: transactor.scenarioId,
+                schedulers: transactor.schedulers.map((scheduler: any) => ({
+                    updated_on: now,
+                    scheduler_code: scheduler.schedulerCode,
+                    step: scheduler.step,
+                    start_date: scheduler.startDate,
+                    day: scheduler.day,
+                    nth_day: scheduler.nthDay,
+                    transactor_id: scheduler.transactorId,
+                })),
+            })),
+        };
+
         const scenario = await Scenario.query()
             .where('user_id', '=', req.user.id)
             .patchAndFetchById(req.params.id, body);
@@ -104,7 +142,7 @@ export const updateSingleScenario = async (
         return respondCreated({
             req,
             res,
-            payload: { scenario },
+            payload: { scenario: scenario.toJson() },
             message: req.t('scenario.messages.updatedSuccessfully'),
         });
     } catch (error: any) {
@@ -130,8 +168,8 @@ export const deleteSingleScenario = async (
             message: req.t('scenario.messages.deletedSuccessfully'),
             statusCode: 204,
         });
-    } catch (err: any) {
-        return respondBadRequest({ req, res, error: err.message });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
     }
 };
 
@@ -151,9 +189,9 @@ export const createManyScenarios = async (req: IUserRequest, res: Response) => {
                 id: uuid(),
             };
 
-            const createdTransaction =
+            const createdScenario =
                 await Scenario.query().insertGraphAndFetch(body);
-            createdScenarios.push(createdTransaction);
+            createdScenarios.push(createdScenario.toJson());
         }
 
         return respondCreated({
@@ -162,8 +200,8 @@ export const createManyScenarios = async (req: IUserRequest, res: Response) => {
             payload: { createdScenarios },
             message: req.t('scenario.messages.scenariosCreated'),
         });
-    } catch (err: any) {
-        return respondBadRequest({ req, res, error: err.message });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
     }
 };
 
@@ -188,7 +226,7 @@ export const deleteManyScenarios = async (req: IUserRequest, res: Response) => {
             message: req.t('scenario.messages.deletedSuccessfully'),
             statusCode: 204,
         });
-    } catch (err: any) {
-        return respondBadRequest({ req, res, error: err.message });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
     }
 };

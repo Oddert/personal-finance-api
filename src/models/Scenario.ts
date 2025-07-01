@@ -58,6 +58,22 @@ export default class Scenario extends Model {
             : '';
     }
 
+    toJson() {
+        return {
+            id: this.id,
+            startDate: this.start_date,
+            endDate: this.end_date,
+            createdOn: this.created_on,
+            updatedOn: this.updated_on,
+            title: this.title,
+            description: this.description,
+            startBallance: this.start_ballance,
+            transactors: this.transactors?.map((transactor) =>
+                transactor.toJson(),
+            ),
+        };
+    }
+
     static get jsonSchema() {
         return {
             type: 'object',
