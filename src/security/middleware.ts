@@ -93,12 +93,13 @@ export const requiresAuth = async (
             });
         }
 
-        req.user = user?.toJson();
+        req.user = user;
         next();
     } catch (error: any) {
         return respondUnauthenticated({
             req,
             res,
+            statusCode: 403,
             message: req.t('securityMessages.loginExpired'),
             error:
                 error?.message || req.t('securityErrors.authHeaderMalformed'),
