@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import dayjs from 'dayjs';
@@ -12,6 +13,8 @@ import {
 } from '../utils/responses';
 
 import Scenario from '../models/Scenario';
+import Transactor from '../models/Transactor';
+import Scheduler from '../models/Scheduler';
 
 dayjs.extend(customParseFormat);
 
@@ -85,11 +88,50 @@ export const createSingleScenario = async (
     res: Response,
 ) => {
     try {
-        const body = { ...req.body, id: uuid() };
+        const now = new Date().toISOString();
+        const scenarioId = uuid();
+        const body = {
+            id: scenarioId,
+            card_id: req.body.cardId,
+            user_id: req.user.id,
+            updated_on: now,
+            created_on: now,
+            start_date: req.body.startDate,
+            end_date: req.body.endDate,
+            title: req.body.title,
+            description: req.body.description,
+            start_ballance: req.body.startBallance,
+            transactors: req.body.transactors.map((transactor: any) => {
+                const transactorId = uuid();
+                return {
+                    id: transactorId,
+                    scenario_id: scenarioId,
+                    updated_on: now,
+                    created_on: now,
+                    description: transactor.description,
+                    is_addition: transactor.isAddition,
+                    value: transactor.value,
+                    schedulers: transactor.schedulers.map((scheduler: any) => {
+                        const schedulerId = uuid();
+                        return {
+                            id: schedulerId,
+                            transactor_id: transactorId,
+                            updated_on: now,
+                            created_on: now,
+                            scheduler_code: scheduler.schedulerCode,
+                            step: scheduler.step,
+                            start_date: scheduler.startDate,
+                            day: scheduler.day,
+                            nth_day: scheduler.nthDay,
+                        };
+                    }),
+                };
+            }),
+        };
+        console.log(body);
 
-        const scenario = req.body.transactors
-            ? await Scenario.query().insertGraphAndFetch(body)
-            : await Scenario.query().insertAndFetch(body);
+        const scenario = await Scenario.query().insertGraphAndFetch(body);
+        console.log(scenario);
 
         return respondCreated({
             req,
@@ -110,39 +152,94 @@ export const updateSingleScenario = async (
 ) => {
     try {
         const now = new Date().toISOString();
+
         const body = {
+            card_id: req.body.cardId,
             updated_on: now,
             start_date: req.body.startDate,
             end_date: req.body.endDate,
             title: req.body.title,
             description: req.body.description,
             start_ballance: req.body.startBallance,
-            transactors: req.body.transactors.map((transactor: any) => ({
-                updated_on: now,
-                description: transactor.description,
-                is_addition: transactor.isAddition,
-                value: transactor.value,
-                scenario_id: transactor.scenarioId,
-                schedulers: transactor.schedulers.map((scheduler: any) => ({
-                    updated_on: now,
-                    scheduler_code: scheduler.schedulerCode,
-                    step: scheduler.step,
-                    start_date: scheduler.startDate,
-                    day: scheduler.day,
-                    nth_day: scheduler.nthDay,
-                    transactor_id: scheduler.transactorId,
-                })),
-            })),
         };
 
         const scenario = await Scenario.query()
             .where('user_id', '=', req.user.id)
             .patchAndFetchById(req.params.id, body);
 
+        if (req.body.transactors) {
+            for (const transactor of req.body.transactors) {
+                let transactorId = uuid();
+                if (transactor.deleted) {
+                    // Transactor is to be removed.
+                    transactorId = transactor.id;
+                    await Transactor.query().deleteById(transactor.id);
+                } else if (transactor.staged) {
+                    // Transactor needs to be created for the first time.
+                    const createdTransactor = await Transactor.query().insert({
+                        id: transactorId,
+                        scenario_id: scenario.id,
+                        updated_on: now,
+                        created_on: now,
+                        description: transactor.description,
+                        is_addition: transactor.isAddition,
+                        value: transactor.value,
+                    });
+                    transactorId = createdTransactor.id || '';
+                } else {
+                    // Transactor should be updated.
+                    const updatedTransactor =
+                        await Transactor.query().patchAndFetchById(
+                            transactor.id,
+                            {
+                                scenario_id: scenario.id,
+                                updated_on: now,
+                                description: transactor.description,
+                                is_addition: transactor.isAddition,
+                                value: transactor.value,
+                            },
+                        );
+                    transactorId = updatedTransactor.id || '';
+                }
+
+                if (transactor.schedulers) {
+                    for (const scheduler of transactor.schedulers) {
+                        if (scheduler.deleted) {
+                            await Scheduler.query().deleteById(scheduler.id);
+                        } else if (scheduler.staged) {
+                            await Scheduler.query().insert({
+                                transactor_id: transactorId,
+                                updated_on: now,
+                                created_on: now,
+                                scheduler_code: scheduler.schedulerCode,
+                                step: scheduler.step,
+                                start_date: scheduler.startDate,
+                                day: scheduler.day,
+                                nth_day: scheduler.nthDay,
+                            });
+                        } else {
+                            await Scheduler.query().patchAndFetchById(
+                                scheduler.id,
+                                {
+                                    transactor_id: transactorId,
+                                    updated_on: now,
+                                    scheduler_code: scheduler.schedulerCode,
+                                    step: scheduler.step,
+                                    start_date: scheduler.startDate,
+                                    day: scheduler.day,
+                                    nth_day: scheduler.nthDay,
+                                },
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         return respondCreated({
             req,
             res,
-            payload: { scenario: scenario.toJson() },
+            payload: { scenario: scenario?.toJson() },
             message: req.t('scenario.messages.updatedSuccessfully'),
         });
     } catch (error: any) {

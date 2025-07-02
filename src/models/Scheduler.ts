@@ -50,11 +50,17 @@ export default class Scheduler extends Model {
     toJson() {
         return {
             id: this.id,
-            createdOn: this.created_on ? new Date(this.created_on).toISOString() : null,
-            updatedOn: this.updated_on ? new Date(this.updated_on).toISOString() : null,
+            createdOn: this.created_on
+                ? new Date(this.created_on).toISOString()
+                : null,
+            updatedOn: this.updated_on
+                ? new Date(this.updated_on).toISOString()
+                : null,
             schedulerCode: this.scheduler_code,
             step: this.step,
-            startDate: this.start_date ? new Date(this.start_date).toISOString() : null,
+            startDate: this.start_date
+                ? new Date(this.start_date).toISOString()
+                : null,
             day: this.day,
             nthDay: this.nth_day,
             transactorId: this.transactor_id,

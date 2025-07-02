@@ -7,6 +7,10 @@ export default class Scenario extends Model {
 
     end_date?: Date | string;
 
+    card_id: string;
+
+    user_id: string;
+
     static start_date: Date | string;
 
     static end_date: Date | string;
@@ -61,6 +65,8 @@ export default class Scenario extends Model {
     toJson() {
         return {
             id: this.id,
+            cardId: this.card_id,
+            userId: this.user_id,
             startDate: this.start_date,
             endDate: this.end_date,
             createdOn: this.created_on,
@@ -79,6 +85,8 @@ export default class Scenario extends Model {
             type: 'object',
             properties: {
                 id: { type: 'string' },
+                card_id: { type: 'string' },
+                user_id: { type: 'string' },
                 created_on: { type: 'string' },
                 updated_on: { type: 'string' },
                 start_date: { type: ['string', 'null'] },
