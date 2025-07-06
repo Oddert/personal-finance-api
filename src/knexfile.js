@@ -23,7 +23,7 @@ const config = {
             directory: __dirname + '/db/migrations',
         },
         seeds: {
-            directory: __dirname + '/db/seeds',
+            directory: __dirname + '/db/private-seeds',
         },
     },
     staging: {

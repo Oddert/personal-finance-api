@@ -21,12 +21,12 @@ export const logInSchema: Schema<
         isString: true,
         exists: { errorMessage: 'Missing field "password" is required.' },
         errorMessage:
-            'Field "password" is invalid. Please ensure it is a string of at least 3 characters long.',
+            'Field "password" is invalid. Please ensure it is a string of at least 8 characters long.',
         isLength: {
             errorMessage:
-                'Field "password" must be at least 3 characters long.',
+                'Field "password" must be at least 8 characters long.',
             options: {
-                min: 3,
+                min: 8,
             },
         },
     },
@@ -97,8 +97,116 @@ export const refreshTokenSchema: Schema<
     },
 };
 
+export const updateUserSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
+    firstName: {
+        isString: true,
+        errorMessage:
+            'Field "firstName" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "firstName" must be at least 3 characters long and no longer than 100 characters.',
+            options: {
+                min: 3,
+                max: 100,
+            },
+        },
+    },
+    lastName: {
+        isString: true,
+        errorMessage:
+            'Field "lastName" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "lastName" must be at least 3 characters long and no longer than 100 characters.',
+            options: {
+                min: 3,
+                max: 100,
+            },
+        },
+    },
+    languages: {
+        isString: true,
+        errorMessage:
+            'Field "languages" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "languages" must be at least 3 characters long.',
+            options: {
+                min: 1,
+            },
+        },
+    },
+    defaultLang: {
+        isString: true,
+        errorMessage:
+            'Field "languages" is invalid. Please ensure it is a string.',
+    },
+    currencies: {
+        isString: true,
+        errorMessage:
+            'Field "languages" is invalid. Please ensure it is a string.',
+    },
+    defaultCurrency: {
+        isString: true,
+        errorMessage:
+            'Field "languages" is invalid. Please ensure it is a string.',
+    },
+};
+
 // export const userExistsSchema = query('username')
 //     .isString()
 //     .withMessage('Field "username" must consist of alpha-numeric characters only.')
 //     .isLength({ min: 3 })
 //     .withMessage('Field "username" must be at least 3 characters long.')
+
+export const changeEmailSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
+    username: {
+        isString: true,
+        exists: { errorMessage: 'Missing field "username" is required.' },
+        errorMessage:
+            'Field "username" is invalid. Please ensure it is a string of at least 3 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "username" must be at least 3 characters long and no longer than 100 characters.',
+            options: {
+                min: 3,
+                max: 100,
+            },
+        },
+    },
+};
+
+export const changePasswordSchema: Schema<
+    'exists' | 'isString' | 'isLength' | 'errorMessage' | 'optional'
+> = {
+    oldPassword: {
+        isString: true,
+        exists: { errorMessage: 'Missing field "oldPassword" is required.' },
+        errorMessage:
+            'Field "oldPassword" is invalid. Please ensure it is a string of at least 8 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "oldPassword" must be at least 8 characters long.',
+            options: {
+                min: 8,
+            },
+        },
+    },
+    newPassword: {
+        isString: true,
+        exists: { errorMessage: 'Missing field "newPassword" is required.' },
+        errorMessage:
+            'Field "newPassword" is invalid. Please ensure it is a string of at least 8 characters long.',
+        isLength: {
+            errorMessage:
+                'Field "newPassword" must be at least 8 characters long.',
+            options: {
+                min: 8,
+            },
+        },
+    },
+};

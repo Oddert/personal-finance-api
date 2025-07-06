@@ -2,17 +2,23 @@ import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 
 import {
+    changePassword,
+    changeEmail,
     getUserDetails,
     getUserExists,
     loginUser,
     refreshUserAuthToken,
     registerUser,
+    updateUserDetails,
 } from '../controllers/AuthController';
 
 import {
+    changeEmailSchema,
+    changePasswordSchema,
     logInSchema,
     refreshTokenSchema,
     signUpSchema,
+    updateUserSchema,
 } from '../schemas/AuthSchemas';
 
 import { requiresAuth } from '../security/middleware';
@@ -29,6 +35,17 @@ router
 
 router.route('/user-exists/:username').get(getUserExists);
 
-router.route('/user').get(requiresAuth, getUserDetails);
+router
+    .route('/user')
+    .get(requiresAuth, getUserDetails)
+    .put(requiresAuth, checkSchema(updateUserSchema), updateUserDetails);
+
+router
+    .route('/change-password')
+    .put(requiresAuth, checkSchema(changePasswordSchema), changePassword);
+
+router
+    .route('/change-email')
+    .put(requiresAuth, checkSchema(changeEmailSchema), changeEmail);
 
 export default router;

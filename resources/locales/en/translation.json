@@ -2,8 +2,8 @@
     "auth": {
         "messages": {
             "noRefreshToken": "No refresh token provided in request.",
-            "noUserForName": "No user found for username \"{{username}}\".",
-            "usernameTaken": "The username requested is already taken.",
+            "noUserForName": "No user found for email \"{{email}}\".",
+            "usernameTaken": "The email address requested is already taken.",
             "usernameOrPasswordWrong": "Username or password is not correct."
         }
     },
@@ -77,6 +77,7 @@
         "jtiMalformed": "Token format is invalid, the key \"jti\" is missing.",
         "noAuthHeader": "No \"Authorization\" header found in request.",
         "subMalformed": "Token format is invalid, the key \"sub\" is missing.",
+        "incorrectPassword": "Password incorrect",
         "tokenExpired": "Token Expired",
         "tokenRevoked": "Token Revoked",
         "unableToDecodeAccessToken": "Unable to decode access token, token type is invalid."
@@ -85,6 +86,7 @@
         "accessTokenExpired": "Access token has expired.",
         "accessTokenUsed": "Access token has already been used.",
         "loginExpired": "Your logged in has expired, please login and try again.",
+        "oldPasswordDoesNotMatch": "The provided old password is not correct",
         "refreshTokenUsed": "Access token has already been used."
     }
 }

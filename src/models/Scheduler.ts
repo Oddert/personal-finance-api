@@ -11,6 +11,8 @@ export default class Scheduler extends Model {
 
     static updated_on: Date | string;
 
+    static start_date: Date | string;
+
     scheduler_code: string;
 
     step?: number;
@@ -40,6 +42,29 @@ export default class Scheduler extends Model {
         this.updated_on = this.updated_on
             ? new Date(this.updated_on).toISOString()
             : '';
+        this.start_date = this.start_date
+            ? new Date(this.start_date).toISOString()
+            : '';
+    }
+
+    toJson() {
+        return {
+            id: this.id,
+            createdOn: this.created_on
+                ? new Date(this.created_on).toISOString()
+                : null,
+            updatedOn: this.updated_on
+                ? new Date(this.updated_on).toISOString()
+                : null,
+            schedulerCode: this.scheduler_code,
+            step: this.step,
+            startDate: this.start_date
+                ? new Date(this.start_date).toISOString()
+                : null,
+            day: this.day,
+            nthDay: this.nth_day,
+            transactorId: this.transactor_id,
+        };
     }
 
     static get jsonSchema() {

@@ -23,19 +23,33 @@ export default class Transactor extends Model {
         return 'transactor';
     }
 
-    static beforeInsert() {
+    $beforeInsert() {
         const now = new Date().toISOString();
         this.created_on = now;
         this.updated_on = now;
     }
 
-    static afterFind() {
+    $afterFind() {
         this.created_on = this.created_on
             ? new Date(this.created_on).toISOString()
             : '';
         this.updated_on = this.updated_on
             ? new Date(this.updated_on).toISOString()
             : '';
+    }
+
+    toJson() {
+        return {
+            id: this.id,
+            createdOn: this.created_on,
+            updatedOn: this.updated_on,
+            description: this.description,
+            isAddition: Boolean(this.is_addition),
+            value: this.value,
+            scenarioId: this.scenario_id,
+            // @ts-expect-error ORM types do not recognise relations
+            schedulers: this?.schedulers.map((scheduler) => scheduler.toJson()),
+        };
     }
 
     static get jsonSchema() {

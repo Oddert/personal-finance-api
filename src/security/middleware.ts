@@ -82,12 +82,24 @@ export const requiresAuth = async (
             .where('username', '=', decodedToken.sub)
             .first();
 
-        req.user = user?.toJson();
+        if (!user) {
+            return respondUnauthenticated({
+                req,
+                res,
+                message: req.t('auth.messages.noUserForName', {
+                    email: decodedToken.sub,
+                }),
+                error: req.t('securityErrors.tokenExpired'),
+            });
+        }
+
+        req.user = user;
         next();
     } catch (error: any) {
         return respondUnauthenticated({
             req,
             res,
+            statusCode: 403,
             message: req.t('securityMessages.loginExpired'),
             error:
                 error?.message || req.t('securityErrors.authHeaderMalformed'),
