@@ -11,6 +11,7 @@ import {
     deleteSingleTransaction,
     createManyTransactions,
     updateManyTransactions,
+    getTransactionCount,
 } from '../controllers/TransactionController';
 
 import {
@@ -29,6 +30,8 @@ router
         checkSchema(createTransactionSchema),
         createSingleTransaction,
     );
+
+router.route('/count').get(requiresAuth, getTransactionCount);
 
 router
     .route('/create-many')

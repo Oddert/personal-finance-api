@@ -268,3 +268,40 @@ export const updateManyTransactions = async (
         return respondBadRequest({ req, res, error: error.message });
     }
 };
+
+/**
+ * Returns a number representing the number of Transactions in a selected date range for a user.
+ */
+export const getTransactionCount = async (req: IUserRequest, res: Response) => {
+    try {
+        const startDate =
+            typeof req.query?.from === 'string'
+                ? dayjs(req.query.from).valueOf()
+                : dayjs(0).valueOf();
+
+        const endDate =
+            typeof req.query?.to === 'string'
+                ? dayjs(req.query.to).valueOf()
+                : dayjs(undefined).valueOf();
+
+        const cardId = req.query.cardId ? String(req.query.cardId) : null;
+
+        if (!cardId) {
+            return respondBadRequest({
+                req,
+                res,
+                message: 'No Card ID supplied in request.',
+            });
+        }
+
+        const count = await Transaction.query()
+            .where('user_id', '=', req.user.id)
+            .whereBetween('date', [startDate, endDate])
+            .where('card_id', '=', cardId)
+            .resultSize();
+
+        return respondOk({ req, res, payload: { count } });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
+    }
+};
