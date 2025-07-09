@@ -247,15 +247,25 @@ export const updateManyTransactions = async (
         const updatedTransactions = [];
 
         for (const transaction of req.body.transactions) {
-            const body = { ...transaction, created_on: date, updated_on: date };
-            if (typeof transaction.date === 'string') {
-                body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf();
-            }
+            if (transaction.deleted) {
+                await Transaction.query()
+                    .where('id', '=', transaction.id)
+                    .delete();
+            } else {
+                const body = {
+                    ...transaction,
+                    created_on: date,
+                    updated_on: date,
+                };
+                if (typeof transaction.date === 'string') {
+                    body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf();
+                }
 
-            const updatedTransaction = await Transaction.query()
-                .where('user_id', '=', req.user.id)
-                .patchAndFetchById(transaction.id, body);
-            updatedTransactions.push(updatedTransaction);
+                const updatedTransaction = await Transaction.query()
+                    .where('user_id', '=', req.user.id)
+                    .patchAndFetchById(transaction.id, body);
+                updatedTransactions.push(updatedTransaction);
+            }
         }
 
         return respondCreated({
