@@ -247,15 +247,25 @@ export const updateManyTransactions = async (
         const updatedTransactions = [];
 
         for (const transaction of req.body.transactions) {
-            const body = { ...transaction, created_on: date, updated_on: date };
-            if (typeof transaction.date === 'string') {
-                body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf();
-            }
+            if (transaction.deleted) {
+                await Transaction.query()
+                    .where('id', '=', transaction.id)
+                    .delete();
+            } else {
+                const body = {
+                    ...transaction,
+                    created_on: date,
+                    updated_on: date,
+                };
+                if (typeof transaction.date === 'string') {
+                    body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf();
+                }
 
-            const updatedTransaction = await Transaction.query()
-                .where('user_id', '=', req.user.id)
-                .patchAndFetchById(transaction.id, body);
-            updatedTransactions.push(updatedTransaction);
+                const updatedTransaction = await Transaction.query()
+                    .where('user_id', '=', req.user.id)
+                    .patchAndFetchById(transaction.id, body);
+                updatedTransactions.push(updatedTransaction);
+            }
         }
 
         return respondCreated({
@@ -264,6 +274,43 @@ export const updateManyTransactions = async (
             payload: { updatedTransactions },
             message: req.t('transaction.messages.transactionsUpdate'),
         });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
+    }
+};
+
+/**
+ * Returns a number representing the number of Transactions in a selected date range for a user.
+ */
+export const getTransactionCount = async (req: IUserRequest, res: Response) => {
+    try {
+        const startDate =
+            typeof req.query?.from === 'string'
+                ? dayjs(req.query.from).valueOf()
+                : dayjs(0).valueOf();
+
+        const endDate =
+            typeof req.query?.to === 'string'
+                ? dayjs(req.query.to).valueOf()
+                : dayjs(undefined).valueOf();
+
+        const cardId = req.query.cardId ? String(req.query.cardId) : null;
+
+        if (!cardId) {
+            return respondBadRequest({
+                req,
+                res,
+                message: 'No Card ID supplied in request.',
+            });
+        }
+
+        const count = await Transaction.query()
+            .where('user_id', '=', req.user.id)
+            .whereBetween('date', [startDate, endDate])
+            .where('card_id', '=', cardId)
+            .resultSize();
+
+        return respondOk({ req, res, payload: { count } });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
