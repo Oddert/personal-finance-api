@@ -67,6 +67,7 @@ i18next
         preload: ['en', 'en-CA', 'en-GB'],
     });
 
+// @ts-expect-error mitigation for errant import errors conflicting with the typedef here
 app.use(i18nextMiddleware.handle(i18next));
 
 cron.schedule('0 1 * * *', clearExpiredRefreshTokens);
@@ -81,7 +82,11 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: ['http://localhost:3001'],
+    }),
+);
 
 console.log('[index] serving static content from: ');
 console.log(path.join(__dirname, './static/'));

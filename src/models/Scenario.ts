@@ -1,4 +1,4 @@
-import { Model } from 'objection';
+import { ColumnNameMappers, Model } from 'objection';
 
 export default class Scenario extends Model {
     id?: string;
@@ -87,4 +87,33 @@ export default class Scenario extends Model {
             },
         };
     }
+
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                description: obj.description,
+                createdOn: obj.created_on,
+                endDate: obj.end_date,
+                id: obj.id,
+                startBallance: obj.start_ballance,
+                startDate: obj.start_date,
+                title: obj.title,
+                transactors: obj.transactors,
+                updatedOn: obj.updated_on,
+            };
+        },
+        format(obj) {
+            return {
+                description: obj.description,
+                created_on: obj.createdOn,
+                end_date: obj.endDate,
+                id: obj.id,
+                start_ballance: obj.startBallance,
+                start_date: obj.startDate,
+                title: obj.title,
+                transactors: obj.transactors,
+                updated_on: obj.updatedOn,
+            };
+        },
+    };
 }
