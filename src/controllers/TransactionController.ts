@@ -23,13 +23,13 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
     try {
         const startDate =
             typeof req.query?.from === 'string'
-                ? dayjs(req.query.from).valueOf()
-                : dayjs(0).valueOf();
+                ? dayjs(req.query.from).toDate()
+                : dayjs(0).toDate();
 
         const endDate =
             typeof req.query?.to === 'string'
-                ? dayjs(req.query.to).valueOf()
-                : dayjs(undefined).valueOf();
+                ? dayjs(req.query.to).toDate()
+                : dayjs(undefined).toDate();
 
         if (req.query.includeCategory) {
             if (req.query.cardId && typeof req.query.cardId === 'string') {
@@ -286,13 +286,13 @@ export const getTransactionCount = async (req: IUserRequest, res: Response) => {
     try {
         const startDate =
             typeof req.query?.from === 'string'
-                ? dayjs(req.query.from).valueOf()
-                : dayjs(0).valueOf();
+                ? dayjs(req.query.from).toDate()
+                : dayjs(0).toDate();
 
         const endDate =
             typeof req.query?.to === 'string'
-                ? dayjs(req.query.to).valueOf()
-                : dayjs(undefined).valueOf();
+                ? dayjs(req.query.to).toDate()
+                : dayjs(undefined).toDate();
 
         const cardId = req.query.cardId ? String(req.query.cardId) : null;
 
