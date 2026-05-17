@@ -12,6 +12,7 @@ import {
     createManyTransactions,
     updateManyTransactions,
     getTransactionCount,
+    getTransactionsAgg,
 } from '../controllers/TransactionController';
 
 import {
@@ -48,6 +49,8 @@ router
         checkSchema(createManyTransactionSchema),
         updateManyTransactions,
     );
+
+router.route('/agg').get(requiresAuth, getTransactionsAgg);
 
 router
     .route('/:id')
