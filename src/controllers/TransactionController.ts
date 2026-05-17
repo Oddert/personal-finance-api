@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
+import knex from '../db/knex';
 import { IUserRequest } from '../types/Auth.types';
 
 import {
@@ -66,6 +67,59 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
             .whereBetween('date', [startDate, endDate])
             .orderBy('date', 'DESC');
         return respondOk({ req, res, payload: { transactions } });
+    } catch (error: any) {
+        return respondBadRequest({ req, res, error: error.message });
+    }
+};
+
+/**
+ * Returns aggregated Transaction data grouped by month and category for a selected date range.
+ * Optional filter by Card ID.
+ */
+export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
+    try {
+        const startDate =
+            typeof req.query?.from === 'string'
+                ? dayjs(req.query.from).toDate()
+                : dayjs('2020-01-01').toDate();
+
+        const endDate =
+            typeof req.query?.to === 'string'
+                ? dayjs(req.query.to).toDate()
+                : dayjs(undefined).toDate();
+
+        if (req.query.cardId && typeof req.query.cardId === 'string') {
+            const aggregates = await knex('transaction')
+                .select('category_id')
+                .select(knex.raw("date_trunc('month', date)::date as month"))
+                .sum({ total_credit: 'credit', total_debit: 'debit' })
+                .where('user_id', '=', req.user.id)
+                .whereBetween('date', [startDate, endDate])
+                .groupBy('category_id')
+                .groupByRaw("date_trunc('month', date)")
+                .orderByRaw("category_id, date_trunc('month', date)");
+
+            const groupedByMonth = aggregates.reduce((acc: any, item: any) => {
+                const month = dayjs(item.month).format('YYYY-MM');
+                if (!acc[month]) {
+                    acc[month] = [];
+                }
+                acc[month].push(item);
+                return acc;
+            }, {});
+
+            return respondOk({
+                req,
+                res,
+                payload: { transactions: groupedByMonth },
+            });
+        }
+
+        return respondBadRequest({
+            req,
+            res,
+            error: 'No parameter "cardId" provided.',
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
