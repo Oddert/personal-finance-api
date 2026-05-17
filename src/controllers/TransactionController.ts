@@ -88,30 +88,79 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                 ? dayjs(req.query.to).toDate()
                 : dayjs(undefined).toDate();
 
-        if (req.query.cardId && typeof req.query.cardId === 'string') {
-            const aggregates = await knex('transaction')
-                .select('category_id')
-                .select(knex.raw("date_trunc('month', date)::date as month"))
-                .sum({ total_credit: 'credit', total_debit: 'debit' })
-                .where('user_id', '=', req.user.id)
-                .whereBetween('date', [startDate, endDate])
-                .groupBy('category_id')
-                .groupByRaw("date_trunc('month', date)")
-                .orderByRaw("category_id, date_trunc('month', date)");
+        const pivot =
+            typeof req.query.pivot === 'string' ? req.query.pivot : 'time';
 
-            const groupedByMonth = aggregates.reduce((acc: any, item: any) => {
-                const month = dayjs(item.month).format('YYYY-MM');
-                if (!acc[month]) {
-                    acc[month] = [];
+        if (req.query.cardId && typeof req.query.cardId === 'string') {
+            interface IAggregateDatapoint {
+                categoryId: string;
+                month: Date;
+                totalCredit: number;
+                totalDebit: number;
+                categoryName: string;
+            }
+
+            type TResponseFormat = Record<string, IAggregateDatapoint[]>;
+
+            const aggregates: IAggregateDatapoint[] = await knex
+                .with('monthly_agg', (qb: any) => {
+                    qb.select('category_id')
+                        .select(
+                            knex.raw(
+                                "date_trunc('month', date)::date as month",
+                            ),
+                        )
+                        .sum({ total_credit: 'credit', total_debit: 'debit' })
+                        .from('transaction')
+                        .where('user_id', '=', req.user.id)
+                        .whereBetween('date', [startDate, endDate])
+                        .groupBy('category_id')
+                        .groupByRaw("date_trunc('month', date)");
+                })
+                .select(
+                    'monthly_agg.category_id as categoryId',
+                    'monthly_agg.month',
+                    'monthly_agg.total_credit as totalCredit',
+                    'monthly_agg.total_debit',
+                    'category.description as categoryName',
+                )
+                .from('monthly_agg')
+                .leftJoin('category', 'monthly_agg.category_id', 'category.id')
+                .orderByRaw('monthly_agg.category_id, monthly_agg.month');
+
+            const transactions: TResponseFormat = (() => {
+                if (pivot === 'time') {
+                    const groupedByMonth = aggregates.reduce(
+                        (acc: TResponseFormat, item: IAggregateDatapoint) => {
+                            const month = dayjs(item.month).format('YYYY-MM');
+                            if (!acc[month]) {
+                                acc[month] = [];
+                            }
+                            acc[month].push(item);
+                            return acc;
+                        },
+                        {},
+                    );
+                    return groupedByMonth;
+                } else {
+                    const groupedByCatergory = aggregates.reduce(
+                        (acc: TResponseFormat, item: IAggregateDatapoint) => {
+                            if (!acc[item.categoryId]) {
+                                acc[item.categoryId] = [];
+                            }
+                            acc[item.categoryId].push(item);
+                            return acc;
+                        },
+                        {},
+                    );
+                    return groupedByCatergory;
                 }
-                acc[month].push(item);
-                return acc;
-            }, {});
+            })();
 
             return respondOk({
                 req,
                 res,
-                payload: { transactions: groupedByMonth },
+                payload: { transactions },
             });
         }
 
