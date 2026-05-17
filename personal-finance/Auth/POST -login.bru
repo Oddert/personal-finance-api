@@ -1,0 +1,35 @@
+meta {
+  name: POST /login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "{{username}}",
+    "password": "{{password}}"
+  }
+}
+
+vars:pre-request {
+  username: oddert@gmail.com
+  password: Bugatt1rulesoK
+}
+
+script:post-response {
+  if (res.body.payload.accessToken) {
+    bru.setEnvVar("accessToken", res.body.payload.accessToken)
+    bru.setEnvVar("refreshToken", res.body.payload.refreshToken)
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
