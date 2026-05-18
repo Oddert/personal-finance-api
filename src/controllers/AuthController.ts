@@ -19,6 +19,7 @@ import TokenExclude from '../models/TokenExclude';
 
 import { createAccessToken, createRefreshToken } from '../security/token';
 import { getHashedPassword, verifyHashedPassword } from '../security/hash';
+import dayjs from 'dayjs';
 
 /**
  * Creates a single new user, first checking the username is not taken.
@@ -205,7 +206,7 @@ export const refreshUserAuthToken = async (
 
         const body = {
             jti: decodedToken.jti,
-            expires: new Date(decodedToken.exp || new Date()).getTime(),
+            expires: dayjs(decodedToken.exp || new Date()).toDate(),
         };
         await TokenExclude.query().insert(body);
 
@@ -278,8 +279,6 @@ export const changePassword = async (req: IUserRequest, res: Response) => {
                 }),
             });
         }
-
-        console.log(req.body.oldPassword, queriedUser);
 
         const oldPasswordCompare = await verifyHashedPassword(
             req.body.oldPassword,
