@@ -108,6 +108,7 @@ export const createSingleScenario = async (
                     scenario_id: scenarioId,
                     updated_on: now,
                     created_on: now,
+                    category_id: transactor.category_id,
                     description: transactor.description,
                     is_addition: transactor.isAddition,
                     value: transactor.value,
@@ -181,6 +182,7 @@ export const updateSingleScenario = async (
                         scenario_id: scenario.id,
                         updated_on: now,
                         created_on: now,
+                        category_id: transactor.category_id,
                         description: transactor.description,
                         is_addition: transactor.isAddition,
                         value: transactor.value,
@@ -194,6 +196,7 @@ export const updateSingleScenario = async (
                             {
                                 scenario_id: scenario.id,
                                 updated_on: now,
+                                category_id: transactor.category_id,
                                 description: transactor.description,
                                 is_addition: transactor.isAddition,
                                 value: transactor.value,

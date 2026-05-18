@@ -3,6 +3,8 @@ import { Model } from 'objection';
 export default class Transactor extends Model {
     id?: string;
 
+    category_id: string | null;
+
     created_on: Date | string;
 
     updated_on: Date | string;
@@ -42,6 +44,7 @@ export default class Transactor extends Model {
         return {
             id: this.id,
             createdOn: this.created_on,
+            categoryId: this.category_id,
             updatedOn: this.updated_on,
             description: this.description,
             isAddition: Boolean(this.is_addition),
@@ -58,6 +61,7 @@ export default class Transactor extends Model {
             properties: {
                 id: { type: 'string' },
                 created_on: { type: 'string' },
+                category_id: { type: 'string' },
                 updated_on: { type: 'string' },
                 description: { type: 'string' },
                 value: { type: 'number' },
