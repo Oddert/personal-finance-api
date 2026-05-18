@@ -50,7 +50,7 @@ router
         updateManyTransactions,
     );
 
-router.route('/agg').get(requiresAuth, getTransactionsAgg);
+router.route('/aggregated').get(requiresAuth, getTransactionsAgg);
 
 router
     .route('/:id')

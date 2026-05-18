@@ -1,11 +1,11 @@
 meta {
-  name: GET /agg
+  name: GET /aggregated
   type: http
   seq: 1
 }
 
 get {
-  url: {{url}}/transaction/agg?cardId=be913800df3b4285803a88e971fde8f3&pivot=category
+  url: {{url}}/transaction/aggregated?cardId=be913800df3b4285803a88e971fde8f3&pivot=category
   body: none
   auth: bearer
 }
