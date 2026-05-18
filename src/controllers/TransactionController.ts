@@ -213,6 +213,7 @@ export const createManyTransactions = async (
                 created_on: date,
                 updated_on: date,
                 userId: req.user.id,
+                categoryId: transaction.assignedCategory,
                 id: uuid(),
             };
             if (typeof transaction.date === 'string') {
