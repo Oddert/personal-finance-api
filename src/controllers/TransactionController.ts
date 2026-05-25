@@ -121,8 +121,8 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                     'monthly_agg.category_id as categoryId',
                     'monthly_agg.month',
                     'monthly_agg.total_credit as totalCredit',
-                    'monthly_agg.total_debit',
-                    'category.description as categoryName',
+                    'monthly_agg.total_debit as totalDebit',
+                    'category.label as categoryName',
                 )
                 .from('monthly_agg')
                 .leftJoin('category', 'monthly_agg.category_id', 'category.id')
