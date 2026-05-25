@@ -100,7 +100,14 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                 categoryName: string;
             }
 
-            type TResponseFormat = Record<string, IAggregateDatapoint[]>;
+            type TResponseFormat = Record<
+                string,
+                {
+                    data: IAggregateDatapoint[];
+                    totalDebit: number;
+                    totalCredit: number;
+                }
+            >;
 
             const aggregates: IAggregateDatapoint[] = await knex
                 .with('monthly_agg', (qb: any) => {
@@ -134,26 +141,39 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                         (acc: TResponseFormat, item: IAggregateDatapoint) => {
                             const month = dayjs(item.month).format('YYYY-MM');
                             if (!acc[month]) {
-                                acc[month] = [];
+                                acc[month] = {
+                                    data: [],
+                                    totalCredit: 0,
+                                    totalDebit: 0,
+                                };
                             }
-                            acc[month].push(item);
+                            acc[month].data.push(item);
+                            acc[month].totalCredit += item.totalCredit;
+                            acc[month].totalDebit += item.totalDebit;
                             return acc;
                         },
                         {},
                     );
                     return groupedByMonth;
                 } else {
-                    const groupedByCatergory = aggregates.reduce(
+                    const groupedByCategory = aggregates.reduce(
                         (acc: TResponseFormat, item: IAggregateDatapoint) => {
                             if (!acc[item.categoryId]) {
-                                acc[item.categoryId] = [];
+                                acc[item.categoryId] = {
+                                    data: [],
+                                    totalCredit: 0,
+                                    totalDebit: 0,
+                                };
                             }
-                            acc[item.categoryId].push(item);
+                            acc[item.categoryId].data.push(item);
+                            acc[item.categoryId].totalCredit +=
+                                item.totalCredit;
+                            acc[item.categoryId].totalDebit += item.totalDebit;
                             return acc;
                         },
                         {},
                     );
-                    return groupedByCatergory;
+                    return groupedByCategory;
                 }
             })();
 
