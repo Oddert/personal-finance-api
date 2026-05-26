@@ -98,6 +98,7 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                 totalCredit: number;
                 totalDebit: number;
                 categoryName: string;
+                finalBalance?: number;
             }
 
             type TResponseFormat = Record<
@@ -106,6 +107,7 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                     data: IAggregateDatapoint[];
                     totalDebit: number;
                     totalCredit: number;
+                    finalBalance?: number;
                 }
             >;
 
@@ -120,9 +122,34 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                         .sum({ total_credit: 'credit', total_debit: 'debit' })
                         .from('transaction')
                         .where('user_id', '=', req.user.id)
+                        .where('card_id', '=', req.query.cardId)
                         .whereBetween('date', [startDate, endDate])
                         .groupBy('category_id')
                         .groupByRaw("date_trunc('month', date)");
+                })
+                .with('monthly_balance', (qb: any) => {
+                    qb.select(
+                        'transaction_ranked.month',
+                        'transaction_ranked.ballance as finalBalance',
+                    )
+                        .from(function () {
+                            // @ts-expect-error implicit any due to explicit any above
+                            this.select(
+                                knex.raw(
+                                    "date_trunc('month', date)::date as month",
+                                ),
+                                'ballance',
+                                knex.raw(
+                                    "row_number() over (partition by date_trunc('month', date)::date order by date desc, id desc) as rn",
+                                ),
+                            )
+                                .from('transaction')
+                                .where('user_id', '=', req.user.id)
+                                .where('card_id', '=', req.query.cardId)
+                                .whereBetween('date', [startDate, endDate])
+                                .as('transaction_ranked');
+                        })
+                        .where('rn', 1);
                 })
                 .select(
                     'monthly_agg.category_id as categoryId',
@@ -130,9 +157,15 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                     'monthly_agg.total_credit as totalCredit',
                     'monthly_agg.total_debit as totalDebit',
                     'category.label as categoryName',
+                    'monthly_balance.finalBalance as finalBalance',
                 )
                 .from('monthly_agg')
                 .leftJoin('category', 'monthly_agg.category_id', 'category.id')
+                .leftJoin(
+                    'monthly_balance',
+                    'monthly_agg.month',
+                    'monthly_balance.month',
+                )
                 .orderByRaw('monthly_agg.category_id, monthly_agg.month');
 
             const transactions: TResponseFormat = (() => {
@@ -145,11 +178,14 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                                     data: [],
                                     totalCredit: 0,
                                     totalDebit: 0,
+                                    finalBalance: item.finalBalance ?? 0,
                                 };
                             }
                             acc[month].data.push(item);
                             acc[month].totalCredit += item.totalCredit;
                             acc[month].totalDebit += item.totalDebit;
+                            acc[month].finalBalance =
+                                item.finalBalance ?? acc[month].finalBalance;
                             return acc;
                         },
                         {},
