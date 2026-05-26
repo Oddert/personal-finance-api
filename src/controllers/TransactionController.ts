@@ -13,9 +13,29 @@ import {
     respondOk,
 } from '../utils/responses';
 
+import Card from '../models/Card';
 import Transaction from '../models/Transaction';
 
 dayjs.extend(customParseFormat);
+
+interface IAggregateDatapoint {
+    categoryId: string;
+    month: Date;
+    totalCredit: number;
+    totalDebit: number;
+    categoryName: string;
+    finalBalance?: number;
+}
+
+type TAggResponseFormat = Record<
+    string,
+    {
+        data: IAggregateDatapoint[];
+        totalDebit: number;
+        totalCredit: number;
+        finalBalance?: number;
+    }
+>;
 
 /**
  * Returns all Transactions belonging to  the authenticated user.
@@ -72,6 +92,110 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
     }
 };
 
+const queryAggregatesSingleCard = async (
+    userId: string,
+    cardId: string,
+    startDate: Date,
+    endDate: Date,
+    pivot: string,
+) => {
+    const aggregates: IAggregateDatapoint[] = await knex
+        .with('monthly_agg', (qb: any) => {
+            qb.select('category_id')
+                .select(knex.raw("date_trunc('month', date)::date as month"))
+                .sum({ total_credit: 'credit', total_debit: 'debit' })
+                .from('transaction')
+                .where('user_id', '=', userId)
+                .where('card_id', '=', cardId)
+                .whereBetween('date', [startDate, endDate])
+                .groupBy('category_id')
+                .groupByRaw("date_trunc('month', date)");
+        })
+        .with('monthly_balance', (qb: any) => {
+            qb.select(
+                'transaction_ranked.month',
+                'transaction_ranked.ballance as finalBalance',
+            )
+                .from(function () {
+                    // @ts-expect-error implicit any due to explicit any above
+                    this.select(
+                        knex.raw("date_trunc('month', date)::date as month"),
+                        'ballance',
+                        knex.raw(
+                            "row_number() over (partition by date_trunc('month', date)::date order by date desc, id desc) as rn",
+                        ),
+                    )
+                        .from('transaction')
+                        .where('user_id', '=', userId)
+                        .where('card_id', '=', cardId)
+                        .whereBetween('date', [startDate, endDate])
+                        .as('transaction_ranked');
+                })
+                .where('rn', 1);
+        })
+        .select(
+            'monthly_agg.category_id as categoryId',
+            'monthly_agg.month',
+            'monthly_agg.total_credit as totalCredit',
+            'monthly_agg.total_debit as totalDebit',
+            'category.label as categoryName',
+            'monthly_balance.finalBalance as finalBalance',
+        )
+        .from('monthly_agg')
+        .leftJoin('category', 'monthly_agg.category_id', 'category.id')
+        .leftJoin(
+            'monthly_balance',
+            'monthly_agg.month',
+            'monthly_balance.month',
+        )
+        .orderByRaw('monthly_agg.category_id, monthly_agg.month');
+
+    const transactions: TAggResponseFormat = (() => {
+        if (pivot === 'time') {
+            const groupedByMonth = aggregates.reduce(
+                (acc: TAggResponseFormat, item: IAggregateDatapoint) => {
+                    const month = dayjs(item.month).format('YYYY-MM');
+                    if (!acc[month]) {
+                        acc[month] = {
+                            data: [],
+                            totalCredit: 0,
+                            totalDebit: 0,
+                            finalBalance: item.finalBalance ?? 0,
+                        };
+                    }
+                    acc[month].data.push(item);
+                    acc[month].totalCredit += item.totalCredit;
+                    acc[month].totalDebit += item.totalDebit;
+                    acc[month].finalBalance =
+                        item.finalBalance ?? acc[month].finalBalance;
+                    return acc;
+                },
+                {},
+            );
+            return groupedByMonth;
+        } else {
+            const groupedByCategory = aggregates.reduce(
+                (acc: TAggResponseFormat, item: IAggregateDatapoint) => {
+                    if (!acc[item.categoryId]) {
+                        acc[item.categoryId] = {
+                            data: [],
+                            totalCredit: 0,
+                            totalDebit: 0,
+                        };
+                    }
+                    acc[item.categoryId].data.push(item);
+                    acc[item.categoryId].totalCredit += item.totalCredit;
+                    acc[item.categoryId].totalDebit += item.totalDebit;
+                    return acc;
+                },
+                {},
+            );
+            return groupedByCategory;
+        }
+    })();
+    return transactions;
+};
+
 /**
  * Returns aggregated Transaction data grouped by month and category for a selected date range.
  * Optional filter by Card ID.
@@ -91,139 +215,39 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
         const pivot =
             typeof req.query.pivot === 'string' ? req.query.pivot : 'time';
 
-        if (req.query.cardId && typeof req.query.cardId === 'string') {
-            interface IAggregateDatapoint {
-                categoryId: string;
-                month: Date;
-                totalCredit: number;
-                totalDebit: number;
-                categoryName: string;
-                finalBalance?: number;
+        const cardIds: string[] = await (async () => {
+            if (req.query.cardId && typeof req.query.cardId === 'string') {
+                return req.query.cardId.split(',');
+            } else {
+                const cards = await Card.query().where(
+                    'userId',
+                    '=',
+                    req.user.id,
+                );
+                return cards.map((card) => String(card.id));
             }
+        })();
 
-            type TResponseFormat = Record<
-                string,
-                {
-                    data: IAggregateDatapoint[];
-                    totalDebit: number;
-                    totalCredit: number;
-                    finalBalance?: number;
-                }
-            >;
+        const cards: {
+            transactions: TAggResponseFormat;
+            cardId: string;
+        }[] = [];
 
-            const aggregates: IAggregateDatapoint[] = await knex
-                .with('monthly_agg', (qb: any) => {
-                    qb.select('category_id')
-                        .select(
-                            knex.raw(
-                                "date_trunc('month', date)::date as month",
-                            ),
-                        )
-                        .sum({ total_credit: 'credit', total_debit: 'debit' })
-                        .from('transaction')
-                        .where('user_id', '=', req.user.id)
-                        .where('card_id', '=', req.query.cardId)
-                        .whereBetween('date', [startDate, endDate])
-                        .groupBy('category_id')
-                        .groupByRaw("date_trunc('month', date)");
-                })
-                .with('monthly_balance', (qb: any) => {
-                    qb.select(
-                        'transaction_ranked.month',
-                        'transaction_ranked.ballance as finalBalance',
-                    )
-                        .from(function () {
-                            // @ts-expect-error implicit any due to explicit any above
-                            this.select(
-                                knex.raw(
-                                    "date_trunc('month', date)::date as month",
-                                ),
-                                'ballance',
-                                knex.raw(
-                                    "row_number() over (partition by date_trunc('month', date)::date order by date desc, id desc) as rn",
-                                ),
-                            )
-                                .from('transaction')
-                                .where('user_id', '=', req.user.id)
-                                .where('card_id', '=', req.query.cardId)
-                                .whereBetween('date', [startDate, endDate])
-                                .as('transaction_ranked');
-                        })
-                        .where('rn', 1);
-                })
-                .select(
-                    'monthly_agg.category_id as categoryId',
-                    'monthly_agg.month',
-                    'monthly_agg.total_credit as totalCredit',
-                    'monthly_agg.total_debit as totalDebit',
-                    'category.label as categoryName',
-                    'monthly_balance.finalBalance as finalBalance',
-                )
-                .from('monthly_agg')
-                .leftJoin('category', 'monthly_agg.category_id', 'category.id')
-                .leftJoin(
-                    'monthly_balance',
-                    'monthly_agg.month',
-                    'monthly_balance.month',
-                )
-                .orderByRaw('monthly_agg.category_id, monthly_agg.month');
-
-            const transactions: TResponseFormat = (() => {
-                if (pivot === 'time') {
-                    const groupedByMonth = aggregates.reduce(
-                        (acc: TResponseFormat, item: IAggregateDatapoint) => {
-                            const month = dayjs(item.month).format('YYYY-MM');
-                            if (!acc[month]) {
-                                acc[month] = {
-                                    data: [],
-                                    totalCredit: 0,
-                                    totalDebit: 0,
-                                    finalBalance: item.finalBalance ?? 0,
-                                };
-                            }
-                            acc[month].data.push(item);
-                            acc[month].totalCredit += item.totalCredit;
-                            acc[month].totalDebit += item.totalDebit;
-                            acc[month].finalBalance =
-                                item.finalBalance ?? acc[month].finalBalance;
-                            return acc;
-                        },
-                        {},
-                    );
-                    return groupedByMonth;
-                } else {
-                    const groupedByCategory = aggregates.reduce(
-                        (acc: TResponseFormat, item: IAggregateDatapoint) => {
-                            if (!acc[item.categoryId]) {
-                                acc[item.categoryId] = {
-                                    data: [],
-                                    totalCredit: 0,
-                                    totalDebit: 0,
-                                };
-                            }
-                            acc[item.categoryId].data.push(item);
-                            acc[item.categoryId].totalCredit +=
-                                item.totalCredit;
-                            acc[item.categoryId].totalDebit += item.totalDebit;
-                            return acc;
-                        },
-                        {},
-                    );
-                    return groupedByCategory;
-                }
-            })();
-
-            return respondOk({
-                req,
-                res,
-                payload: { transactions },
-            });
+        for (const cardId of cardIds) {
+            const transactions = await queryAggregatesSingleCard(
+                req.user.id,
+                cardId,
+                startDate,
+                endDate,
+                pivot,
+            );
+            cards.push({ cardId, transactions });
         }
 
-        return respondBadRequest({
+        return respondOk({
             req,
             res,
-            error: 'No parameter "cardId" provided.',
+            payload: { cards },
         });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
