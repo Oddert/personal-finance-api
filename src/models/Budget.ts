@@ -94,6 +94,7 @@ export default class Budget extends Model {
         parse(obj) {
             return {
                 id: obj.id,
+                cardId: obj.card_id,
                 userId: obj.user_id,
                 name: obj.name,
                 shortDescription: obj.short_desc,

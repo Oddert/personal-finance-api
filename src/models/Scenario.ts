@@ -1,4 +1,4 @@
-import { Model } from 'objection';
+import { ColumnNameMappers, Model } from 'objection';
 
 export default class Scenario extends Model {
     id?: string;
@@ -68,7 +68,12 @@ export default class Scenario extends Model {
             cardId: this.card_id,
             userId: this.user_id,
             startDate: this.start_date,
-            endDate: this.end_date,
+            endDate:
+                typeof this.end_date === 'string'
+                    ? this.end_date.length
+                        ? this.end_date
+                        : null
+                    : this.end_date,
             createdOn: this.created_on,
             updatedOn: this.updated_on,
             title: this.title,
@@ -111,4 +116,35 @@ export default class Scenario extends Model {
             },
         };
     }
+
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                startDate: obj.start_date,
+                endDate: obj.end_date,
+                cardId: obj.card_id,
+                userId: obj.user_id,
+                createdOn: obj.created_on,
+                updatedOn: obj.updated_on,
+                title: obj.title,
+                description: obj.description,
+                startBallance: obj.start_ballance,
+            };
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                start_date: obj.startDate,
+                end_date: obj.endDate,
+                card_id: obj.cardId,
+                user_id: obj.userId,
+                created_on: obj.createdOn,
+                updated_on: obj.updatedOn,
+                title: obj.title,
+                description: obj.description,
+                start_ballance: obj.startBallance,
+            };
+        },
+    };
 }

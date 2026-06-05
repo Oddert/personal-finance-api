@@ -1,4 +1,4 @@
-import { Model } from 'objection';
+import { ColumnNameMappers, Model } from 'objection';
 
 export default class Scheduler extends Model {
     id?: string;
@@ -97,4 +97,33 @@ export default class Scheduler extends Model {
             },
         };
     }
+
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                createdOn: obj.created_on,
+                updatedOn: obj.updated_on,
+                schedulerCode: obj.scheduler_code,
+                step: obj.step,
+                startDate: obj.start_date,
+                day: obj.day,
+                nthDay: obj.nth_day,
+                transactorId: obj.transactor_id,
+            };
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                created_on: obj.createdOn,
+                updated_on: obj.updatedOn,
+                scheduler_code: obj.schedulerCode,
+                step: obj.step,
+                start_date: obj.startDate,
+                day: obj.day,
+                nth_day: obj.nthDay,
+                transactor_id: obj.transactorId,
+            };
+        },
+    };
 }

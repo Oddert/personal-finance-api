@@ -1,4 +1,4 @@
-import { Model } from 'objection';
+import { ColumnNameMappers, Model } from 'objection';
 
 export default class Transactor extends Model {
     id?: string;
@@ -92,4 +92,31 @@ export default class Transactor extends Model {
             },
         };
     }
+
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                categoryId: obj.category_id ?? null,
+                createdOn: obj.created_on,
+                updatedOn: obj.updated_on,
+                description: obj.description,
+                isAddition: obj.is_addition,
+                value: obj.value,
+                scenarioId: obj.scenario_id,
+            };
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                category_id: obj.categoryId ?? null,
+                created_on: obj.createdOn,
+                updated_on: obj.updatedOn,
+                description: obj.description,
+                is_addition: obj.isAddition,
+                value: obj.value,
+                scenario_id: obj.scenarioId,
+            };
+        },
+    };
 }
