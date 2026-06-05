@@ -14,6 +14,7 @@ import budget from './routes/BudgetRoutes';
 import category from './routes/CategoryRoutes';
 import card from './routes/CardRoutes';
 import debug from './routes/DebugRoutes';
+import exportImport from './routes/ExportImportRoutes';
 import matcher from './routes/MatcherRoutes';
 import scenario from './routes/ScenarioRoutes';
 import transaction from './routes/TransactionRoutes';
@@ -36,6 +37,7 @@ const app = express();
 const routes = [
     { path: '/auth', router: auth },
     { path: '/budget', router: budget },
+    { path: '/bulk-data', router: exportImport },
     { path: '/category', router: category },
     { path: '/card', router: card },
     { path: '/matcher', router: matcher },
@@ -81,7 +83,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 
 console.log('[index] serving static content from: ');
