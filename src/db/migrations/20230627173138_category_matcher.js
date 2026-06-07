@@ -5,9 +5,17 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('category_matcher', (table) => {
-        table.increments('id').primary();
-        table.integer('category_id').references('id').inTable('category');
-        table.integer('matcher_id').references('id').inTable('matcher');
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
+        table
+            .uuid('category_id')
+            .references('id')
+            .inTable('category')
+            .notNullable();
+        table
+            .uuid('matcher_id')
+            .references('id')
+            .inTable('matcher')
+            .notNullable();
     });
 };
 

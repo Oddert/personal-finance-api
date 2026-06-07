@@ -5,7 +5,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('budget', (table) => {
-        table.increments('id').primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.string('name').notNullable();
         table.string('short_desc').defaultTo('');
         table.string('long_desc').defaultTo('');

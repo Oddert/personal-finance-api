@@ -5,7 +5,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('matcher', (table) => {
-        table.increments('id').primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.string('match');
         table.string('match_type');
         table.boolean('case_sensitive');

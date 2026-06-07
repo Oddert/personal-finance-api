@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('card', (table) => {
-        table.increments('id').primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.boolean('is_default').notNullable().defaultTo(false);
         table.string('card_name').notNullable();
         table.string('card_type');
