@@ -60,7 +60,7 @@ export default class Transaction extends Model {
             type: 'object',
             properties: {
                 id: { type: 'string' },
-                date: { type: ['number', 'string'] },
+                date: { type: 'string' },
                 transaction_type: {
                     type: 'string',
                     minLength: 1,

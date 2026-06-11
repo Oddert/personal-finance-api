@@ -73,7 +73,7 @@ export default class Card extends Model {
                 bankName: { type: 'string' },
                 sortCode: { type: 'number' },
                 cardNumber: { type: 'number' },
-                expires: { type: 'number' },
+                expires: { type: 'string' },
                 description: { type: 'string' },
                 icon: { type: 'string' },
                 coverImage: { type: 'string' },
