@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,7 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
+import { nullOr } from '../../utils/testUtils';
 
 chai.use(chaiHttp);
 
@@ -20,14 +22,6 @@ const migrateOpts = {
 const seedOpts = {
     directory: path.join(__dirname, '../../db/seeds'),
 };
-
-/**
- * Curried function which tests a value for null.
- *
- * Returns `true` if the item is null, otherwise returns the default value `other`.
- * @param other Default value to return.
- */
-const nullOr = (other: string) => (s: any) => s === null || typeof s == other;
 
 describe('[INTEGRATION] routes : transaction', () => {
     beforeEach(() => {
@@ -56,15 +50,17 @@ describe('[INTEGRATION] routes : transaction', () => {
                         0,
                     );
                     expect(res.body.payload.scenarios[0]).to.have.all.keys(
-                        'id',
-                        'start_date',
-                        'end_date',
-                        'created_on',
-                        'updated_on',
-                        'title',
+                        'cardId',
+                        'createdOn',
                         'description',
-                        'start_ballance',
+                        'endDate',
+                        'id',
+                        'startBallance',
+                        'startDate',
+                        'title',
                         'transactors',
+                        'updatedOn',
+                        'userId',
                     );
                     expect(res.body.payload.scenarios[0].transactors).to.be.a(
                         'array',
@@ -72,42 +68,43 @@ describe('[INTEGRATION] routes : transaction', () => {
                     expect(
                         res.body.payload.scenarios[0].transactors[0],
                     ).to.have.all.keys(
-                        'id',
-                        'created_on',
-                        'updated_on',
+                        'categoryId',
+                        'createdOn',
                         'description',
-                        'is_addition',
-                        'value',
-                        'scenario_id',
+                        'id',
+                        'isAddition',
+                        'scenarioId',
                         'schedulers',
+                        'updatedOn',
+                        'value',
                     );
                     expect(
                         res.body.payload.scenarios[0].transactors[0].id,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0].created_on,
                     ).to.be.a('string');
                     expect(
-                        res.body.payload.scenarios[0].transactors[0].updated_on,
+                        res.body.payload.scenarios[0].transactors[0].createdOn,
+                    ).to.be.a('string');
+                    expect(
+                        res.body.payload.scenarios[0].transactors[0].categoryId,
+                    ).to.satisfy(nullOr('string'));
+                    expect(
+                        res.body.payload.scenarios[0].transactors[0].updatedOn,
                     ).to.be.a('string');
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
                             .description,
                     ).to.be.a('string');
                     expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .is_addition,
+                        res.body.payload.scenarios[0].transactors[0].isAddition,
                     ).to.be.oneOf([0, 1, true, false]);
                     expect(
                         res.body.payload.scenarios[0].transactors[0].value,
                     ).to.be.a('number');
                     expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .scenario_id,
-                    ).to.be.a('number');
+                        res.body.payload.scenarios[0].transactors[0].scenarioId,
+                    ).to.be.a('string');
                     expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .scenario_id,
+                        res.body.payload.scenarios[0].transactors[0].scenarioId,
                     ).to.eql(res.body.payload.scenarios[0].id);
                     expect(
                         res.body.payload.scenarios[0].transactors[0].schedulers,
@@ -116,35 +113,35 @@ describe('[INTEGRATION] routes : transaction', () => {
                         res.body.payload.scenarios[0].transactors[0]
                             .schedulers[0],
                     ).to.have.all.keys(
-                        'id',
-                        'scheduler_code',
-                        'created_on',
-                        'updated_on',
-                        'step',
-                        'start_date',
+                        'createdOn',
                         'day',
-                        'nth_day',
-                        'transactor_id',
+                        'id',
+                        'nthDay',
+                        'startDate',
+                        'schedulerCode',
+                        'step',
+                        'transactorId',
+                        'updatedOn',
                     );
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
                             .schedulers[0].id,
-                    ).to.be.a('number');
+                    ).to.be.a('string');
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].id,
+                            .schedulers[0].transactorId,
                     ).to.eql(res.body.payload.scenarios[0].transactors[0].id);
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].scheduler_code,
+                            .schedulers[0].schedulerCode,
                     ).to.be.a('string');
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].created_on,
+                            .schedulers[0].createdOn,
                     ).to.be.a('string');
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].updated_on,
+                            .schedulers[0].updatedOn,
                     ).to.be.a('string');
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
@@ -152,7 +149,7 @@ describe('[INTEGRATION] routes : transaction', () => {
                     ).to.satisfy(nullOr('string'));
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].start_date,
+                            .schedulers[0].startDate,
                     ).to.satisfy(nullOr('number'));
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
@@ -160,15 +157,15 @@ describe('[INTEGRATION] routes : transaction', () => {
                     ).to.satisfy(nullOr('number'));
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].nth_day,
+                            .schedulers[0].nthDay,
                     ).to.satisfy(nullOr('number'));
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].transactor_id,
-                    ).to.be.a('number');
+                            .schedulers[0].transactorId,
+                    ).to.be.a('string');
                     expect(
                         res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].transactor_id,
+                            .schedulers[0].transactorId,
                     ).to.eql(res.body.payload.scenarios[0].transactors[0].id);
                     done();
                 });

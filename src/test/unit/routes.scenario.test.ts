@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,6 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
 
 chai.use(chaiHttp);
 
@@ -20,6 +21,8 @@ const migrateOpts = {
 const seedOpts = {
     directory: path.join(__dirname, '../../db/seeds'),
 };
+
+const scenarioId1 = 'f75ac2d1-1ff2-4f14-aa6a-0a7d7fda372d';
 
 describe('[UNIT] routes : scenario', () => {
     beforeEach(() => {
@@ -49,42 +52,32 @@ describe('[UNIT] routes : scenario', () => {
                     expect(res.body.payload.scenarios).to.have.lengthOf.above(
                         0,
                     );
-                    expect(res.body.payload.scenarios[0]).to.have.all.keys(
-                        'id',
-                        'start_date',
-                        'end_date',
-                        'created_on',
-                        'updated_on',
-                        'title',
-                        'description',
-                        'start_ballance',
-                        'transactors',
-                    );
-                    expect(res.body.payload.scenarios[0].id).to.be.a('number');
-                    expect(res.body.payload.scenarios[0].start_date).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenarios[0].end_date).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenarios[0].created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenarios[0].updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenarios[0].title).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenarios[0].description).to.be.a(
-                        'string',
-                    );
-                    expect(
-                        res.body.payload.scenarios[0].start_ballance,
-                    ).to.be.a('number');
-                    expect(res.body.payload.scenarios[0].transactors).to.be.a(
-                        'array',
-                    );
+                    for (const scenario of res.body.payload.scenarios) {
+                        expect(scenario).to.have.all.keys(
+                            'cardId',
+                            'createdOn',
+                            'description',
+                            'endDate',
+                            'id',
+                            'startBallance',
+                            'startDate',
+                            'title',
+                            'transactors',
+                            'updatedOn',
+                            'userId',
+                        );
+                        expect(scenario.cardId).to.be.a('string');
+                        expect(scenario.createdOn).to.be.a('string');
+                        expect(scenario.description).to.be.a('string');
+                        expect(scenario.endDate).to.be.a('string');
+                        expect(scenario.id).to.be.a('string');
+                        expect(scenario.startBallance).to.be.a('number');
+                        expect(scenario.startDate).to.be.a('string');
+                        expect(scenario.title).to.be.a('string');
+                        expect(scenario.transactors).to.be.a('array');
+                        expect(scenario.updatedOn).to.be.a('string');
+                        expect(scenario.userId).to.be.a('string');
+                    }
                     done();
                 });
         });
@@ -92,19 +85,25 @@ describe('[UNIT] routes : scenario', () => {
 
     describe('POST /scenario', () => {
         it('should create a scenario', (done) => {
-            const scenario = {
-                start_date: '20 march 2024',
-                end_date: '1 jan 2025',
-                title: '[test] routes.scenario POST /scenario title',
-                description:
-                    '[test] routes.scenario POST /scenario description',
-                start_ballance: 7293,
-            };
+            const description =
+                '[test] routes.scenario POST /scenario description';
+            const cardId = 'be913800-df3b-4285-803a-88e971fde8f3';
+            const endDate = '1 jan 2025';
+            const startBallance = 7293;
+            const startDate = '20 march 2024';
+            const title = '[test] routes.scenario POST /scenario title';
 
             chai.request(server)
                 .post('/scenario')
                 .set('Content-Type', 'application/json')
-                .send(scenario)
+                .send({
+                    description,
+                    cardId,
+                    endDate,
+                    startBallance,
+                    startDate,
+                    title,
+                })
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
@@ -112,38 +111,35 @@ describe('[UNIT] routes : scenario', () => {
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.scenario).to.have.all.keys(
-                        'id',
-                        'start_date',
-                        'end_date',
-                        'created_on',
-                        'updated_on',
-                        'title',
+                    const scenario = res.body.payload.scenario;
+                    expect(scenario).to.have.all.keys(
+                        'cardId',
+                        'createdOn',
                         'description',
-                        'start_ballance',
+                        'endDate',
+                        'id',
+                        'startBallance',
+                        'startDate',
+                        'title',
+                        'transactors',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.scenario.id).to.be.a('number');
-                    expect(res.body.payload.scenario.start_date).to.eql(
-                        new Date(scenario.start_date).toISOString(),
+                    expect(scenario.cardId).to.be.eql(cardId);
+                    expect(scenario.createdOn).to.be.a('string');
+                    expect(scenario.description).to.eql(description);
+                    expect(scenario.endDate).to.eql(
+                        new Date(endDate).toISOString(),
                     );
-                    expect(res.body.payload.scenario.end_date).to.eql(
-                        new Date(scenario.end_date).toISOString(),
+                    expect(scenario.id).to.be.a('string');
+                    expect(scenario.startBallance).to.eql(startBallance);
+                    expect(scenario.startDate).to.eql(
+                        new Date(startDate).toISOString(),
                     );
-                    expect(res.body.payload.scenario.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenario.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.scenario.title).to.eql(
-                        scenario.title,
-                    );
-                    expect(res.body.payload.scenario.description).to.eql(
-                        scenario.description,
-                    );
-                    expect(res.body.payload.scenario.start_ballance).to.eql(
-                        scenario.start_ballance,
-                    );
+                    expect(scenario.title).to.eql(title);
+                    expect(scenario.transactors).to.be.a('array');
+                    expect(scenario.updatedOn).to.be.a('string');
+                    expect(scenario.userId).to.be.a('string');
 
                     done();
                 });
@@ -153,7 +149,7 @@ describe('[UNIT] routes : scenario', () => {
     describe('GET /scenario/:id', () => {
         it('should get a specific scenario', (done) => {
             chai.request(server)
-                .get('/scenario/1')
+                .get(`/scenario/${scenarioId1}`)
                 .set('Content-Type', 'application/json')
                 .send()
                 .end((err, res) => {
@@ -164,17 +160,19 @@ describe('[UNIT] routes : scenario', () => {
 
                     res.body.status.should.eql(res.status);
                     expect(res.body.payload.scenario).to.have.all.keys(
-                        'id',
-                        'start_date',
-                        'end_date',
-                        'created_on',
-                        'updated_on',
-                        'title',
+                        'cardId',
+                        'createdOn',
                         'description',
-                        'start_ballance',
+                        'endDate',
+                        'id',
+                        'startBallance',
+                        'startDate',
+                        'title',
                         'transactors',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.scenario.id).to.eql(1);
+                    expect(res.body.payload.scenario.id).to.eql(scenarioId1);
 
                     done();
                 });
@@ -183,41 +181,60 @@ describe('[UNIT] routes : scenario', () => {
 
     describe('PUT /scenario/:id', () => {
         it('should update a scenario', (done) => {
-            const scenario = {
-                id: 1,
-                start_date: '15 june 2024',
-                end_date: '30 sept 2025',
-                title: '[test] routes.scenario POST /scenario/:id title',
-                description:
-                    '[test] routes.scenario POST /scenario/:id description',
-                start_ballance: 4915,
-            };
+            const cardId = 'be913800-df3b-4285-803a-88e971fde8f3';
+            const description =
+                '[test] routes.scenario POST /scenario/:id description';
+            const endDate = '30 sept 2025';
+            const startDate = '15 june 2024';
+            const startBallance = 4915;
+            const title = '[test] routes.scenario POST /scenario/:id title';
+
             chai.request(server)
-                .put('/scenario/1')
+                .put(`/scenario/${scenarioId1}`)
                 .set('Content-Type', 'application/json')
-                .send(scenario)
+                .send({
+                    cardId,
+                    description,
+                    endDate,
+                    startDate,
+                    startBallance,
+                    title,
+                })
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(201);
                     res.type.should.eql('application/json');
 
-                    expect(res.body.payload.scenario.id).to.eql(scenario.id);
-                    expect(res.body.payload.scenario.start_date).to.eql(
-                        new Date(scenario.start_date).toISOString(),
+                    const scenario = res.body.payload.scenario;
+                    expect(scenario).to.have.all.keys(
+                        'cardId',
+                        'createdOn',
+                        'description',
+                        'endDate',
+                        'id',
+                        'startBallance',
+                        'startDate',
+                        'transactors',
+                        'title',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.scenario.end_date).to.eql(
-                        new Date(scenario.end_date).toISOString(),
+                    expect(scenario.cardId).to.be.eql(cardId);
+                    expect(scenario.createdOn).to.be.a('string');
+                    expect(scenario.description).to.eql(description);
+                    expect(scenario.endDate).to.eql(
+                        new Date(endDate).toISOString(),
                     );
-                    expect(res.body.payload.scenario.title).to.eql(
-                        scenario.title,
+                    expect(scenario.id).to.be.a('string');
+                    expect(scenario.startBallance).to.eql(startBallance);
+                    expect(scenario.startDate).to.eql(
+                        new Date(startDate).toISOString(),
                     );
-                    expect(res.body.payload.scenario.description).to.eql(
-                        scenario.description,
-                    );
-                    expect(res.body.payload.scenario.start_ballance).to.eql(
-                        scenario.start_ballance,
-                    );
+                    expect(scenario.title).to.eql(title);
+                    expect(scenario.transactors).to.be.a('array');
+                    expect(scenario.updatedOn).to.be.a('string');
+                    expect(scenario.userId).to.be.a('string');
 
                     done();
                 });
@@ -227,17 +244,13 @@ describe('[UNIT] routes : scenario', () => {
     describe('DELETE /scenario/:id', () => {
         it('should delete a scenario', (done) => {
             chai.request(server)
-                .delete('/scenario/1')
+                .delete(`/scenario/${scenarioId1}`)
                 .set('Content-Type', 'application/json')
-                .send({ id: 1 })
+                .send({ id: scenarioId1 })
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
-                    res.type.should.eql('application/json');
-
-                    expect(res.body.payload.deleted).to.eql(1);
-
+                    res.status.should.eql(204);
                     done();
                 });
         });
@@ -252,11 +265,7 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
-                    res.type.should.eql('application/json');
-
-                    expect(res.body.payload.deletedScenarios).to.be.a('array');
-
+                    res.status.should.eql(204);
                     done();
                 });
         });

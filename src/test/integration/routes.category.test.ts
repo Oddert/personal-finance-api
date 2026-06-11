@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,6 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
 
 chai.use(chaiHttp);
 
@@ -71,15 +72,17 @@ describe('[INTEGRATION] routes : category', () => {
                                 'object',
                             );
                             expect(res2.body.payload.category).to.have.all.keys(
+                                'colour',
+                                'createdOn',
+                                'description',
                                 'id',
                                 'label',
-                                'description',
-                                'colour',
-                                'created_on',
-                                'updated_on',
+                                'matchers',
+                                'updatedOn',
+                                'userId',
                             );
                             expect(res2.body.payload.category.id).to.be.a(
-                                'number',
+                                'string',
                             );
                             expect(res2.body.payload.category.label).to.eql(
                                 catLabel,
@@ -91,10 +94,10 @@ describe('[INTEGRATION] routes : category', () => {
                                 catColour,
                             );
                             expect(
-                                res2.body.payload.category.created_on,
+                                res2.body.payload.category.createdOn,
                             ).to.be.a('string');
                             expect(
-                                res2.body.payload.category.updated_on,
+                                res2.body.payload.category.updatedOn,
                             ).to.be.a('string');
 
                             chai.request(server)

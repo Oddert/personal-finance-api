@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,6 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
 
 chai.use(chaiHttp);
 
@@ -20,6 +21,10 @@ const migrateOpts = {
 const seedOpts = {
     directory: path.join(__dirname, '../../db/seeds'),
 };
+
+const foodCatId = '486f9685-cc57-45f4-a2e7-fc505840de6a';
+const supportCatId = '4b8614e2-4f8d-41e2-8d62-7163eefa6812';
+const travelCatId = 'b6945bdd-04b6-4df9-9530-1e1a9ce273c3';
 
 describe('[UNIT] routes : category', () => {
     beforeEach(() => {
@@ -39,8 +44,11 @@ describe('[UNIT] routes : category', () => {
                 .get('/category')
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
@@ -49,30 +57,24 @@ describe('[UNIT] routes : category', () => {
                     expect(res.body.payload.categories).to.have.lengthOf.above(
                         0,
                     );
-                    expect(res.body.payload.categories[0]).to.have.all.keys(
-                        'id',
-                        'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
-                    );
-                    expect(res.body.payload.categories[0].id).to.be.a('number');
-                    expect(res.body.payload.categories[0].label).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.categories[0].description).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.categories[0].colour).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.categories[0].created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.categories[0].updated_on).to.be.a(
-                        'string',
-                    );
+                    for (const category of res.body.payload.categories) {
+                        expect(category).to.have.all.keys(
+                            'colour',
+                            'createdOn',
+                            'description',
+                            'id',
+                            'label',
+                            'updatedOn',
+                            'userId',
+                        );
+                        expect(category.id).to.be.a('string');
+                        expect(category.label).to.be.a('string');
+                        expect(category.description).to.be.a('string');
+                        expect(category.colour).to.be.a('string');
+                        expect(category.createdOn).to.be.a('string');
+                        expect(category.updatedOn).to.be.a('string');
+                        expect(category.userId).to.be.a('string');
+                    }
                     done();
                 });
         });
@@ -84,8 +86,11 @@ describe('[UNIT] routes : category', () => {
                 .get('/category?includeMatchers=true')
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
@@ -94,43 +99,35 @@ describe('[UNIT] routes : category', () => {
                     expect(res.body.payload.categories).to.have.lengthOf.above(
                         0,
                     );
-                    expect(res.body.payload.categories[0]).to.have.all.keys(
-                        'id',
-                        'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
-                        'matchers',
-                    );
-                    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                    expect(res.body.payload.categories[0].matchers).to.exist;
-                    expect(res.body.payload.categories[0].matchers).to.be.a(
-                        'array',
-                    );
-                    expect(res.body.payload.categories[0].matchers[0]).to.be.a(
-                        'object',
-                    );
 
-                    expect(
-                        res.body.payload.categories[0].matchers[0].id,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.categories[0].matchers[0].match,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.categories[0].matchers[0].match_type,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.categories[0].matchers[0]
-                            .case_sensitive,
-                    ).to.be.oneOf(['boolean', 0, 1]);
-                    expect(
-                        res.body.payload.categories[0].matchers[0].created_on,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.categories[0].matchers[0].updated_on,
-                    ).to.be.a('string');
+                    for (const category of res.body.payload.categories) {
+                        expect(category).to.have.all.keys(
+                            'colour',
+                            'createdOn',
+                            'description',
+                            'id',
+                            'label',
+                            'matchers',
+                            'updatedOn',
+                            'userId',
+                        );
+                        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                        expect(category.matchers).to.exist;
+                        expect(category.matchers).to.be.a('array');
+                        for (const matcher of category.matchers) {
+                            expect(matcher).to.be.a('object');
+                            expect(matcher.id).to.be.a('string');
+                            expect(matcher.match).to.be.a('string');
+                            expect(matcher.matchType).to.be.a('string');
+                            expect(matcher.caseSensitive).to.be.oneOf([
+                                true,
+                                false,
+                            ]);
+                            expect(matcher.createdOn).to.be.a('string');
+                            expect(matcher.updatedOn).to.be.a('string');
+                            expect(matcher.userId).to.be.a('string');
+                        }
+                    }
                     done();
                 });
         });
@@ -139,36 +136,37 @@ describe('[UNIT] routes : category', () => {
     describe('GET /category/:id', () => {
         it('should retrieve a single category', (done) => {
             chai.request(server)
-                .get('/category/1')
+                .get(`/category/${foodCatId}`)
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.category).to.have.all.keys(
+                    const category = res.body.payload.category;
+                    expect(category).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.category.id).to.be.a('number');
-                    expect(res.body.payload.category.label).to.be.a('string');
-                    expect(res.body.payload.category.description).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.category.colour).to.be.a('string');
-                    expect(res.body.payload.category.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.category.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(category.id).to.be.a('string');
+                    expect(category.id).to.eql(foodCatId);
+                    expect(category.label).to.be.a('string');
+                    expect(category.description).to.be.a('string');
+                    expect(category.colour).to.be.a('string');
+                    expect(category.createdOn).to.be.a('string');
+                    expect(category.updatedOn).to.be.a('string');
+                    expect(category.userId).to.be.a('string');
                     done();
                 });
         });
@@ -177,50 +175,54 @@ describe('[UNIT] routes : category', () => {
     describe('GET /category/:id?includeMatchers=true', () => {
         it('should retrieve a category with matchers joined', (done) => {
             chai.request(server)
-                .get('/category/1?includeMatchers=true')
+                .get(`/category/${foodCatId}?includeMatchers=true`)
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.category).to.have.all.keys(
+                    const category = res.body.payload.category;
+                    expect(category).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
                         'matchers',
+                        'updatedOn',
+                        'userId',
                     );
                     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                    expect(res.body.payload.category.matchers).to.exist;
-                    expect(res.body.payload.category.matchers).to.be.a('array');
-                    expect(res.body.payload.category.matchers[0]).to.be.a(
-                        'object',
-                    );
-
-                    expect(res.body.payload.category.matchers[0].id).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.category.matchers[0].match).to.be.a(
-                        'string',
-                    );
-                    expect(
-                        res.body.payload.category.matchers[0].match_type,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.category.matchers[0].case_sensitive,
-                    ).to.be.oneOf(['boolean', 0, 1]);
-                    expect(
-                        res.body.payload.category.matchers[0].created_on,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.category.matchers[0].updated_on,
-                    ).to.be.a('string');
+                    expect(category.matchers).to.exist;
+                    expect(category.matchers).to.be.a('array');
+                    for (const matcher of category.matchers) {
+                        expect(matcher).to.be.a('object');
+                        expect(matcher).to.have.all.keys([
+                            'id',
+                            'match',
+                            'matchType',
+                            'caseSensitive',
+                            'createdOn',
+                            'updatedOn',
+                            'userId',
+                        ]);
+                        expect(matcher.id).to.be.a('string');
+                        expect(matcher.match).to.be.a('string');
+                        expect(matcher.matchType).to.be.a('string');
+                        expect(matcher.caseSensitive).to.be.oneOf([
+                            true,
+                            false,
+                        ]);
+                        expect(matcher.createdOn).to.be.a('string');
+                        expect(matcher.updatedOn).to.be.a('string');
+                    }
                     done();
                 });
         });
@@ -241,34 +243,35 @@ describe('[UNIT] routes : category', () => {
                     description: catDesc,
                     colour: catColour,
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(201);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.category).to.be.a('object');
-                    expect(res.body.payload.category).to.have.all.keys(
+                    const category = res.body.payload.category;
+                    expect(category).to.be.a('object');
+                    expect(category).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
+                        'matchers',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.category.id).to.be.a('number');
-                    expect(res.body.payload.category.label).to.eql(catLabel);
-                    expect(res.body.payload.category.description).to.eql(
-                        catDesc,
-                    );
-                    expect(res.body.payload.category.colour).to.eql(catColour);
-                    expect(res.body.payload.category.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.category.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(category.id).to.be.a('string');
+                    expect(category.label).to.eql(catLabel);
+                    expect(category.description).to.eql(catDesc);
+                    expect(category.colour).to.eql(catColour);
+                    expect(category.createdOn).to.be.a('string');
+                    expect(category.updatedOn).to.be.a('string');
+                    expect(category.userId).to.be.a('string');
                     done();
                 });
         });
@@ -292,77 +295,67 @@ describe('[UNIT] routes : category', () => {
                     matchers: [
                         {
                             match: matchName,
-                            match_type: matchType,
-                            case_sensitive: false,
+                            matchType: matchType,
+                            caseSensitive: false,
                         },
                     ],
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(201);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.category).to.be.a('object');
-                    expect(res.body.payload.category).to.have.all.keys(
+                    const category = res.body.payload.category;
+                    expect(category).to.be.a('object');
+                    expect(category).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
                         'matchers',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.category.id).to.be.a('number');
-                    expect(res.body.payload.category.label).to.eql(catLabel);
-                    expect(res.body.payload.category.description).to.eql(
-                        catDesc,
-                    );
-                    expect(res.body.payload.category.colour).to.eql(catColour);
-                    expect(res.body.payload.category.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.category.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(category.id).to.be.a('string');
+                    expect(category.label).to.eql(catLabel);
+                    expect(category.description).to.eql(catDesc);
+                    expect(category.colour).to.eql(catColour);
+                    expect(category.createdOn).to.be.a('string');
+                    expect(category.updatedOn).to.be.a('string');
+                    expect(category.userId).to.be.a('string');
 
-                    expect(res.body.payload.category.matchers[0]).to.be.a(
-                        'object',
-                    );
-                    expect(
-                        res.body.payload.category.matchers[0],
-                    ).to.have.all.keys(
-                        'id',
-                        'match',
-                        'match_type',
-                        'case_sensitive',
-                        'created_on',
-                        'updated_on',
-                    );
-                    expect(res.body.payload.category.matchers[0].id).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.category.matchers[0].match).to.eql(
-                        matchName,
-                    );
-                    expect(
-                        res.body.payload.category.matchers[0].match_type,
-                    ).to.eql(matchType);
-                    expect(
-                        res.body.payload.category.matchers[0].case_sensitive,
-                    ).to.be.oneOf([0, false]);
-                    // expect(res.body.payload.category.matchers[0].created_on).to.be.a('string')
-                    // expect(res.body.payload.category.matchers[0].updated_on).to.be.a('string')
-                    // expect(res.body.payload.category.matchers[0].updated_on).to.eql(
-                    //     res.body.payload.matcher.created_on
-                    // )
+                    for (const matcher of category.matchers) {
+                        expect(matcher).to.be.a('object');
+                        expect(matcher).to.have.all.keys(
+                            'caseSensitive',
+                            'createdOn',
+                            'id',
+                            'match',
+                            'matchType',
+                            'updatedOn',
+                            'userId',
+                        );
+                        expect(matcher.id).to.be.a('string');
+                        expect(matcher.match).to.eql(matchName);
+                        expect(matcher.matchType).to.eql(matchType);
+                        expect(matcher.caseSensitive).to.be.oneOf([0, false]);
+                        expect(matcher.userId).to.be.a('string');
+                        expect(matcher.createdOn).to.be.a('string');
+                        expect(matcher.updatedOn).to.be.a('string');
+                        expect(matcher.updatedOn).to.eql(matcher.createdOn);
+                    }
                     done();
                 });
         });
     });
 
-    describe('PUT /category/2', () => {
+    describe('PUT /category/:categoryId', () => {
         it('should update a single category', (done) => {
             const date = new Date();
             const catLabel = `TEST_CATEGORY_LABEL_${date.toString()}`;
@@ -370,53 +363,53 @@ describe('[UNIT] routes : category', () => {
             const catColour = '#ecf0f1';
 
             chai.request(server)
-                .put('/category/2')
+                .put(`/category/${supportCatId}`)
                 .set('Content-Type', 'application/json')
                 .send({
                     label: catLabel,
                     description: catDesc,
                     colour: catColour,
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(201);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.category).to.be.a('object');
-                    expect(res.body.payload.category).to.have.all.keys(
+                    const category = res.body.payload.category;
+                    expect(category).to.be.a('object');
+                    expect(category).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
+                        'matchers',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.category.id).to.eql(2);
-                    expect(res.body.payload.category.label).to.eql(catLabel);
-                    expect(res.body.payload.category.description).to.eql(
-                        catDesc,
-                    );
-                    expect(res.body.payload.category.colour).to.eql(catColour);
-                    expect(res.body.payload.category.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.category.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.category.updated_on).to.not.eql(
-                        res.body.payload.category.created_on,
-                    );
+                    expect(category.id).to.be.a('string');
+                    expect(category.id).to.eql(supportCatId);
+                    expect(category.label).to.eql(catLabel);
+                    expect(category.description).to.eql(catDesc);
+                    expect(category.colour).to.eql(catColour);
+                    expect(category.createdOn).to.be.a('string');
+                    expect(category.updatedOn).to.be.a('string');
+                    expect(category.updatedOn).to.not.eql(category.createdOn);
+                    expect(category.userId).to.be.a('string');
                     done();
                 });
         });
     });
 
-    describe('DELETE /category/3', () => {
+    describe('DELETE /category/:categoryId', () => {
         it('should delete a single category', (done) => {
             chai.request(server)
-                .get('/category/3')
+                .get(`/category/${travelCatId}`)
                 .set('Content-Type', 'application/json')
                 .end((err1, res1) => {
                     should.not.exist(err1);
@@ -425,30 +418,28 @@ describe('[UNIT] routes : category', () => {
                     res1.type.should.eql('application/json');
 
                     res1.body.status.should.eql(res1.status);
-                    expect(res1.body.payload.category).to.be.a('object');
-                    expect(res1.body.payload.category).to.have.all.keys(
+                    const category = res1.body.payload.category;
+                    expect(category).to.be.a('object');
+                    expect(category).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res1.body.payload.category.id).to.be.a('number');
-                    expect(res1.body.payload.category.label).to.be.a('string');
-                    expect(res1.body.payload.category.description).to.be.a(
-                        'string',
-                    );
-                    expect(res1.body.payload.category.colour).to.be.a('string');
-                    expect(res1.body.payload.category.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res1.body.payload.category.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(category.id).to.be.a('string');
+                    expect(category.id).to.eql(travelCatId);
+                    expect(category.label).to.be.a('string');
+                    expect(category.description).to.be.a('string');
+                    expect(category.colour).to.be.a('string');
+                    expect(category.createdOn).to.be.a('string');
+                    expect(category.updatedOn).to.be.a('string');
+                    expect(category.userId).to.be.a('string');
 
                     chai.request(server)
-                        .delete('/category/3')
+                        .delete(`/category/${travelCatId}`)
                         .set('Content-Type', 'application/json')
                         .end((err2, res2) => {
                             should.not.exist(err2);
@@ -456,7 +447,7 @@ describe('[UNIT] routes : category', () => {
                             res2.status.should.eql(204);
 
                             chai.request(server)
-                                .get('/category/3')
+                                .get(`/category/${travelCatId}`)
                                 .set('Content-Type', 'application/json')
                                 .end((err3, res3) => {
                                     should.not.exist(err3);
@@ -464,7 +455,7 @@ describe('[UNIT] routes : category', () => {
                                     res3.status.should.eql(404);
                                     res3.type.should.eql('application/json');
                                     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                                    expect(res3.body.payload.category).to.not
+                                    expect(res3.body.payload?.category).to.not
                                         .exist;
                                     done();
                                 });

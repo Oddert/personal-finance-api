@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,6 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
 
 chai.use(chaiHttp);
 
@@ -55,8 +56,8 @@ describe('[INTEGRATION] routes : matcher', () => {
                         .set('Content-Type', 'application/json')
                         .send({
                             match: matchName,
-                            match_type: 'any',
-                            case_sensitive: false,
+                            matchType: 'any',
+                            caseSensitive: false,
                         })
                         .end((err2, res2) => {
                             should.not.exist(err2);
@@ -67,33 +68,34 @@ describe('[INTEGRATION] routes : matcher', () => {
                             res2.body.status.should.eql(res2.status);
                             expect(res2.body.payload.matcher).to.be.a('object');
                             expect(res2.body.payload.matcher).to.have.all.keys(
+                                'caseSensitive',
+                                'createdOn',
                                 'id',
                                 'match',
-                                'match_type',
-                                'case_sensitive',
-                                'created_on',
-                                'updated_on',
+                                'matchType',
+                                'updatedOn',
+                                'userId',
                             );
                             expect(res2.body.payload.matcher.id).to.be.a(
-                                'number',
+                                'string',
                             );
                             expect(res2.body.payload.matcher.match).to.eql(
                                 matchName,
                             );
-                            expect(res2.body.payload.matcher.match_type).to.eql(
+                            expect(res2.body.payload.matcher.matchType).to.eql(
                                 'any',
                             );
                             expect(
-                                res2.body.payload.matcher.case_sensitive,
+                                res2.body.payload.matcher.caseSensitive,
                             ).to.be.oneOf([0, false]);
-                            expect(
-                                res2.body.payload.matcher.created_on,
-                            ).to.be.a('string');
-                            expect(
-                                res2.body.payload.matcher.updated_on,
-                            ).to.be.a('string');
-                            expect(res2.body.payload.matcher.updated_on).to.eql(
-                                res2.body.payload.matcher.created_on,
+                            expect(res2.body.payload.matcher.createdOn).to.be.a(
+                                'string',
+                            );
+                            expect(res2.body.payload.matcher.updatedOn).to.be.a(
+                                'string',
+                            );
+                            expect(res2.body.payload.matcher.updatedOn).to.eql(
+                                res2.body.payload.matcher.createdOn,
                             );
 
                             chai.request(server)

@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,6 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
 
 chai.use(chaiHttp);
 
@@ -20,6 +21,10 @@ const migrateOpts = {
 const seedOpts = {
     directory: path.join(__dirname, '../../db/seeds'),
 };
+
+const matcher1 = '1abb45aa-05bf-4172-ae73-79117969aaf5';
+const matcher2 = '51189223-8688-48e5-9d57-c4e343c01175';
+const matcher3 = 'e56221ba-b789-44af-b1fc-a68d526a3239';
 
 describe('[UNIT] routes : matcher', () => {
     beforeEach(() => {
@@ -39,38 +44,39 @@ describe('[UNIT] routes : matcher', () => {
                 .get('/matcher')
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.matchers).to.have.lengthOf.above(0);
-                    expect(res.body.payload.matchers[0]).to.have.all.keys(
-                        'id',
-                        'match',
-                        'match_type',
-                        'case_sensitive',
-                        'created_on',
-                        'updated_on',
-                    );
-                    expect(res.body.payload.matchers[0].id).to.be.a('number');
-                    expect(res.body.payload.matchers[0].match).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matchers[0].match_type).to.be.a(
-                        'string',
-                    );
-                    expect(
-                        res.body.payload.matchers[0].case_sensitive,
-                    ).to.be.oneOf(['boolean', 0, 1]);
-                    expect(res.body.payload.matchers[0].created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matchers[0].updated_on).to.be.a(
-                        'string',
-                    );
+                    const matchers = res.body.payload.matchers;
+                    expect(matchers).to.have.lengthOf.above(0);
+                    for (const matcher of matchers) {
+                        expect(matcher).to.have.all.keys(
+                            'id',
+                            'match',
+                            'matchType',
+                            'caseSensitive',
+                            'createdOn',
+                            'updatedOn',
+                            'userId',
+                        );
+                        expect(matcher.id).to.be.a('string');
+                        expect(matcher.match).to.be.a('string');
+                        expect(matcher.matchType).to.be.a('string');
+                        expect(matcher.caseSensitive).to.be.oneOf([
+                            true,
+                            false,
+                        ]);
+                        expect(matcher.createdOn).to.be.a('string');
+                        expect(matcher.updatedOn).to.be.a('string');
+                        expect(matcher.userId).to.be.a('string');
+                    }
                     done();
                 });
         });
@@ -79,38 +85,36 @@ describe('[UNIT] routes : matcher', () => {
     describe('GET /matcher/:id', () => {
         it('should retrieve a single matcher', (done) => {
             chai.request(server)
-                .get('/matcher/1')
+                .get(`/matcher/${matcher1}`)
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(200);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.matcher).to.have.all.keys(
+                    const matcher = res.body.payload.matcher;
+                    expect(matcher).to.have.all.keys(
                         'id',
                         'match',
-                        'match_type',
-                        'case_sensitive',
-                        'created_on',
-                        'updated_on',
+                        'matchType',
+                        'caseSensitive',
+                        'createdOn',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.matcher.id).to.eql(1);
-                    expect(res.body.payload.matcher.match).to.be.a('string');
-                    expect(res.body.payload.matcher.match_type).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matcher.case_sensitive).to.be.oneOf(
-                        ['boolean', 0, 1],
-                    );
-                    expect(res.body.payload.matcher.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matcher.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(matcher.id).to.eql(matcher1);
+                    expect(matcher.match).to.be.a('string');
+                    expect(matcher.matchType).to.be.a('string');
+                    expect(matcher.caseSensitive).to.be.oneOf([true, false]);
+                    expect(matcher.createdOn).to.be.a('string');
+                    expect(matcher.updatedOn).to.be.a('string');
+                    expect(matcher.userId).to.be.a('string');
                     done();
                 });
         });
@@ -126,95 +130,93 @@ describe('[UNIT] routes : matcher', () => {
                 .set('Content-Type', 'application/json')
                 .send({
                     match: matchName,
-                    match_type: 'any',
-                    case_sensitive: false,
+                    matchType: 'any',
+                    caseSensitive: false,
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(201);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.matcher).to.be.a('object');
-                    expect(res.body.payload.matcher).to.have.all.keys(
+                    const matcher = res.body.payload.matcher;
+                    expect(matcher).to.be.a('object');
+                    expect(matcher).to.have.all.keys(
                         'id',
                         'match',
-                        'match_type',
-                        'case_sensitive',
-                        'created_on',
-                        'updated_on',
+                        'matchType',
+                        'caseSensitive',
+                        'createdOn',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.matcher.id).to.be.a('number');
-                    expect(res.body.payload.matcher.match).to.eql(matchName);
-                    expect(res.body.payload.matcher.match_type).to.eql('any');
-                    expect(res.body.payload.matcher.case_sensitive).to.be.oneOf(
-                        [false, 0],
-                    );
-                    expect(res.body.payload.matcher.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matcher.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matcher.updated_on).to.eql(
-                        res.body.payload.matcher.created_on,
-                    );
+                    expect(matcher.id).to.be.a('string');
+                    expect(matcher.match).to.eql(matchName);
+                    expect(matcher.matchType).to.eql('any');
+                    expect(matcher.caseSensitive).to.be.oneOf([false]);
+                    expect(matcher.createdOn).to.be.a('string');
+                    expect(matcher.updatedOn).to.be.a('string');
+                    expect(matcher.updatedOn).to.eql(matcher.createdOn);
+                    expect(matcher.userId).to.be.a('string');
                     done();
                 });
         });
     });
 
-    describe('PUT /matcher/2', () => {
+    describe('PUT /matcher/:matcherId', () => {
         it('should update a single matcher', (done) => {
             const date = new Date();
             const matchName = `TEST_MATCHER_UPDATED${date.toString()}`;
             chai.request(server)
-                .put('/matcher/2')
+                .put(`/matcher/${matcher2}`)
                 .set('Content-Type', 'application/json')
                 .send({
-                    id: 2,
+                    id: matcher2,
                     match: matchName,
-                    match_type: 'any',
-                    case_sensitive: false,
+                    matchType: 'any',
+                    caseSensitive: false,
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
                     res.status.should.eql(201);
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.matcher).to.be.a('object');
-                    expect(res.body.payload.matcher).to.have.all.keys(
+                    const matcher = res.body.payload.matcher;
+                    expect(matcher).to.be.a('object');
+                    expect(matcher).to.have.all.keys(
                         'id',
                         'match',
-                        'match_type',
-                        'case_sensitive',
-                        'created_on',
-                        'updated_on',
+                        'matchType',
+                        'caseSensitive',
+                        'createdOn',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.matcher.id).to.eql(2);
-                    expect(res.body.payload.matcher.match).to.eql(matchName);
-                    expect(res.body.payload.matcher.match_type).to.eql('any');
-                    expect(res.body.payload.matcher.case_sensitive).to.be.oneOf(
-                        ['boolean', 0, 1],
-                    );
-                    expect(res.body.payload.matcher.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.matcher.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(matcher.id).to.eql(matcher2);
+                    expect(matcher.match).to.eql(matchName);
+                    expect(matcher.matchType).to.eql('any');
+                    expect(matcher.caseSensitive).to.be.oneOf([true, false]);
+                    expect(matcher.createdOn).to.be.a('string');
+                    expect(matcher.updatedOn).to.be.a('string');
+                    expect(matcher.userId).to.be.a('string');
                     done();
                 });
         });
     });
 
-    describe('DELETE /matcher/1', () => {
+    describe('DELETE /matcher/:matcherId', () => {
         it('should delete a single matcher', (done) => {
             chai.request(server)
-                .get('/matcher/1')
+                .get(`/matcher/${matcher3}`)
                 .set('Content-Type', 'application/json')
                 .end((err1, res1) => {
                     should.not.exist(err1);
@@ -223,32 +225,27 @@ describe('[UNIT] routes : matcher', () => {
                     res1.type.should.eql('application/json');
 
                     res1.body.status.should.eql(res1.status);
-                    expect(res1.body.payload.matcher).to.be.a('object');
-                    expect(res1.body.payload.matcher).to.have.all.keys(
+                    const matcher = res1.body.payload.matcher;
+                    expect(matcher).to.be.a('object');
+                    expect(matcher).to.have.all.keys(
                         'id',
                         'match',
-                        'match_type',
-                        'case_sensitive',
-                        'created_on',
-                        'updated_on',
+                        'matchType',
+                        'caseSensitive',
+                        'createdOn',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res1.body.payload.matcher.id).to.eql(1);
-                    expect(res1.body.payload.matcher.match).to.be.a('string');
-                    expect(res1.body.payload.matcher.match_type).to.be.a(
-                        'string',
-                    );
-                    expect(
-                        res1.body.payload.matcher.case_sensitive,
-                    ).to.be.oneOf(['boolean', 0, 1]);
-                    expect(res1.body.payload.matcher.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res1.body.payload.matcher.updated_on).to.be.a(
-                        'string',
-                    );
+                    expect(matcher.id).to.eql(matcher3);
+                    expect(matcher.match).to.be.a('string');
+                    expect(matcher.matchType).to.be.a('string');
+                    expect(matcher.caseSensitive).to.be.oneOf([true, false]);
+                    expect(matcher.createdOn).to.be.a('string');
+                    expect(matcher.updatedOn).to.be.a('string');
+                    expect(matcher.userId).to.be.a('string');
 
                     chai.request(server)
-                        .delete('/matcher/1')
+                        .delete(`/matcher/${matcher3}`)
                         .set('Content-Type', 'application/json')
                         .end((err2, res2) => {
                             should.not.exist(err2);
@@ -256,7 +253,7 @@ describe('[UNIT] routes : matcher', () => {
                             res2.status.should.eql(204);
 
                             chai.request(server)
-                                .get('/matcher/1')
+                                .get(`/matcher/${matcher3}`)
                                 .set('Content-Type', 'application/json')
                                 .end((err3, res3) => {
                                     should.not.exist(err3);
@@ -264,7 +261,7 @@ describe('[UNIT] routes : matcher', () => {
                                     res3.status.should.eql(404);
                                     res3.type.should.eql('application/json');
                                     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                                    expect(res3.body.payload.matcher).to.not
+                                    expect(res3.body.payload?.matcher).to.not
                                         .exist;
                                     done();
                                 });
