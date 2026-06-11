@@ -1,4 +1,5 @@
 import { Model } from 'objection';
+import { IClientScheduler } from '../types/clientTypes';
 
 export default class Scheduler extends Model {
     id?: string;
@@ -98,3 +99,56 @@ export default class Scheduler extends Model {
         };
     }
 }
+
+/**
+ * Formats a scheduler to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param scheduler The scheduler to return.
+ * @returns The formatted scheduler.
+ */
+export const reprScheduler = (scheduler: Scheduler): IClientScheduler => {
+    const formattedScheduler: IClientScheduler = {
+        createdOn: scheduler.created_on
+            ? new Date(scheduler.created_on).toISOString()
+            : null,
+        id: scheduler.id ?? '',
+        schedulerCode: scheduler.scheduler_code,
+        transactorId: scheduler.transactor_id,
+        updatedOn: scheduler.updated_on
+            ? new Date(scheduler.updated_on).toISOString()
+            : null,
+    };
+
+    if (scheduler.day) {
+        formattedScheduler.day = scheduler.day;
+    }
+    if (scheduler.nth_day) {
+        formattedScheduler.nthDay = scheduler.nth_day;
+    }
+    if (scheduler.step) {
+        formattedScheduler.step = scheduler.step;
+    }
+    if (scheduler.start_date) {
+        formattedScheduler.startDate = new Date(
+            scheduler.start_date,
+        ).toISOString();
+    }
+
+    return formattedScheduler;
+};
+
+/**
+ * List format of {@link reprScheduler}.
+ *
+ * Formats a list of schedulers to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param schedulers List of schedulers to represent.
+ * @returns The formatted schedulers.
+ */
+export const reprSchedulerList = (
+    schedulers: Scheduler[],
+): IClientScheduler[] => {
+    return schedulers.map(reprScheduler);
+};

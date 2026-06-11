@@ -1,4 +1,6 @@
 import { Model } from 'objection';
+import { IClientTransactor } from '../types/clientTypes';
+import { reprSchedulerList } from './Scheduler';
 
 export default class Transactor extends Model {
     id?: string;
@@ -20,6 +22,8 @@ export default class Transactor extends Model {
     value: number;
 
     scenario_id: string;
+
+    schedulers: any[];
 
     static get tableName() {
         return 'transactor';
@@ -50,7 +54,6 @@ export default class Transactor extends Model {
             isAddition: Boolean(this.is_addition),
             value: this.value,
             scenarioId: this.scenario_id,
-            // @ts-expect-error ORM types do not recognise relations
             schedulers: this?.schedulers.map((scheduler) => scheduler.toJson()),
         };
     }
@@ -93,3 +96,50 @@ export default class Transactor extends Model {
         };
     }
 }
+
+/**
+ * Formats a transactor to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param transactor The transactor to return.
+ * @returns The formatted transactor.
+ */
+export const reprTransactor = (transactor: Transactor): IClientTransactor => {
+    const formattedTransactor: IClientTransactor = {
+        categoryId: transactor.category_id ?? '',
+        createdOn: transactor.created_on
+            ? new Date(transactor.created_on).toISOString()
+            : null,
+        description: transactor.description,
+        id: transactor.id ?? '',
+        isAddition: Boolean(transactor.is_addition),
+        scenarioId: transactor.scenario_id,
+        updatedOn: transactor.updated_on
+            ? new Date(transactor.updated_on).toISOString()
+            : null,
+        value: transactor.value,
+    };
+
+    if (transactor.schedulers) {
+        formattedTransactor.schedulers = reprSchedulerList(
+            transactor.schedulers,
+        );
+    }
+
+    return formattedTransactor;
+};
+
+/**
+ * List format of {@link reprTransactor}.
+ *
+ * Formats a list of transactors to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param transactors List of transactors to represent.
+ * @returns The formatted transactors.
+ */
+export const reprTransactorList = (
+    transactors: Transactor[],
+): IClientTransactor[] => {
+    return transactors.map(reprTransactor);
+};

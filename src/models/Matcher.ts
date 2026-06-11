@@ -17,6 +17,8 @@ export default class Matcher extends Model {
 
     updated_on: Date | number | string;
 
+    user_id: string;
+
     static created_on: string;
 
     static updated_on: string;
@@ -79,3 +81,39 @@ export default class Matcher extends Model {
         };
     }
 }
+
+/**
+ * Formats a matcher to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param matcher The matcher to return.
+ * @returns The formatted matcher.
+ */
+export const reprMatcher = (matcher: Matcher) => {
+    return {
+        id: matcher.id,
+        match: matcher.match ?? '',
+        matchType: matcher.match_type ?? '',
+        caseSensitive: Boolean(matcher.case_sensitive),
+        createdOn: matcher.created_on
+            ? new Date(matcher.created_on).toISOString()
+            : null,
+        updatedOn: matcher.updated_on
+            ? new Date(matcher.updated_on).toISOString()
+            : null,
+        userId: matcher.user_id,
+    };
+};
+
+/**
+ * List format of {@link reprMatcher}.
+ *
+ * Formats a list of matchers to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param matchers List of matchers to represent.
+ * @returns The formatted matchers.
+ */
+export const reprMatcherList = (matchers: Matcher[]) => {
+    return matchers.map(reprMatcher);
+};

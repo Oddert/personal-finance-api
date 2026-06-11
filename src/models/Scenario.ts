@@ -1,4 +1,6 @@
 import { Model } from 'objection';
+import { IClientScenario } from '../types/clientTypes';
+import { reprTransactorList } from './Transactor';
 
 export default class Scenario extends Model {
     id?: string;
@@ -112,3 +114,54 @@ export default class Scenario extends Model {
         };
     }
 }
+
+/**
+ * Formats a scenario to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param scenario The scenario to return.
+ * @returns The formatted scenario.
+ */
+export const reprScenario = (scenario: Scenario): IClientScenario => {
+    const formattedScenario: IClientScenario = {
+        cardId: scenario.card_id,
+        createdOn: scenario.created_on
+            ? new Date(scenario.created_on).toISOString()
+            : null,
+        description: scenario.description,
+        endDate: scenario.end_date
+            ? new Date(scenario.end_date).toISOString()
+            : null,
+        id: scenario.id ?? '',
+        startDate: scenario.start_date
+            ? new Date(scenario.start_date).toISOString()
+            : null,
+        startBallance: scenario.start_ballance ?? 0,
+        title: scenario.title,
+        userId: scenario.user_id,
+        updatedOn: scenario.updated_on
+            ? new Date(scenario.updated_on).toISOString()
+            : null,
+    };
+
+    if (scenario.transactors) {
+        formattedScenario.transactors = reprTransactorList(
+            scenario.transactors,
+        );
+    }
+
+    return formattedScenario;
+};
+
+/**
+ * List format of {@link reprScenario}.
+ *
+ * Formats a list of scenarios to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param scenarios List of scenarios to represent.
+ * @returns The formatted scenarios.
+ */
+export const reprScenarioList = (scenarios: Scenario[]): IClientScenario[] => {
+    return scenarios.map(reprScenario);
+};

@@ -13,7 +13,10 @@ import {
     respondOk,
 } from '../utils/responses';
 
-import Transaction from '../models/Transaction';
+import Transaction, {
+    reprTransaction,
+    reprTransactionList,
+} from '../models/Transaction';
 
 dayjs.extend(customParseFormat);
 
@@ -40,7 +43,13 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
                     .whereBetween('date', [startDate, endDate])
                     .withGraphFetched('assignedCategory')
                     .orderBy('date', 'DESC');
-                return respondOk({ req, res, payload: { transactions } });
+                return respondOk({
+                    req,
+                    res,
+                    payload: {
+                        transactions: reprTransactionList(transactions),
+                    },
+                });
             }
 
             const transactions = await Transaction.query()
@@ -49,7 +58,11 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
                 .withGraphFetched('assignedCategory')
                 .orderBy('date', 'DESC');
 
-            return respondOk({ req, res, payload: { transactions } });
+            return respondOk({
+                req,
+                res,
+                payload: { transactions: reprTransactionList(transactions) },
+            });
         }
 
         if (req.query.cardId && typeof req.query.cardId === 'string') {
@@ -59,14 +72,25 @@ export const getTransactions = async (req: IUserRequest, res: Response) => {
                 .where('card_id', '=', req.query.cardId)
                 .orderBy('date', 'DESC');
 
-            return respondOk({ req, res, payload: { transactions } });
+            return respondOk({
+                req,
+                res,
+                payload: { transactions: reprTransactionList(transactions) },
+            });
         }
 
         const transactions = await Transaction.query()
             .where('user_id', '=', req.user.id)
             .whereBetween('date', [startDate, endDate])
             .orderBy('date', 'DESC');
-        return respondOk({ req, res, payload: { transactions } });
+
+        return respondOk({
+            req,
+            res,
+            payload: {
+                transactions: reprTransactionList(transactions),
+            },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -121,7 +145,7 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                     'monthly_agg.category_id as categoryId',
                     'monthly_agg.month',
                     'monthly_agg.total_credit as totalCredit',
-                    'monthly_agg.total_debit',
+                    'monthly_agg.total_debit as totalDebit',
                     'category.description as categoryName',
                 )
                 .from('monthly_agg')
@@ -198,7 +222,11 @@ export const getSingleTransactions = async (
                 payload: { id: req.params.id },
             });
         }
-        return respondOk({ req, res, payload: { transaction } });
+        return respondOk({
+            req,
+            res,
+            payload: { transaction: reprTransaction(transaction) },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -214,36 +242,68 @@ export const createSingleTransaction = async (
     try {
         const date = new Date().toISOString();
         const body = {
-            ...req.body,
-            created_on: date,
-            updated_on: date,
-            userId: req.user.id,
+            assignedCategory: req.body.assignedCategory ?? null,
+            ballance: req.body.ballance,
+            categoryId: req.body.categoryId,
+            cardId: req.body.cardId,
+            createdOn: date,
+            credit: req.body.credit,
+            currency: req.body.currency,
+            date: req.body.date,
+            debit: req.body.debit,
+            description: req.body.description,
             id: uuid(),
+            transactionType: req.body.transactionType,
+            updatedOn: date,
+            userId: req.user.id,
         };
 
         // TODO: Research why the beforeInsert hooks are not working and replace:
         if (req.body.assignedCategory) {
+            const categoryId = uuid();
             body.assignedCategory.created_on = date;
             body.assignedCategory.updated_on = date;
+            body.assignedCategory.user_id = req.user.id;
+            body.assignedCategory.id = categoryId;
+            body.categoryId = categoryId;
             if (req.body.assignedCategory.matchers) {
                 body.assignedCategory.matchers =
                     req.body.assignedCategory.matchers.map((matcher: any) => ({
                         ...matcher,
                         created_on: date,
                         updated_on: date,
+                        user_id: req.user.id,
+                        id: uuid(),
                     }));
             }
         }
 
-        const transaction = req.body.assignedCategory
-            ? await Transaction.query().insertGraphAndFetch(body)
-            : await Transaction.query().insertAndFetch(body);
+        if (req.body.assignedCategory) {
+            await Transaction.query().insertGraphAndFetch(body);
+        } else {
+            await Transaction.query().insertAndFetch(body);
+        }
 
-        return respondCreated({
+        const transaction = await Transaction.query()
+            .where('id', '=', body.id)
+            .withGraphFetched('[assignedCategory, assignedCategory.matchers]')
+            .first();
+
+        if (transaction) {
+            return respondCreated({
+                req,
+                res,
+                payload: {
+                    transaction: reprTransaction(transaction),
+                },
+                message: req.t('transaction.messages.createdSuccessfully'),
+            });
+        }
+
+        return respondBadRequest({
             req,
             res,
-            payload: { transaction },
-            message: req.t('transaction.messages.createdSuccessfully'),
+            error: 'Create transaction failed',
         });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
@@ -259,7 +319,19 @@ export const updateSingleTransaction = async (
 ) => {
     try {
         const date = new Date().toISOString();
-        const body = { ...req.body, updated_on: date };
+        const body = {
+            assignedCategory: req.body.assignedCategory ?? null,
+            ballance: req.body.ballance,
+            categoryId: req.body.categoryId,
+            cardId: req.body.cardId,
+            credit: req.body.credit,
+            currency: req.body.currency,
+            date: req.body.date,
+            debit: req.body.debit,
+            description: req.body.description,
+            transactionType: req.body.transactionType,
+            updatedOn: date,
+        };
 
         const transaction = await Transaction.query()
             .where('user_id', '=', req.user.id)
@@ -268,7 +340,7 @@ export const updateSingleTransaction = async (
         return respondCreated({
             req,
             res,
-            payload: { transaction },
+            payload: { transaction: reprTransaction(transaction) },
             message: req.t('transaction.messages.updatedSuccessfully'),
         });
     } catch (error: any) {
@@ -308,7 +380,7 @@ export const createManyTransactions = async (
 ) => {
     try {
         const date = new Date().toISOString();
-        const createdTransactions = [];
+        const createdTransactions: object[] = [];
 
         for (const transaction of req.body.transactions) {
             const body = {
@@ -325,7 +397,7 @@ export const createManyTransactions = async (
 
             const createdTransaction =
                 await Transaction.query().insertAndFetch(body);
-            createdTransactions.push(createdTransaction);
+            createdTransactions.push(reprTransaction(createdTransaction));
         }
 
         return respondCreated({
@@ -348,7 +420,7 @@ export const updateManyTransactions = async (
 ) => {
     try {
         const date = new Date().toISOString();
-        const updatedTransactions = [];
+        const updatedTransactions: object[] = [];
 
         for (const transaction of req.body.transactions) {
             if (transaction.deleted) {
@@ -368,7 +440,7 @@ export const updateManyTransactions = async (
                 const updatedTransaction = await Transaction.query()
                     .where('user_id', '=', req.user.id)
                     .patchAndFetchById(transaction.id, body);
-                updatedTransactions.push(updatedTransaction);
+                updatedTransactions.push(updatedTransaction.toJson());
             }
         }
 

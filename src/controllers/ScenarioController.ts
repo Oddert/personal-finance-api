@@ -12,7 +12,7 @@ import {
     respondOk,
 } from '../utils/responses';
 
-import Scenario from '../models/Scenario';
+import Scenario, { reprScenario } from '../models/Scenario';
 import Transactor from '../models/Transactor';
 import Scheduler from '../models/Scheduler';
 
@@ -101,38 +101,38 @@ export const createSingleScenario = async (
             title: req.body.title,
             description: req.body.description,
             start_ballance: req.body.startBallance,
-            transactors: req.body.transactors.map((transactor: any) => {
-                const transactorId = uuid();
-                return {
-                    id: transactorId,
-                    scenario_id: scenarioId,
-                    updated_on: now,
-                    created_on: now,
-                    category_id: transactor.category_id,
-                    description: transactor.description,
-                    is_addition: transactor.isAddition,
-                    value: transactor.value,
-                    schedulers: transactor.schedulers.map((scheduler: any) => {
-                        const schedulerId = uuid();
-                        return {
-                            id: schedulerId,
-                            transactor_id: transactorId,
-                            updated_on: now,
-                            created_on: now,
-                            scheduler_code: scheduler.schedulerCode,
-                            step: scheduler.step,
-                            start_date: scheduler.startDate,
-                            day: scheduler.day,
-                            nth_day: scheduler.nthDay,
-                        };
-                    }),
-                };
-            }),
+            transactors:
+                req.body.transactors?.map((transactor: any) => {
+                    const transactorId = uuid();
+                    return {
+                        id: transactorId,
+                        scenario_id: scenarioId,
+                        updated_on: now,
+                        created_on: now,
+                        category_id: transactor.category_id,
+                        description: transactor.description,
+                        is_addition: transactor.isAddition,
+                        value: transactor.value,
+                        schedulers:
+                            transactor.schedulers?.map((scheduler: any) => {
+                                const schedulerId = uuid();
+                                return {
+                                    id: schedulerId,
+                                    transactor_id: transactorId,
+                                    updated_on: now,
+                                    created_on: now,
+                                    scheduler_code: scheduler.schedulerCode,
+                                    step: scheduler.step,
+                                    start_date: scheduler.startDate,
+                                    day: scheduler.day,
+                                    nth_day: scheduler.nthDay,
+                                };
+                            }) ?? [],
+                    };
+                }) ?? [],
         };
-        console.log(body);
 
         const scenario = await Scenario.query().insertGraphAndFetch(body);
-        console.log(scenario);
 
         return respondCreated({
             req,
@@ -156,12 +156,12 @@ export const updateSingleScenario = async (
 
         const body = {
             card_id: req.body.cardId,
-            updated_on: now,
-            start_date: req.body.startDate,
-            end_date: req.body.endDate,
-            title: req.body.title,
             description: req.body.description,
+            end_date: req.body.endDate,
             start_ballance: req.body.startBallance,
+            start_date: req.body.startDate,
+            title: req.body.title,
+            updated_on: now,
         };
 
         const scenario = await Scenario.query()
@@ -178,13 +178,13 @@ export const updateSingleScenario = async (
                 } else if (transactor.staged) {
                     // Transactor needs to be created for the first time.
                     const createdTransactor = await Transactor.query().insert({
+                        category_id: transactor.category_id,
+                        created_on: now,
+                        description: transactor.description,
                         id: transactorId,
+                        is_addition: transactor.isAddition,
                         scenario_id: scenario.id,
                         updated_on: now,
-                        created_on: now,
-                        category_id: transactor.category_id,
-                        description: transactor.description,
-                        is_addition: transactor.isAddition,
                         value: transactor.value,
                     });
                     transactorId = createdTransactor.id || '';
@@ -194,11 +194,11 @@ export const updateSingleScenario = async (
                         await Transactor.query().patchAndFetchById(
                             transactor.id,
                             {
-                                scenario_id: scenario.id,
-                                updated_on: now,
                                 category_id: transactor.category_id,
                                 description: transactor.description,
                                 is_addition: transactor.isAddition,
+                                scenario_id: scenario.id,
+                                updated_on: now,
                                 value: transactor.value,
                             },
                         );
@@ -211,26 +211,26 @@ export const updateSingleScenario = async (
                             await Scheduler.query().deleteById(scheduler.id);
                         } else if (scheduler.staged) {
                             await Scheduler.query().insert({
-                                transactor_id: transactorId,
-                                updated_on: now,
                                 created_on: now,
+                                day: scheduler.day,
+                                nth_day: scheduler.nthDay,
                                 scheduler_code: scheduler.schedulerCode,
                                 step: scheduler.step,
                                 start_date: scheduler.startDate,
-                                day: scheduler.day,
-                                nth_day: scheduler.nthDay,
+                                transactor_id: transactorId,
+                                updated_on: now,
                             });
                         } else {
                             await Scheduler.query().patchAndFetchById(
                                 scheduler.id,
                                 {
-                                    transactor_id: transactorId,
-                                    updated_on: now,
-                                    scheduler_code: scheduler.schedulerCode,
-                                    step: scheduler.step,
-                                    start_date: scheduler.startDate,
                                     day: scheduler.day,
                                     nth_day: scheduler.nthDay,
+                                    scheduler_code: scheduler.schedulerCode,
+                                    start_date: scheduler.startDate,
+                                    step: scheduler.step,
+                                    transactor_id: transactorId,
+                                    updated_on: now,
                                 },
                             );
                         }
@@ -239,10 +239,21 @@ export const updateSingleScenario = async (
             }
         }
 
+        const scenarioResponse = await Scenario.query()
+            .where('user_id', '=', req.user.id)
+            .where('id', '=', req.params.id)
+            .withGraphFetched('transactors.[schedulers]')
+            .first();
+
         return respondCreated({
             req,
             res,
-            payload: { scenario: scenario?.toJson() },
+            payload: {
+                // Redundant catch to satisfy type safety
+                scenario: scenarioResponse
+                    ? reprScenario(scenarioResponse)
+                    : null,
+            },
             message: req.t('scenario.messages.updatedSuccessfully'),
         });
     } catch (error: any) {
