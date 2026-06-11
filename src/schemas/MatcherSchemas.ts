@@ -14,26 +14,26 @@ export const createMatcherSchema: Schema<
             },
         },
     },
-    match_type: {
+    matchType: {
         isString: true,
-        exists: { errorMessage: 'Field "match_type" is required.' },
+        exists: { errorMessage: 'Field "matchType" is required.' },
         errorMessage:
-            '"match_type" is invalid. Please ensure match_type is a string of at least 3 characters.',
+            '"matchType" is invalid. Please ensure matchType is a string of at least 3 characters.',
         isLength: {
             errorMessage:
-                'Length error. "match_type" must be at least 3 characters long.',
+                'Length error. "matchType" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
         },
     },
-    case_sensitive: {
-        exists: { errorMessage: 'Field "case_sensitive" is required.' },
+    caseSensitive: {
+        exists: { errorMessage: 'Field "caseSensitive" is required.' },
         errorMessage:
-            '"case_sensitive" is invalid. Please ensure case_sensitive is a boolean value.',
+            '"caseSensitive" is invalid. Please ensure caseSensitive is a boolean value.',
         isIn: {
             errorMessage:
-                '"case_sensitive" is invalid. Please ensure case_sensitive is a boolean value.',
+                '"caseSensitive" is invalid. Please ensure caseSensitive is a boolean value.',
             options: [true, false, 1, 0],
         },
     },
@@ -57,26 +57,26 @@ export const createManyMatchersSchema: Schema<
             },
         },
     },
-    'matchers.*.match_type': {
+    'matchers.*.matchType': {
         isString: true,
-        exists: { errorMessage: 'Field "match_type" is required.' },
+        exists: { errorMessage: 'Field "matchType" is required.' },
         errorMessage:
-            '"match_type" is invalid. Please ensure match_type is a string of at least 3 characters.',
+            '"matchType" is invalid. Please ensure matchType is a string of at least 3 characters.',
         isLength: {
             errorMessage:
-                'Length error. "match_type" must be at least 3 characters long.',
+                'Length error. "matchType" must be at least 3 characters long.',
             options: {
                 min: 3,
             },
         },
     },
-    'matchers.*.case_sensitive': {
-        exists: { errorMessage: 'Field "case_sensitive" is required.' },
+    'matchers.*.caseSensitive': {
+        exists: { errorMessage: 'Field "caseSensitive" is required.' },
         errorMessage:
-            '"case_sensitive" is invalid. Please ensure case_sensitive is a boolean value.',
+            '"caseSensitive" is invalid. Please ensure caseSensitive is a boolean value.',
         isIn: {
             errorMessage:
-                '"case_sensitive" is invalid. Please ensure case_sensitive is a boolean value.',
+                '"caseSensitive" is invalid. Please ensure caseSensitive is a boolean value.',
             options: [true, false, 1, 0],
         },
     },
