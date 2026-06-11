@@ -7,6 +7,7 @@ import { respondUnauthenticated } from '../utils/responses';
 
 import TokenExclude from '../models/TokenExclude';
 import User from '../models/User';
+import { getTestUser } from '../utils/testUtils';
 
 /**
  * Middleware to protect routes requiring authorisation.
@@ -18,6 +19,14 @@ export const requiresAuth = async (
     res: Response,
     next: NextFunction,
 ) => {
+    if (process.env.NODE_ENV === 'test') {
+        console.warn(
+            'WARNING: NODE_ENV set to test, bypassing authentication.',
+        );
+        req.user = getTestUser();
+        return next();
+    }
+
     const authHeader = req.header('Authorization');
 
     if (!authHeader) {

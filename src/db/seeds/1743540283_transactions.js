@@ -15,7 +15,7 @@ exports.seed = async function (knex) {
     await knex('transaction').del();
     await knex('transaction').insert([
         {
-            id: uuid(),
+            id: '5a23ad67-9a9f-4b3e-9f8b-8c22ff310662',
             user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             date: new Date(
                 dayjs()
@@ -34,7 +34,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: uuid(),
+            id: 'ffcc3053-211f-4e4e-8513-093f8094a362',
             user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             date: new Date(
                 dayjs()
@@ -53,7 +53,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: uuid(),
+            id: 'a3455fb5-403c-42bf-9ad3-27714dab1f1e',
             user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             date: new Date(
                 dayjs()

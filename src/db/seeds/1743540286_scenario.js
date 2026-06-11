@@ -1,4 +1,3 @@
-const { v4: uuid } = require('uuid');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 
@@ -10,7 +9,7 @@ dayjs.extend(customParseFormat);
  */
 exports.seed = async function (knex) {
     // Deletes ALL existing entries
-    const scenarioUuid = uuid();
+    const scenarioUuid = 'f75ac2d1-1ff2-4f14-aa6a-0a7d7fda372d';
     await knex('scenario').del();
     await knex('scenario').insert([
         {

@@ -270,7 +270,7 @@ exports.seed = async function (knex) {
             user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             label: 'Support & Donations',
             description:
-                'Any funds supporting organisations or other voluntery donations.',
+                'Any funds supporting organisations or other voluntary donations.',
             colour: '#4c9a2a',
             created_on: new Date(),
             updated_on: new Date(),
