@@ -44,7 +44,10 @@ describe('[INTEGRATION] routes : matcher', () => {
                 .end((err1, res1) => {
                     should.not.exist(err1);
                     res1.redirects.length.should.eql(0);
-                    res1.status.should.eql(200);
+                    res1.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res1.body)}`,
+                    );
                     res1.type.should.eql('application/json');
                     expect(res1.body.payload.matchers).to.have.lengthOf.above(
                         0,
@@ -62,7 +65,10 @@ describe('[INTEGRATION] routes : matcher', () => {
                         .end((err2, res2) => {
                             should.not.exist(err2);
                             res2.redirects.length.should.eql(0);
-                            res2.status.should.eql(201);
+                            res2.status.should.eql(
+                                201,
+                                `Invalid response: ${JSON.stringify(res2.body)}`,
+                            );
                             res2.type.should.eql('application/json');
 
                             res2.body.status.should.eql(res2.status);
@@ -105,7 +111,10 @@ describe('[INTEGRATION] routes : matcher', () => {
                                 .end((err3, res3) => {
                                     should.not.exist(err3);
                                     res3.redirects.length.should.eql(0);
-                                    res3.status.should.eql(200);
+                                    res3.status.should.eql(
+                                        200,
+                                        `Invalid response: ${JSON.stringify(res3.body)}`,
+                                    );
                                     res3.type.should.eql('application/json');
                                     expect(
                                         res3.body.payload.matchers,

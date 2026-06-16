@@ -5,31 +5,31 @@ import { reprTransactorList } from './Transactor';
 export default class Scenario extends Model {
     id?: string;
 
-    start_date?: Date | string;
+    startDate?: Date | string | null;
 
-    end_date?: Date | string;
+    endDate?: Date | string | null;
 
-    card_id: string;
+    cardId: string;
 
-    user_id: string;
+    userId: string;
 
-    static start_date: Date | string;
+    static startDate: Date | string;
 
-    static end_date: Date | string;
+    static endDate: Date | string;
 
-    created_on: Date | string;
+    static createdOn: Date | string;
 
-    updated_on: Date | string;
+    static updatedOn: Date | string;
 
-    static created_on: Date | string;
+    createdOn: Date | string;
 
-    static updated_on: Date | string;
+    updatedOn: Date | string;
 
     title: string;
 
     description: string;
 
-    start_ballance?: number;
+    startBallance?: number;
 
     transactors?: any[];
 
@@ -39,48 +39,44 @@ export default class Scenario extends Model {
 
     $beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
-        this.start_date = this.start_date
-            ? new Date(this.start_date).toISOString()
+        this.createdOn = now;
+        this.updatedOn = now;
+        this.startDate = this.startDate
+            ? new Date(this.startDate).toISOString()
             : '';
-        this.end_date = this.end_date
-            ? new Date(this.end_date).toISOString()
-            : '';
+        this.endDate = this.endDate ? new Date(this.endDate).toISOString() : '';
     }
 
     $afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
-        this.start_date = this.start_date
-            ? new Date(this.start_date).toISOString()
+        this.startDate = this.startDate
+            ? new Date(this.startDate).toISOString()
             : '';
-        this.end_date = this.end_date
-            ? new Date(this.end_date).toISOString()
-            : '';
+        this.endDate = this.endDate ? new Date(this.endDate).toISOString() : '';
     }
 
     toJson() {
         return {
             id: this.id,
-            cardId: this.card_id,
-            userId: this.user_id,
-            startDate: this.start_date,
+            cardId: this.cardId,
+            userId: this.userId,
+            startDate: this.startDate,
             endDate:
-                typeof this.end_date === 'string'
-                    ? this.end_date.length
-                        ? this.end_date
+                typeof this.endDate === 'string'
+                    ? this.endDate.length
+                        ? this.endDate
                         : null
-                    : this.end_date,
-            createdOn: this.created_on,
-            updatedOn: this.updated_on,
+                    : this.endDate,
+            createdOn: this.createdOn,
+            updatedOn: this.updatedOn,
             title: this.title,
             description: this.description,
-            startBallance: this.start_ballance,
+            startBallance: this.startBallance,
             transactors: this.transactors?.map((transactor) =>
                 transactor.toJson(),
             ),
@@ -92,15 +88,15 @@ export default class Scenario extends Model {
             type: 'object',
             properties: {
                 id: { type: 'string' },
-                card_id: { type: 'string' },
-                user_id: { type: 'string' },
-                created_on: { type: 'string' },
+                cardId: { type: 'string' },
+                userId: { type: 'string' },
+                createdOn: { type: 'string' },
                 updated_on: { type: 'string' },
-                start_date: { type: ['string', 'null'] },
-                end_date: { type: ['string', 'null'] },
+                startDate: { type: ['string', 'null'] },
+                endDate: { type: ['string', 'null'] },
                 title: { type: 'string' },
                 description: { type: 'string' },
-                start_ballance: { type: ['number', 'null'] },
+                startBallance: { type: ['number', 'null'] },
             },
         };
     }
@@ -160,24 +156,24 @@ export default class Scenario extends Model {
  */
 export const reprScenario = (scenario: Scenario): IClientScenario => {
     const formattedScenario: IClientScenario = {
-        cardId: scenario.card_id,
-        createdOn: scenario.created_on
-            ? new Date(scenario.created_on).toISOString()
-            : null,
+        cardId: scenario.cardId,
+        createdOn: scenario.createdOn
+            ? new Date(scenario.createdOn).toISOString()
+            : '',
         description: scenario.description,
-        endDate: scenario.end_date
-            ? new Date(scenario.end_date).toISOString()
+        endDate: scenario.endDate
+            ? new Date(scenario.endDate).toISOString()
             : null,
         id: scenario.id ?? '',
-        startDate: scenario.start_date
-            ? new Date(scenario.start_date).toISOString()
+        startDate: scenario.startDate
+            ? new Date(scenario.startDate).toISOString()
             : null,
-        startBallance: scenario.start_ballance ?? 0,
+        startBallance: scenario.startBallance ?? 0,
         title: scenario.title,
-        userId: scenario.user_id,
-        updatedOn: scenario.updated_on
-            ? new Date(scenario.updated_on).toISOString()
-            : null,
+        userId: scenario.userId,
+        updatedOn: scenario.updatedOn
+            ? new Date(scenario.updatedOn).toISOString()
+            : '',
     };
 
     if (scenario.transactors) {

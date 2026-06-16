@@ -8,6 +8,7 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
+import { nullOr } from '../../utils/testUtils';
 
 chai.use(chaiHttp);
 
@@ -45,7 +46,10 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -69,13 +73,13 @@ describe('[UNIT] routes : scenario', () => {
                         expect(scenario.cardId).to.be.a('string');
                         expect(scenario.createdOn).to.be.a('string');
                         expect(scenario.description).to.be.a('string');
-                        expect(scenario.endDate).to.be.a('string');
+                        expect(scenario.endDate).to.satisfy(nullOr('string'));
                         expect(scenario.id).to.be.a('string');
                         expect(scenario.startBallance).to.be.a('number');
                         expect(scenario.startDate).to.be.a('string');
                         expect(scenario.title).to.be.a('string');
                         expect(scenario.transactors).to.be.a('array');
-                        expect(scenario.updatedOn).to.be.a('string');
+                        expect(scenario.updatedOn).to.satisfy(nullOr('string'));
                         expect(scenario.userId).to.be.a('string');
                     }
                     done();
@@ -107,7 +111,10 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -155,7 +162,10 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -203,7 +213,10 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     const scenario = res.body.payload.scenario;
@@ -250,7 +263,10 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(204);
+                    res.status.should.eql(
+                        204,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     done();
                 });
         });
@@ -265,7 +281,10 @@ describe('[UNIT] routes : scenario', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(204);
+                    res.status.should.eql(
+                        204,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     done();
                 });
         });

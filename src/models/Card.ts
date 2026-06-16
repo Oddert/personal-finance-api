@@ -1,6 +1,8 @@
 import { ColumnNameMappers, Model } from 'objection';
 
 import knex from '../db/knex';
+import { IClientCard } from '../types/clientTypes';
+import { ICardTypes } from '../types/ModelResponseFormats.types';
 
 Model.knex(knex);
 
@@ -127,3 +129,43 @@ export default class Card extends Model {
         },
     };
 }
+
+/**
+ * Formats a card to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param card The card to return.
+ * @returns The formatted card.
+ */
+export const reprCard = (card: Card) => {
+    const formattedCard: IClientCard = {
+        bankName: card.bankName,
+        cardName: card.cardName,
+        cardNumber: card.cardNumber,
+        cardType: card.cardType as ICardTypes,
+        coverImage: card.coverImage,
+        createdOn: card.createdOn,
+        description: card.description,
+        expires: card.expires,
+        icon: card.icon,
+        id: card.id ?? '',
+        isDefault: card.isDefault,
+        sortCode: card.sortCode,
+        updatedOn: card.updatedOn,
+    };
+
+    return formattedCard;
+};
+
+/**
+ * List format of {@link reprCard}.
+ *
+ * Formats a list of cards to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param cards List of cards to represent.
+ * @returns The formatted cards.
+ */
+export const reprCardList = (cards: Card[]) => {
+    return cards.map(reprCard);
+};

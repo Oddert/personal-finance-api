@@ -51,7 +51,10 @@ describe('[UNIT] routes : transaction', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -107,7 +110,10 @@ describe('[UNIT] routes : transaction', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -146,6 +152,7 @@ describe('[UNIT] routes : transaction', () => {
                                 'description',
                                 'id',
                                 'label',
+                                'matchers',
                                 'updatedOn',
                                 'userId',
                             );
@@ -168,7 +175,10 @@ describe('[UNIT] routes : transaction', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -220,7 +230,10 @@ describe('[UNIT] routes : transaction', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -248,6 +261,7 @@ describe('[UNIT] routes : transaction', () => {
                         'description',
                         'id',
                         'label',
+                        'matchers',
                         'updatedOn',
                         'userId',
                     );
@@ -288,7 +302,10 @@ describe('[UNIT] routes : transaction', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -361,7 +378,10 @@ describe('[UNIT] routes : transaction', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -410,7 +430,10 @@ describe('[UNIT] routes : transaction', () => {
                 .end((err1, res) => {
                     should.not.exist(err1);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -452,7 +475,10 @@ describe('[UNIT] routes : transaction', () => {
                         .end((err2, res2) => {
                             should.not.exist(err2);
                             res2.redirects.length.should.eql(0);
-                            res2.status.should.eql(204);
+                            res2.status.should.eql(
+                                204,
+                                `Invalid response: ${JSON.stringify(res2.body)}`,
+                            );
 
                             chai.request(server)
                                 .get(`/transaction/${transactionId3}`)
@@ -460,7 +486,10 @@ describe('[UNIT] routes : transaction', () => {
                                 .end((err3, res3) => {
                                     should.not.exist(err3);
                                     res3.redirects.length.should.eql(0);
-                                    res3.status.should.eql(404);
+                                    res3.status.should.eql(
+                                        404,
+                                        `Invalid response: ${JSON.stringify(res3.body)}`,
+                                    );
                                     res3.type.should.eql('application/json');
                                     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                                     expect(res3.body.payload.transaction).to.not

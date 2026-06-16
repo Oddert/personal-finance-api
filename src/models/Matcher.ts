@@ -1,6 +1,8 @@
 import { Model } from 'objection';
 
 import knex from '../db/knex';
+import { IClientMatcher } from '../types/clientTypes';
+import { TMatchType } from '../types/ModelResponseFormats.types';
 
 Model.knex(knex);
 
@@ -89,18 +91,18 @@ export default class Matcher extends Model {
  * @param matcher The matcher to return.
  * @returns The formatted matcher.
  */
-export const reprMatcher = (matcher: Matcher) => {
+export const reprMatcher = (matcher: Matcher): IClientMatcher => {
     return {
-        id: matcher.id,
-        match: matcher.match ?? '',
-        matchType: matcher.match_type ?? '',
         caseSensitive: Boolean(matcher.case_sensitive),
         createdOn: matcher.created_on
             ? new Date(matcher.created_on).toISOString()
-            : null,
+            : '',
+        id: matcher.id ?? '',
+        match: matcher.match ?? '',
+        matchType: (matcher.match_type as TMatchType) ?? 'exact',
         updatedOn: matcher.updated_on
             ? new Date(matcher.updated_on).toISOString()
-            : null,
+            : '',
         userId: matcher.user_id,
     };
 };

@@ -138,14 +138,14 @@ export const reprTransactor = (transactor: Transactor): IClientTransactor => {
         categoryId: transactor.category_id ?? '',
         createdOn: transactor.created_on
             ? new Date(transactor.created_on).toISOString()
-            : null,
+            : '',
         description: transactor.description,
         id: transactor.id ?? '',
         isAddition: Boolean(transactor.is_addition),
         scenarioId: transactor.scenario_id,
         updatedOn: transactor.updated_on
             ? new Date(transactor.updated_on).toISOString()
-            : null,
+            : '',
         value: transactor.value,
     };
 

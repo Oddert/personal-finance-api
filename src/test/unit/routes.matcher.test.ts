@@ -50,7 +50,10 @@ describe('[UNIT] routes : matcher', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -94,7 +97,10 @@ describe('[UNIT] routes : matcher', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -139,7 +145,10 @@ describe('[UNIT] routes : matcher', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -186,7 +195,10 @@ describe('[UNIT] routes : matcher', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -221,7 +233,10 @@ describe('[UNIT] routes : matcher', () => {
                 .end((err1, res1) => {
                     should.not.exist(err1);
                     res1.redirects.length.should.eql(0);
-                    res1.status.should.eql(200);
+                    res1.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res1.body)}`,
+                    );
                     res1.type.should.eql('application/json');
 
                     res1.body.status.should.eql(res1.status);
@@ -250,7 +265,10 @@ describe('[UNIT] routes : matcher', () => {
                         .end((err2, res2) => {
                             should.not.exist(err2);
                             res2.redirects.length.should.eql(0);
-                            res2.status.should.eql(204);
+                            res2.status.should.eql(
+                                204,
+                                `Invalid response: ${JSON.stringify(res2.body)}`,
+                            );
 
                             chai.request(server)
                                 .get(`/matcher/${matcher3}`)

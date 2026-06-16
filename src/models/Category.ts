@@ -2,6 +2,7 @@ import { ColumnNameMappers, Model } from 'objection';
 
 import knex from '../db/knex';
 import { reprMatcherList } from './Matcher';
+import { IClientCategory } from '../types/clientTypes';
 
 Model.knex(knex);
 
@@ -120,26 +121,18 @@ export default class Category extends Model {
  * @returns The formatted category.
  */
 export const reprCategory = (category: Category) => {
-    const formattedCategory: {
-        colour: string | undefined;
-        createdOn: string | null;
-        description: string | undefined;
-        id: string;
-        label: string | undefined;
-        matchers?: any[];
-        updatedOn: string | null;
-        userId: string;
-    } = {
-        colour: category.colour,
+    const formattedCategory: IClientCategory = {
+        colour: category.colour ?? '#ECF0F1',
         createdOn: category.created_on
             ? new Date(category.created_on).toISOString()
-            : null,
-        description: category.description,
+            : '',
+        description: category.description ?? null,
         id: category.id ?? '',
-        label: category.label,
+        label: category.label ?? '',
+        matchers: [],
         updatedOn: category.updated_on
             ? new Date(category.updated_on).toISOString()
-            : null,
+            : '',
         userId: category.user_id,
     };
 

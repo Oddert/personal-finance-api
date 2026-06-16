@@ -329,7 +329,7 @@ export const createSingleTransaction = async (
             createdOn: date,
             credit: req.body.credit,
             currency: req.body.currency,
-            date: req.body.date,
+            date: new Date(req.body.date).toISOString(),
             debit: req.body.debit,
             description: req.body.description,
             id: uuid(),
@@ -338,7 +338,6 @@ export const createSingleTransaction = async (
             userId: req.user.id,
         };
 
-        // TODO: Research why the beforeInsert hooks are not working and replace:
         if (req.body.assignedCategory) {
             const categoryId = uuid();
             body.assignedCategory.created_on = date;
@@ -359,9 +358,9 @@ export const createSingleTransaction = async (
         }
 
         if (req.body.assignedCategory) {
-            await Transaction.query().insertGraphAndFetch(body);
+            await Transaction.query().insertGraph(body);
         } else {
-            await Transaction.query().insertAndFetch(body);
+            await Transaction.query().insert(body);
         }
 
         const transaction = await Transaction.query()
@@ -406,7 +405,7 @@ export const updateSingleTransaction = async (
             cardId: req.body.cardId,
             credit: req.body.credit,
             currency: req.body.currency,
-            date: req.body.date,
+            date: new Date(req.body.date).toISOString(),
             debit: req.body.debit,
             description: req.body.description,
             transactionType: req.body.transactionType,

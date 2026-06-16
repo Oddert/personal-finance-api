@@ -10,8 +10,8 @@ import {
     respondServerError,
 } from '../utils/responses';
 
-import Budget from '../models/Budget';
-import BudgetRow from '../models/BudgetRow';
+import Budget, { reprBudget, reprBudgetList } from '../models/Budget';
+import BudgetRow, { reprBudgetRowList } from '../models/BudgetRow';
 
 /**
  * Returns all Budgets belonging to  the authenticated user.
@@ -22,7 +22,11 @@ export const getBudgets = async (req: IUserRequest, res: Response) => {
             .where('budget.user_id', '=', req.user.id)
             .withGraphJoined('budgetRows');
 
-        return respondOk({ req, res, payload: { budgets } });
+        return respondOk({
+            req,
+            res,
+            payload: { budgets: reprBudgetList(budgets) },
+        });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -38,7 +42,17 @@ export const getSingleBudget = async (req: IUserRequest, res: Response) => {
             .where('budget.user_id', '=', req.user.id)
             .withGraphJoined('budgetRows');
 
-        return respondOk({ req, res, payload: { budget } });
+        if (!budget) {
+            return respondNotFound({
+                req,
+                res,
+                error: req.t('budget.messaged.notFoundById', {
+                    budgetId: req.params.id,
+                }),
+            });
+        }
+
+        return respondOk({ req, res, payload: { budget: reprBudget(budget) } });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -53,7 +67,11 @@ export const getBudgetRows = async (req: IUserRequest, res: Response) => {
             .where('user_id', '=', req.user.id)
             .withGraphJoined('budget');
 
-        return respondOk({ req, res, payload: { budgetRows } });
+        return respondOk({
+            req,
+            res,
+            payload: { budgetRows: reprBudgetRowList(budgetRows) },
+        });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -90,10 +108,27 @@ export const createSingleBudget = async (req: IUserRequest, res: Response) => {
             const budget = await Budget.query()
                 .findById(stagedBudget.id)
                 .withGraphJoined('budgetRows');
-            return respondCreated({ req, res, payload: { budget } });
+
+            if (!budget) {
+                return respondServerError({
+                    req,
+                    res,
+                    error: req.t('budget.messages.issueRetrievingCreatedItem'),
+                });
+            }
+
+            return respondCreated({
+                req,
+                res,
+                payload: { budget: reprBudget(budget) },
+            });
         }
 
-        return respondServerError({ req, res });
+        return respondServerError({
+            req,
+            res,
+            error: req.t('budget.messages.issueCreating'),
+        });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -138,7 +173,7 @@ export const updateSingleBudget = async (req: IUserRequest, res: Response) => {
         return respondCreated({
             req,
             res,
-            payload: { budget },
+            payload: { budget: reprBudget(budget) },
             message: req.t('budget.messages.updatedSuccessfully'),
         });
     } catch (error: any) {

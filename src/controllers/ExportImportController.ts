@@ -101,7 +101,6 @@ export const clearAndReImportData = async (
         for (const category of body.categories) {
             await Category.query().insertGraphAndFetch({
                 ...category,
-                // @ts-expect-error
                 user_id: req.user.id,
                 created_on: new Date(category.created_on).toISOString(),
                 updated_on: new Date(category.updated_on).toISOString(),
@@ -112,7 +111,6 @@ export const clearAndReImportData = async (
             // @ts-expect-error
             await Transaction.query().insertAndFetch({
                 ...transaction,
-                // @ts-expect-error
                 date: new Date(transaction.date).toISOString(),
                 currency: transaction.currency ?? undefined,
                 created_on: new Date(transaction.createdOn).toISOString(),
@@ -136,7 +134,6 @@ export const clearAndReImportData = async (
         for (const scenario of body.scenarios) {
             await Scenario.query().insertGraphAndFetch({
                 ...scenario,
-                // @ts-expect-error
                 userId: req.user.id,
                 createdOn: new Date(scenario.createdOn).toISOString(),
                 updatedOn: new Date(scenario.updatedOn).toISOString(),

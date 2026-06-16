@@ -303,8 +303,6 @@ export const changePassword = async (req: IUserRequest, res: Response) => {
         const accessToken = createAccessToken(updatedUser.username);
         const refreshToken = createRefreshToken(updatedUser.username);
 
-        console.log(updatedUser);
-
         return respondOk({
             req,
             res,

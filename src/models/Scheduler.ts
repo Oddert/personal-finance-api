@@ -141,13 +141,17 @@ export const reprScheduler = (scheduler: Scheduler): IClientScheduler => {
     const formattedScheduler: IClientScheduler = {
         createdOn: scheduler.created_on
             ? new Date(scheduler.created_on).toISOString()
-            : null,
+            : '',
+        day: null,
         id: scheduler.id ?? '',
+        nthDay: null,
         schedulerCode: scheduler.scheduler_code,
+        startDate: null,
+        step: null,
         transactorId: scheduler.transactor_id,
         updatedOn: scheduler.updated_on
             ? new Date(scheduler.updated_on).toISOString()
-            : null,
+            : '',
     };
 
     if (scheduler.day) {

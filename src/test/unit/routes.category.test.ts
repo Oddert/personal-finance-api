@@ -50,7 +50,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -64,6 +67,7 @@ describe('[UNIT] routes : category', () => {
                             'description',
                             'id',
                             'label',
+                            'matchers',
                             'updatedOn',
                             'userId',
                         );
@@ -92,7 +96,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -145,7 +152,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -156,6 +166,7 @@ describe('[UNIT] routes : category', () => {
                         'description',
                         'id',
                         'label',
+                        'matchers',
                         'updatedOn',
                         'userId',
                     );
@@ -184,7 +195,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -249,7 +263,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -306,7 +323,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -376,7 +396,10 @@ describe('[UNIT] routes : category', () => {
                     }
                     should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
@@ -426,6 +449,7 @@ describe('[UNIT] routes : category', () => {
                         'description',
                         'id',
                         'label',
+                        'matchers',
                         'updatedOn',
                         'userId',
                     );

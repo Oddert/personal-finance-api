@@ -10,7 +10,7 @@ export default class Transaction extends Model {
 
     cardId?: string;
 
-    date?: Date;
+    date?: string;
 
     transactionType?: string;
 
