@@ -135,7 +135,7 @@ export default class Transactor extends Model {
  */
 export const reprTransactor = (transactor: Transactor): IClientTransactor => {
     const formattedTransactor: IClientTransactor = {
-        categoryId: transactor.category_id ?? '',
+        categoryId: transactor.category_id ?? null,
         createdOn: transactor.created_on
             ? new Date(transactor.created_on).toISOString()
             : '',
