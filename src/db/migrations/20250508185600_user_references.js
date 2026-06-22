@@ -5,36 +5,36 @@
 exports.up = function (knex) {
     return knex.schema
         .alterTable('budget', (table) => {
-            table.uuid('user_id').notNullable().references('user.id');
+            table.uuid('user_id').references('user.id').notNullable();
         })
         .then(() =>
             knex.schema.alterTable('budget_row', (table) => {
-                table.uuid('user_id').notNullable().references('user.id');
+                table.uuid('user_id').references('user.id').notNullable();
             }),
         )
         .then(() =>
             knex.schema.alterTable('card', (table) => {
-                table.uuid('user_id').notNullable().references('user.id');
+                table.uuid('user_id').references('user.id').notNullable();
             }),
         )
         .then(() =>
             knex.schema.alterTable('category', (table) => {
-                table.uuid('user_id').notNullable().references('user.id');
+                table.uuid('user_id').references('user.id').notNullable();
             }),
         )
         .then(() =>
             knex.schema.alterTable('scenario', (table) => {
-                table.uuid('user_id').notNullable().references('user.id');
+                table.uuid('user_id').references('user.id').notNullable();
             }),
         )
         .then(() =>
             knex.schema.alterTable('transaction', (table) => {
-                table.uuid('user_id').notNullable().references('user.id');
+                table.uuid('user_id').references('user.id').notNullable();
             }),
         )
         .then(() =>
             knex.schema.alterTable('matcher', (table) => {
-                table.uuid('user_id').notNullable().references('user.id');
+                table.uuid('user_id').references('user.id').notNullable();
             }),
         );
 };

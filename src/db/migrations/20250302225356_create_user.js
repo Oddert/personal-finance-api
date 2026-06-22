@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('user', (table) => {
-        table.uuid('id').defaultTo(knex.fn.uuid()).primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.date('created_on').notNullable();
         table.date('updated_on').notNullable();
         table.string('username').notNullable();
