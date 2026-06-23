@@ -221,6 +221,8 @@ export interface IClientScheduler {
 export interface IClientTransactor {
     /** The ID of the Category this action represents. */
     categoryId: string | null;
+    /** The Card / Account this transactor applies to. */
+    cardId: string | null;
     /** ISO timestamp of the date/time the record was first created. */
     createdOn: string;
     /** The user-defined description of this action. */

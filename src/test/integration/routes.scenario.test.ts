@@ -73,6 +73,7 @@ describe('[INTEGRATION] routes : scenario', () => {
                         for (const transactor of scenario.transactors) {
                             expect(transactor).to.have.all.keys(
                                 'categoryId',
+                                'cardId',
                                 'createdOn',
                                 'description',
                                 'id',

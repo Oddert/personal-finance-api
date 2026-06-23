@@ -19,6 +19,11 @@ exports.up = function (knex) {
             return knex.schema.alterTable('scenario', (table) => {
                 table.dropColumn('start_balance');
             });
+        })
+        .then(() => {
+            return knex.schema.alterTable('transactor', (table) => {
+                table.uuid('card_id').references('card.id').notNullable();
+            });
         });
 };
 

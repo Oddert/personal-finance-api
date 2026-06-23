@@ -100,6 +100,7 @@ export interface IScenario {
 export interface ITransactor {
     id: string;
     categoryId: string | null;
+    cardId: string | null;
     createdOn: string;
     description: string;
     isAddition: boolean;

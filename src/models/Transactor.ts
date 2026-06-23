@@ -10,6 +10,8 @@ export default class Transactor extends Model {
 
     categoryId: string | null;
 
+    cardId: string;
+
     createdOn: Date | string;
 
     updatedOn: Date | string;
@@ -54,6 +56,7 @@ export default class Transactor extends Model {
                 id: { type: 'string' },
                 created_on: { type: 'string' },
                 category_id: { type: 'string' },
+                card_id: { type: 'string' },
                 updated_on: { type: 'string' },
                 description: { type: 'string' },
                 value: { type: 'number' },
@@ -90,6 +93,7 @@ export default class Transactor extends Model {
             return {
                 id: obj.id,
                 categoryId: obj.category_id ?? null,
+                cardId: obj.card_id,
                 createdOn: obj.created_on,
                 updatedOn: obj.updated_on,
                 description: obj.description,
@@ -102,6 +106,7 @@ export default class Transactor extends Model {
             return {
                 id: obj.id,
                 category_id: obj.categoryId ?? null,
+                card_id: obj.cardId,
                 created_on: obj.createdOn,
                 updated_on: obj.updatedOn,
                 description: obj.description,
@@ -123,6 +128,7 @@ export default class Transactor extends Model {
 export const reprTransactor = (transactor: Transactor): IClientTransactor => {
     const formattedTransactor: IClientTransactor = {
         categoryId: transactor.categoryId ?? null,
+        cardId: transactor.cardId ?? '',
         createdOn: transactor.createdOn
             ? new Date(transactor.createdOn).toISOString()
             : '',

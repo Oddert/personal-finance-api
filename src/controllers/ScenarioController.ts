@@ -121,6 +121,7 @@ export const createSingleScenario = async (
                         updatedOn: now,
                         createdOn: now,
                         categoryId: transactor.category_id,
+                        cardId: transactor.card_id ?? transactor.cardId,
                         description: transactor.description,
                         isAddition: transactor.isAddition,
                         value: transactor.value,
@@ -195,6 +196,7 @@ export const updateSingleScenario = async (
                     // @ts-expect-error
                     const createdTransactor = await Transactor.query().insert({
                         categoryId: transactor.category_id,
+                        cardId: transactor.card_id ?? transactor.cardId,
                         createdOn: now,
                         description: transactor.description,
                         id: transactorId,
@@ -211,6 +213,7 @@ export const updateSingleScenario = async (
                             transactor.id,
                             {
                                 categoryId: transactor.category_id,
+                                cardId: transactor.card_id ?? transactor.cardId,
                                 description: transactor.description,
                                 isAddition: transactor.isAddition,
                                 scenarioId: scenario.id,
