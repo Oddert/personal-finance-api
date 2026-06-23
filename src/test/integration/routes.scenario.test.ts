@@ -62,10 +62,12 @@ describe('[INTEGRATION] routes : scenario', () => {
                             'startBallance',
                             'startDate',
                             'title',
+                            'cards',
                             'transactors',
                             'updatedOn',
                             'userId',
                         );
+                        expect(scenario.cards).to.be.a('array');
                         expect(scenario.transactors).to.be.a('array');
 
                         for (const transactor of scenario.transactors) {

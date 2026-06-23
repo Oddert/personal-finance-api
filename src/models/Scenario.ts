@@ -1,7 +1,99 @@
 import { ColumnNameMappers, Model } from 'objection';
-import { IClientScenario } from '../types/clientTypes';
+import type {
+    IClientScenario,
+    IClientScenarioCardBridge,
+} from '../types/clientTypes';
 import { reprTransactorList } from './Transactor';
 import type Transactor from './Transactor';
+
+export class ScenarioCardBridge extends Model {
+    id: string;
+
+    scenarioId: string;
+
+    cardId: string;
+
+    calcStartDate: string;
+
+    calcEndDate: string;
+
+    displayStartDate: string;
+
+    displayEndDate: string;
+
+    startBalance: number;
+
+    note: string;
+
+    static get tableName() {
+        return 'scenario_card_bridge';
+    }
+
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                scenarioId: obj.scenario_id,
+                cardId: obj.card_id,
+                calcStartDate: obj.calc_start_date,
+                calcEndDate: obj.calc_end_date,
+                displayStartDate: obj.display_start_date,
+                displayEndDate: obj.display_end_date,
+                startBalance: obj.start_balance,
+                note: obj.note,
+            };
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                scenario_id: obj.scenarioId,
+                card_id: obj.cardId,
+                calc_start_date: obj.calcStartDate,
+                calc_end_date: obj.calcEndDate,
+                display_start_date: obj.displayStartDate,
+                display_end_date: obj.displayEndDate,
+                start_balance: obj.startBalance,
+                note: obj.note,
+            };
+        },
+    };
+}
+
+/**
+ * Formats a SCB to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param scb The scenario card bridge to return.
+ * @returns The formatted scenario.
+ */
+export const reprScenarioCardBridge = (
+    scb: ScenarioCardBridge,
+): IClientScenarioCardBridge => ({
+    id: scb.id,
+    scenarioId: scb.scenarioId,
+    cardId: scb.cardId,
+    calcStartDate: scb.calcStartDate,
+    calcEndDate: scb.calcEndDate ?? null,
+    displayStartDate: scb.displayStartDate,
+    displayEndDate: scb.displayEndDate ?? null,
+    startBalance: scb.startBalance,
+    note: scb.note ?? null,
+});
+
+/**
+ * List format of {@link reprScenarioCardBridge}.
+ *
+ * Formats a list of scenario card bridges to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param scbList List of scenario card bridges to represent.
+ * @returns The formatted scenarios.
+ */
+export const reprScenarioCardBridgeList = (
+    scbList: ScenarioCardBridge[],
+): IClientScenarioCardBridge[] => {
+    return scbList.map(reprScenarioCardBridge);
+};
 
 export default class Scenario extends Model {
     id?: string;
@@ -31,6 +123,8 @@ export default class Scenario extends Model {
     description: string;
 
     startBallance?: number;
+
+    cards?: ScenarioCardBridge[];
 
     transactors?: Transactor[];
 
@@ -78,6 +172,7 @@ export default class Scenario extends Model {
             title: this.title,
             description: this.description,
             startBallance: this.startBallance,
+            cards: reprScenarioCardBridgeList(this.cards ?? []),
             transactors: reprTransactorList(this.transactors ?? []),
         };
     }
@@ -103,6 +198,14 @@ export default class Scenario extends Model {
     static get relationMappings() {
         const Transactor = __dirname + '/Transactor';
         return {
+            cards: {
+                relation: Model.HasManyRelation,
+                modelClass: ScenarioCardBridge,
+                join: {
+                    from: 'scenario.id',
+                    to: 'scenario_card_bridge.scenario_id',
+                },
+            },
             transactors: {
                 relation: Model.HasManyRelation,
                 modelClass: Transactor,
@@ -174,6 +277,10 @@ export const reprScenario = (scenario: Scenario): IClientScenario => {
             ? new Date(scenario.updatedOn).toISOString()
             : '',
     };
+
+    if (scenario.cards) {
+        formattedScenario.cards = reprScenarioCardBridgeList(scenario.cards);
+    }
 
     if (scenario.transactors) {
         formattedScenario.transactors = reprTransactorList(

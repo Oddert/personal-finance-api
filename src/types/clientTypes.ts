@@ -239,6 +239,27 @@ export interface IClientTransactor {
     value: number;
 }
 
+export interface IClientScenarioCardBridge {
+    /** Unique identifier for the bridge record. */
+    id: string;
+    /** The Scenario this bridge belongs to. */
+    scenarioId: string;
+    /** The Card associated with this bridge. */
+    cardId: string;
+    /** Computed start date for the bridge entry. */
+    calcStartDate: string;
+    /** Computed end date for the bridge entry. */
+    calcEndDate: string | null;
+    /** Display start date for the bridge entry. */
+    displayStartDate: string;
+    /** Display end date for the bridge entry. */
+    displayEndDate: string | null;
+    /** Starting balance for the bridge entry. */
+    startBalance: number;
+    /** Optional note attached to the bridge. */
+    note: string | null;
+}
+
 /**
  * A "what-if" possible future projection of account behaviour.
  *
@@ -265,6 +286,8 @@ export interface IClientScenario {
     title: string;
     /** List of Transactors which provide the Scenario with its expected future changes. */
     transactors?: IClientTransactor[];
+    /** List of Card bridge entries for multi-card Scenarios. */
+    cards?: IClientScenarioCardBridge[];
     /** Unique identifier of the user who owns the Scenario. */
     userId: string;
     /** ISO timestamp of most recent save. */

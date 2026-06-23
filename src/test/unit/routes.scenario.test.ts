@@ -66,11 +66,13 @@ describe('[UNIT] routes : scenario', () => {
                             'startBallance',
                             'startDate',
                             'title',
+                            'cards',
                             'transactors',
                             'updatedOn',
                             'userId',
                         );
                         expect(scenario.cardId).to.be.a('string');
+                        expect(scenario.cards).to.be.a('array');
                         expect(scenario.createdOn).to.be.a('string');
                         expect(scenario.description).to.be.a('string');
                         expect(scenario.endDate).to.satisfy(nullOr('string'));
@@ -178,10 +180,12 @@ describe('[UNIT] routes : scenario', () => {
                         'startBallance',
                         'startDate',
                         'title',
+                        'cards',
                         'transactors',
                         'updatedOn',
                         'userId',
                     );
+                    expect(res.body.payload.scenario.cards).to.be.a('array');
                     expect(res.body.payload.scenario.id).to.eql(scenarioId1);
 
                     done();
@@ -228,6 +232,7 @@ describe('[UNIT] routes : scenario', () => {
                         'id',
                         'startBallance',
                         'startDate',
+                        'cards',
                         'transactors',
                         'title',
                         'updatedOn',

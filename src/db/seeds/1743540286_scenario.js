@@ -22,7 +22,20 @@ exports.seed = async function (knex) {
             end_date: null,
             title: 'BAU',
             description: 'Business as usual',
-            start_ballance: 1943,
+        },
+    ]);
+    await knex('scenario_card_bridge').del();
+    await knex('scenario_card_bridge').insert([
+        {
+            id: '6ed8bb49-f22b-4091-b8f2-6fd9b17e51ba',
+            scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
+            calc_start_date: new Date(),
+            calc_end_date: null,
+            display_start_date: new Date(),
+            display_end_date: null,
+            start_balance: 1943,
+            note: 'Primary card bridge',
         },
     ]);
     await knex('transactor').del();

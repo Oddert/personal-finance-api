@@ -38,7 +38,7 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
             const scenarios = await Scenario.query()
                 .where('user_id', '=', req.user.id)
                 .whereBetween('start_date', [startDate, endDate])
-                .withGraphFetched('transactors.[schedulers]')
+                .withGraphFetched('[cards, transactors.[schedulers]]')
                 .orderBy('title', 'DESC');
 
             return respondOk({ req, res, payload: { scenarios } });
@@ -46,7 +46,7 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
 
         const scenarios = await Scenario.query()
             .where('user_id', '=', req.user.id)
-            .withGraphFetched('transactors.[schedulers]')
+            .withGraphFetched('[cards, transactors.[schedulers]]')
             .orderBy('title', 'DESC');
 
         return respondOk({
@@ -69,7 +69,7 @@ export const getSingleScenario = async (req: IUserRequest, res: Response) => {
         const scenario = await Scenario.query()
             .where('user_id', '=', req.user.id)
             .findById(req.params.id)
-            .withGraphFetched('transactors.[schedulers]');
+            .withGraphFetched('[cards, transactors.[schedulers]]');
 
         if (!scenario) {
             return respondNotFound({
@@ -258,7 +258,7 @@ export const updateSingleScenario = async (
         const scenarioResponse = await Scenario.query()
             .where('user_id', '=', req.user.id)
             .where('id', '=', req.params.id)
-            .withGraphFetched('transactors.[schedulers]')
+            .withGraphFetched('[cards, transactors.[schedulers]]')
             .first();
 
         if (!scenarioResponse) {
