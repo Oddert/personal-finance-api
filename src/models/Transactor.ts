@@ -3,29 +3,30 @@ import { ColumnNameMappers, Model } from 'objection';
 import { IClientTransactor } from '../types/clientTypes';
 
 import { reprSchedulerList } from './Scheduler';
+import type Scheduler from './Scheduler';
 
 export default class Transactor extends Model {
     id?: string;
 
-    category_id: string | null;
+    categoryId: string | null;
 
-    created_on: Date | string;
+    createdOn: Date | string;
 
-    updated_on: Date | string;
+    updatedOn: Date | string;
 
-    static created_on: Date | string;
+    static createdOn: Date | string;
 
-    static updated_on: Date | string;
+    static updatedOn: Date | string;
 
     description: string;
 
-    is_addition: boolean;
+    isAddition: boolean;
 
     value: number;
 
-    scenario_id: string;
+    scenarioId: string;
 
-    schedulers: any[];
+    schedulers: Scheduler[];
 
     static get tableName() {
         return 'transactor';
@@ -33,31 +34,17 @@ export default class Transactor extends Model {
 
     $beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     $afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
-    }
-
-    toJson() {
-        return {
-            id: this.id,
-            createdOn: this.created_on,
-            categoryId: this.category_id,
-            updatedOn: this.updated_on,
-            description: this.description,
-            isAddition: Boolean(this.is_addition),
-            value: this.value,
-            scenarioId: this.scenario_id,
-            schedulers: this?.schedulers.map((scheduler) => scheduler.toJson()),
-        };
     }
 
     static get jsonSchema() {
@@ -135,16 +122,16 @@ export default class Transactor extends Model {
  */
 export const reprTransactor = (transactor: Transactor): IClientTransactor => {
     const formattedTransactor: IClientTransactor = {
-        categoryId: transactor.category_id ?? null,
-        createdOn: transactor.created_on
-            ? new Date(transactor.created_on).toISOString()
+        categoryId: transactor.categoryId ?? null,
+        createdOn: transactor.createdOn
+            ? new Date(transactor.createdOn).toISOString()
             : '',
         description: transactor.description,
         id: transactor.id ?? '',
-        isAddition: Boolean(transactor.is_addition),
-        scenarioId: transactor.scenario_id,
-        updatedOn: transactor.updated_on
-            ? new Date(transactor.updated_on).toISOString()
+        isAddition: Boolean(transactor.isAddition),
+        scenarioId: transactor.scenarioId,
+        updatedOn: transactor.updatedOn
+            ? new Date(transactor.updatedOn).toISOString()
             : '',
         value: transactor.value,
     };

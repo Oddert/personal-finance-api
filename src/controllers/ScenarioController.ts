@@ -194,7 +194,6 @@ export const updateSingleScenario = async (
                     // Transactor needs to be created for the first time.
                     // @ts-expect-error
                     const createdTransactor = await Transactor.query().insert({
-                        // @ts-expect-error
                         categoryId: transactor.category_id,
                         createdOn: now,
                         description: transactor.description,
@@ -211,7 +210,6 @@ export const updateSingleScenario = async (
                         await Transactor.query().patchAndFetchById(
                             transactor.id,
                             {
-                                // @ts-expect-error
                                 categoryId: transactor.category_id,
                                 description: transactor.description,
                                 isAddition: transactor.isAddition,
@@ -228,9 +226,7 @@ export const updateSingleScenario = async (
                         if (scheduler.deleted) {
                             await Scheduler.query().deleteById(scheduler.id);
                         } else if (scheduler.staged) {
-                            // @ts-expect-error
                             await Scheduler.query().insert({
-                                // @ts-expect-error
                                 createdOn: now,
                                 day: scheduler.day,
                                 nthDay: scheduler.nthDay,
@@ -245,7 +241,6 @@ export const updateSingleScenario = async (
                                 scheduler.id,
                                 {
                                     day: scheduler.day,
-                                    // @ts-expect-error
                                     nthDay: scheduler.nthDay,
                                     schedulerCode: scheduler.schedulerCode,
                                     startDate: scheduler.startDate,

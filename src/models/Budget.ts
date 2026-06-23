@@ -3,6 +3,7 @@ import { ColumnNameMappers, Model } from 'objection';
 import knex from '../db/knex';
 import { IClientBudget } from '../types/clientTypes';
 import { reprBudgetRowList } from './BudgetRow';
+import type BudgetRow from './BudgetRow';
 
 Model.knex(knex);
 
@@ -25,7 +26,7 @@ export default class Budget extends Model {
 
     updatedOn: string;
 
-    budgetRows: any[];
+    budgetRows: BudgetRow[];
 
     static createdOn: Date | string;
 

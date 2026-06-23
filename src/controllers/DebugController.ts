@@ -56,7 +56,7 @@ export const getSeeds = async (req: IUserRequest, res: Response) => {
         }));
         const transactor = (await Transactor.query()).map((datum) => ({
             ...datum,
-            is_addition: Boolean(datum.is_addition),
+            is_addition: Boolean(datum.isAddition),
         }));
         const scheduler = await Scheduler.query();
         const transaction = await Transaction.query();

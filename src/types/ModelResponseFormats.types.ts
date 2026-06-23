@@ -78,7 +78,7 @@ export interface IMatcher {
     id: string;
     match: string;
     match_type: TMatchType;
-    case_sensitive: boolean | 1 | 0;
+    case_sensitive: boolean;
     created_on: string;
     updated_on: string;
 }

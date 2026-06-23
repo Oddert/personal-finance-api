@@ -2,6 +2,7 @@ import { ColumnNameMappers, Model } from 'objection';
 
 import knex from '../db/knex';
 import { reprMatcherList } from './Matcher';
+import type Matcher from './Matcher';
 import { IClientCategory } from '../types/clientTypes';
 
 Model.knex(knex);
@@ -25,7 +26,7 @@ export default class Category extends Model {
 
     user_id: string;
 
-    matchers: any;
+    matchers: Matcher[];
 
     static get tableName() {
         return 'category';

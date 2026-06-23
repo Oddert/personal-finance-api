@@ -5,27 +5,27 @@ import { IClientScheduler } from '../types/clientTypes';
 export default class Scheduler extends Model {
     id?: string;
 
-    created_on: Date | string;
+    createdOn: Date | string;
 
-    updated_on: Date | string;
+    updatedOn: Date | string;
 
-    static created_on: Date | string;
+    static createdOn: Date | string;
 
-    static updated_on: Date | string;
+    static updatedOn: Date | string;
 
-    static start_date: Date | string;
+    static startDate: Date | string;
 
-    scheduler_code: string;
+    schedulerCode: string;
 
     step?: number;
 
-    start_date?: Date | string;
+    startDate?: Date | string;
 
     day?: number;
 
-    nth_day?: number;
+    nthDay?: number;
 
-    transactor_id: string;
+    transactorId: string;
 
     static get tableName() {
         return 'scheduler';
@@ -33,39 +33,39 @@ export default class Scheduler extends Model {
 
     static beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     static afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
-        this.start_date = this.start_date
-            ? new Date(this.start_date).toISOString()
+        this.startDate = this.startDate
+            ? new Date(this.startDate).toISOString()
             : '';
     }
 
     toJson() {
         return {
             id: this.id,
-            createdOn: this.created_on
-                ? new Date(this.created_on).toISOString()
+            createdOn: this.createdOn
+                ? new Date(this.createdOn).toISOString()
                 : null,
-            updatedOn: this.updated_on
-                ? new Date(this.updated_on).toISOString()
+            updatedOn: this.updatedOn
+                ? new Date(this.updatedOn).toISOString()
                 : null,
-            schedulerCode: this.scheduler_code,
+            schedulerCode: this.schedulerCode,
             step: this.step,
-            startDate: this.start_date
-                ? new Date(this.start_date).toISOString()
+            startDate: this.startDate
+                ? new Date(this.startDate).toISOString()
                 : null,
             day: this.day,
-            nthDay: this.nth_day,
-            transactorId: this.transactor_id,
+            nthDay: this.nthDay,
+            transactorId: this.transactorId,
         };
     }
 
@@ -74,14 +74,14 @@ export default class Scheduler extends Model {
             type: 'object',
             properties: {
                 id: { type: 'string' },
-                created_on: { type: 'string' },
-                updated_on: { type: 'string' },
-                start_date: { type: ['string', 'null'] },
-                scheduler_code: { type: 'string' },
+                createdOn: { type: 'string' },
+                updatedOn: { type: 'string' },
+                startDate: { type: ['string', 'null'] },
+                schedulerCode: { type: 'string' },
                 step: { type: ['number', 'null'] },
                 day: { type: ['number', 'null'] },
-                nth_day: { type: ['number', 'null'] },
-                transactor_id: { type: ['string', 'null'] },
+                nthDay: { type: ['number', 'null'] },
+                transactorId: { type: ['string', 'null'] },
             },
         };
     }
@@ -139,33 +139,33 @@ export default class Scheduler extends Model {
  */
 export const reprScheduler = (scheduler: Scheduler): IClientScheduler => {
     const formattedScheduler: IClientScheduler = {
-        createdOn: scheduler.created_on
-            ? new Date(scheduler.created_on).toISOString()
+        createdOn: scheduler.createdOn
+            ? new Date(scheduler.createdOn).toISOString()
             : '',
         day: null,
         id: scheduler.id ?? '',
         nthDay: null,
-        schedulerCode: scheduler.scheduler_code,
+        schedulerCode: scheduler.schedulerCode,
         startDate: null,
         step: null,
-        transactorId: scheduler.transactor_id,
-        updatedOn: scheduler.updated_on
-            ? new Date(scheduler.updated_on).toISOString()
+        transactorId: scheduler.transactorId,
+        updatedOn: scheduler.updatedOn
+            ? new Date(scheduler.updatedOn).toISOString()
             : '',
     };
 
     if (scheduler.day) {
         formattedScheduler.day = scheduler.day;
     }
-    if (scheduler.nth_day) {
-        formattedScheduler.nthDay = scheduler.nth_day;
+    if (scheduler.nthDay) {
+        formattedScheduler.nthDay = scheduler.nthDay;
     }
     if (scheduler.step) {
         formattedScheduler.step = scheduler.step;
     }
-    if (scheduler.start_date) {
+    if (scheduler.startDate) {
         formattedScheduler.startDate = new Date(
-            scheduler.start_date,
+            scheduler.startDate,
         ).toISOString();
     }
 

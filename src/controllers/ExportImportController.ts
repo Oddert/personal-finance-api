@@ -139,13 +139,17 @@ export const clearAndReImportData = async (
                 updatedOn: new Date(scenario.updatedOn).toISOString(),
                 transactors: scenario.transactors.map((tr) => ({
                     ...tr,
-                    userId: req.user.id,
                     createdOn: new Date(tr.createdOn).toISOString(),
                     updatedOn: new Date(tr.updatedOn).toISOString(),
                     schedulers: tr.schedulers.map((sched) => ({
                         ...sched,
                         userId: req.user.id,
                         createdOn: new Date(sched.createdOn).toISOString(),
+                        nthDay: sched.nthDay ?? undefined,
+                        startDate: sched.startDate
+                            ? new Date(sched.startDate).toISOString()
+                            : undefined,
+                        step: sched.step ?? undefined,
                         updatedOn: new Date(sched.updatedOn).toISOString(),
                     })),
                 })),

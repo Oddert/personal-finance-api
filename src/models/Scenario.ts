@@ -1,6 +1,7 @@
 import { ColumnNameMappers, Model } from 'objection';
 import { IClientScenario } from '../types/clientTypes';
 import { reprTransactorList } from './Transactor';
+import type Transactor from './Transactor';
 
 export default class Scenario extends Model {
     id?: string;
@@ -31,7 +32,7 @@ export default class Scenario extends Model {
 
     startBallance?: number;
 
-    transactors?: any[];
+    transactors?: Transactor[];
 
     static get tableName() {
         return 'scenario';
@@ -77,9 +78,7 @@ export default class Scenario extends Model {
             title: this.title,
             description: this.description,
             startBallance: this.startBallance,
-            transactors: this.transactors?.map((transactor) =>
-                transactor.toJson(),
-            ),
+            transactors: reprTransactorList(this.transactors ?? []),
         };
     }
 
