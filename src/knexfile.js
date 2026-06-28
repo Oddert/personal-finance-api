@@ -26,7 +26,7 @@ const config = {
             directory: __dirname + '/db/migrations',
         },
         seeds: {
-            directory: __dirname + '/db/private-seeds',
+            directory: __dirname + '/db/seeds',
         },
     },
     development: {
@@ -56,7 +56,7 @@ const config = {
             directory: __dirname + '/db/migrations',
         },
         seeds: {
-            directory: __dirname + '/db/private-seeds',
+            directory: __dirname + '/db/seeds',
         },
     },
     staging: {
