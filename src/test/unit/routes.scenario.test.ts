@@ -83,6 +83,25 @@ describe('[UNIT] routes : scenario', () => {
                         expect(scenario.transactors).to.be.a('array');
                         expect(scenario.updatedOn).to.satisfy(nullOr('string'));
                         expect(scenario.userId).to.be.a('string');
+                        console.log(scenario.cards);
+
+                        for (const scb of scenario.cards) {
+                            console.log(scb);
+                            expect(scb.id).to.be.a('string');
+                            expect(scb.scenarioId).to.be.a('string');
+                            expect(scb.cardId).to.be.a('string');
+                            expect(scb.cardName).to.be.a('string');
+                            expect(scb.calcStartDate).to.be.a('string');
+                            expect(scb.calcEndDate).to.satisfy(
+                                nullOr('string'),
+                            );
+                            expect(scb.displayStartDate).to.be.a('string');
+                            expect(scb.displayEndDate).to.satisfy(
+                                nullOr('string'),
+                            );
+                            expect(scb.startBalance).to.be.a('number');
+                            expect(scb.note).to.satisfy(nullOr('string'));
+                        }
                     }
                     done();
                 });

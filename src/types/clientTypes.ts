@@ -241,6 +241,11 @@ export interface IClientTransactor {
     value: number;
 }
 
+/**
+ * A connection from Scenario to Card to allow Scenario to track a starting balance and window to display for.
+ * @category Types
+ * @subcategory Client Types
+ */
 export interface IClientScenarioCardBridge {
     /** Unique identifier for the bridge record. */
     id: string;
@@ -248,6 +253,8 @@ export interface IClientScenarioCardBridge {
     scenarioId: string;
     /** The Card associated with this bridge. */
     cardId: string;
+    /** Name of the card or account. */
+    cardName: string;
     /** Computed start date for the bridge entry. */
     calcStartDate: string;
     /** Computed end date for the bridge entry. */
@@ -272,6 +279,8 @@ export interface IClientScenarioCardBridge {
 export interface IClientScenario {
     /** The Card / Account which is associated. Future work will allow multi-card Scenarios. */
     cardId: string;
+    /** List of Card bridge entries for multi-card Scenarios. */
+    cards?: IClientScenarioCardBridge[];
     /** ISO timestamp of the date/time the record was first created. */
     createdOn: string;
     /** Longer user-defined description of what this Scenario represents. */
@@ -288,8 +297,6 @@ export interface IClientScenario {
     title: string;
     /** List of Transactors which provide the Scenario with its expected future changes. */
     transactors?: IClientTransactor[];
-    /** List of Card bridge entries for multi-card Scenarios. */
-    cards?: IClientScenarioCardBridge[];
     /** Unique identifier of the user who owns the Scenario. */
     userId: string;
     /** ISO timestamp of most recent save. */

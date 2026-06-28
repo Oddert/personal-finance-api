@@ -12,19 +12,20 @@ exports.up = function (knex) {
             table.datetime('calc_end_date').defaultTo(null);
             table.datetime('display_start_date').defaultTo(knex.fn.now());
             table.datetime('display_end_date').defaultTo(null);
-            table.float('start_balance').defaultTo(0);
+            table.float('start_ballance').defaultTo(0);
             table.text('note');
         })
         .then(() => {
             return knex.schema.alterTable('scenario', (table) => {
-                table.dropColumn('start_balance');
-            });
-        })
-        .then(() => {
-            return knex.schema.alterTable('transactor', (table) => {
-                table.uuid('card_id').references('card.id').notNullable();
+                // table.dropColumn('start_ballance');
+                // table.dropColumn('card_id');
             });
         });
+    // .then(() => {
+    //     return knex.schema.alterTable('transactor', (table) => {
+    //         table.uuid('card_id').references('card.id');
+    //     });
+    // });
 };
 
 /**

@@ -5,11 +5,14 @@ import type {
 } from '../types/clientTypes';
 import { reprTransactorList } from './Transactor';
 import type Transactor from './Transactor';
+import type Card from './Card';
 
 export class ScenarioCardBridge extends Model {
     id: string;
 
     scenarioId: string;
+
+    card?: Card;
 
     cardId: string;
 
@@ -27,6 +30,20 @@ export class ScenarioCardBridge extends Model {
 
     static get tableName() {
         return 'scenario_card_bridge';
+    }
+
+    static get relationMappings() {
+        const Card = __dirname + '/Card';
+        return {
+            card: {
+                relation: Model.HasOneRelation,
+                modelClass: Card,
+                join: {
+                    from: 'scenario_card_bridge.card_id',
+                    to: 'card.id',
+                },
+            },
+        };
     }
 
     static columnNameMappers: ColumnNameMappers = {
@@ -72,6 +89,7 @@ export const reprScenarioCardBridge = (
     id: scb.id,
     scenarioId: scb.scenarioId,
     cardId: scb.cardId,
+    cardName: scb.card?.cardName ?? '',
     calcStartDate: scb.calcStartDate,
     calcEndDate: scb.calcEndDate ?? null,
     displayStartDate: scb.displayStartDate,
