@@ -24,7 +24,6 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
     ]);
-    // await knex('budget_row').del()
     await knex('budget_row').insert([
         {
             id: uuid(),

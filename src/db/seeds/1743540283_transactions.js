@@ -12,7 +12,6 @@ dayjs.extend(customParseFormat);
  * @returns { Promise<void> }
  */
 exports.seed = async function (knex) {
-    await knex('transaction').del();
     await knex('transaction').insert([
         {
             id: '5a23ad67-9a9f-4b3e-9f8b-8c22ff310662',
@@ -2431,6 +2430,26 @@ exports.seed = async function (knex) {
             id: uuid(),
             user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
+            created_on: new Date(),
+            updated_on: new Date(),
+        },
+        {
+            date: new Date(
+                dayjs()
+                    .subtract(12 - 11, 'month')
+                    .subtract(31 - 18, 'day')
+                    .valueOf(),
+            ), // '2024-11-18'
+            transaction_type: 'CR',
+            description: 'CREDIT CARD',
+            debit: 0,
+            credit: 95.5,
+            ballance: 95.5,
+            currency: 'GBP',
+            category_id: '15d150b4-9eb5-42a5-bc36-88420bc4dd0d',
+            id: uuid(),
+            user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
+            card_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
             created_on: new Date(),
             updated_on: new Date(),
         },
