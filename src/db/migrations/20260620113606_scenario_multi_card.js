@@ -20,12 +20,12 @@ exports.up = function (knex) {
                 // table.dropColumn('start_ballance');
                 // table.dropColumn('card_id');
             });
+        })
+        .then(() => {
+            return knex.schema.alterTable('transactor', (table) => {
+                table.uuid('card_id').references('card.id');
+            });
         });
-    // .then(() => {
-    //     return knex.schema.alterTable('transactor', (table) => {
-    //         table.uuid('card_id').references('card.id');
-    //     });
-    // });
 };
 
 /**
