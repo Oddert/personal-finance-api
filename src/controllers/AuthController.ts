@@ -43,13 +43,14 @@ export const registerUser = async (req: IUserRequest, res: Response) => {
         const hashedPassword = await getHashedPassword(req.body.password);
         const now = new Date().toISOString();
         const body = {
-            languages: 'en-GB',
-            defaultLang: 'en-GB',
-            currencies: 'GBP',
-            defaultCurrency: 'GBP',
-            ...req.body,
-            createdOn: now,
-            updatedOn: now,
+            languages: req.body.languages ?? 'en-GB',
+            default_lang: req.body.defaultLang ?? 'en-GB',
+            currencies: req.body.currencies ?? 'GBP',
+            default_currency: req.body.defaultCurrency ?? 'GBP',
+            first_name: req.body.firstName ?? '',
+            last_name: req.body.lastName ?? '',
+            created_on: now,
+            updated_on: now,
             username: req.body.username.toLowerCase(),
             password: hashedPassword,
             id: uuid(),
