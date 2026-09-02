@@ -5,7 +5,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('category', (table) => {
-        table.increments('id').primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.string('label');
         table.string('description');
         table.string('colour');

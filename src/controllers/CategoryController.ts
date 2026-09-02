@@ -10,7 +10,7 @@ import {
     respondOk,
 } from '../utils/responses';
 
-import Category from '../models/Category';
+import Category, { reprCategory, reprCategoryList } from '../models/Category';
 import Matcher from '../models/Matcher';
 import Transaction from '../models/Transaction';
 
@@ -25,14 +25,22 @@ export const getCategories = async (req: IUserRequest, res: Response) => {
                 .orderBy('label', 'ASC')
                 .withGraphFetched('matchers');
 
-            return respondOk({ req, res, payload: { categories } });
+            return respondOk({
+                req,
+                res,
+                payload: { categories: reprCategoryList(categories) },
+            });
         }
-        const categories = await Category.query().where(
-            'user_id',
-            '=',
-            req.user.id,
-        );
-        return respondOk({ req, res, payload: { categories } });
+
+        const categories = await Category.query()
+            .where('user_id', '=', req.user.id)
+            .orderBy('label', 'ASC');
+
+        return respondOk({
+            req,
+            res,
+            payload: { categories: reprCategoryList(categories) },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -62,7 +70,11 @@ export const getSingleCategory = async (req: IUserRequest, res: Response) => {
             });
         }
 
-        return respondOk({ req, res, payload: { category } });
+        return respondOk({
+            req,
+            res,
+            payload: { category: reprCategory(category) },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -78,7 +90,20 @@ export const createSingleCategory = async (
     try {
         const date = new Date().toISOString();
         const body = {
-            ...req.body,
+            colour: req.body.colour,
+            description: req.body.description,
+            label: req.body.label,
+            matchers: req.body.matchers
+                ? req.body.matchers.map((matcher: any) => ({
+                      match_type: matcher.matchType,
+                      case_sensitive: matcher.caseSensitive,
+                      match: matcher.match,
+                      user_id: req.user.id,
+                      created_on: date,
+                      updated_on: date,
+                      id: uuid(),
+                  }))
+                : [],
             created_on: date,
             updated_on: date,
             user_id: req.user.id,
@@ -89,7 +114,11 @@ export const createSingleCategory = async (
             ? await Category.query().insertGraphAndFetch(body)
             : await Category.query().insertAndFetch(body);
 
-        return respondCreated({ req, res, payload: { category } });
+        return respondCreated({
+            req,
+            res,
+            payload: { category: reprCategory(category) },
+        });
     } catch (error: any) {
         return respondBadRequest({ req, res, error: error.message });
     }
@@ -103,7 +132,20 @@ export const updateSingleCategory = async (
     res: Response,
 ) => {
     try {
-        const body = { ...req.body, updated_on: new Date().toISOString() };
+        const body = {
+            colour: req.body.colour,
+            description: req.body.description,
+            label: req.body.label,
+            matchers: req.body.matchers
+                ? req.body.matchers.map((matcher: any) => ({
+                      match: matcher.match,
+                      match_type: matcher.matchType,
+                      case_sensitive: matcher.caseSensitive,
+                      id: matcher.id ?? uuid(),
+                  }))
+                : [],
+            updated_on: new Date().toISOString(),
+        };
 
         if (req.body.matchers) {
             const category = await Category.query()
@@ -186,7 +228,7 @@ export const updateSingleCategory = async (
         return respondCreated({
             req,
             res,
-            payload: { category },
+            payload: { category: reprCategory(category) },
             message: 'category.messages.updatedSuccessfully',
         });
     } catch (error: any) {
@@ -241,7 +283,18 @@ export const createManyCategories = async (
 
         for (const category of req.body.categories) {
             const body = {
-                ...category,
+                colour: category.colour,
+                description: category.description,
+                label: category.label,
+                matchers: category.matchers
+                    ? category.matchers.map((matcher: any) => ({
+                          match_type: matcher.matchType,
+                          case_sensitive: matcher.caseSensitive,
+                          match: matcher.match,
+                          user_id: req.user.id,
+                          id: uuid(),
+                      }))
+                    : [],
                 created_on: date,
                 updated_on: date,
                 user_id: req.user.id,

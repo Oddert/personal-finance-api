@@ -5,7 +5,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('scenario', (table) => {
-        table.increments('id').primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.datetime('start_date').defaultTo(null);
         table.datetime('end_date').defaultTo(null);
         table.datetime('created_on').notNullable();

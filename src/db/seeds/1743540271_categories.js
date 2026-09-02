@@ -8,7 +8,6 @@ const { v4: uuid } = require('uuid');
  */
 exports.seed = async function (knex) {
     // Deletes ALL existing entries
-    await knex('matcher').del();
     await knex('matcher').insert([
         {
             id: '1abb45aa-05bf-4172-ae73-79117969aaf5', // was 1
@@ -254,7 +253,6 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
     ]);
-    await knex('category').del();
     await knex('category').insert([
         {
             id: '486f9685-cc57-45f4-a2e7-fc505840de6a', // was 1
@@ -270,7 +268,7 @@ exports.seed = async function (knex) {
             user_id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',
             label: 'Support & Donations',
             description:
-                'Any funds supporting organisations or other voluntery donations.',
+                'Any funds supporting organisations or other voluntary donations.',
             colour: '#4c9a2a',
             created_on: new Date(),
             updated_on: new Date(),
@@ -441,7 +439,6 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
     ]);
-    await knex('category_matcher').del();
     await knex('category_matcher').insert([
         {
             id: uuid(),

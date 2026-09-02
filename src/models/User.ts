@@ -48,16 +48,16 @@ export default class User extends Model {
 
     toJson() {
         return {
-            id: this.id,
             createdOn: this.created_on,
-            updatedOn: this.updated_on,
-            username: this.username,
-            firstName: this.first_name,
-            lastName: this.last_name,
-            languages: this.languages,
-            defaultLang: this.default_lang,
             currencies: this.currencies,
             defaultCurrency: this.default_currency,
+            defaultLang: this.default_lang,
+            firstName: this.first_name,
+            id: this.id,
+            languages: this.languages,
+            lastName: this.last_name,
+            updatedOn: this.updated_on,
+            username: this.username,
         };
     }
 

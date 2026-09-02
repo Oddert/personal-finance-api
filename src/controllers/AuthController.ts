@@ -19,6 +19,7 @@ import TokenExclude from '../models/TokenExclude';
 
 import { createAccessToken, createRefreshToken } from '../security/token';
 import { getHashedPassword, verifyHashedPassword } from '../security/hash';
+import dayjs from 'dayjs';
 
 /**
  * Creates a single new user, first checking the username is not taken.
@@ -42,13 +43,14 @@ export const registerUser = async (req: IUserRequest, res: Response) => {
         const hashedPassword = await getHashedPassword(req.body.password);
         const now = new Date().toISOString();
         const body = {
-            languages: 'en-GB',
-            defaultLang: 'en-GB',
-            currencies: 'GBP',
-            defaultCurrency: 'GBP',
-            ...req.body,
-            createdOn: now,
-            updatedOn: now,
+            languages: req.body.languages ?? 'en-GB',
+            default_lang: req.body.defaultLang ?? 'en-GB',
+            currencies: req.body.currencies ?? 'GBP',
+            default_currency: req.body.defaultCurrency ?? 'GBP',
+            first_name: req.body.firstName ?? '',
+            last_name: req.body.lastName ?? '',
+            created_on: now,
+            updated_on: now,
             username: req.body.username.toLowerCase(),
             password: hashedPassword,
             id: uuid(),
@@ -205,7 +207,7 @@ export const refreshUserAuthToken = async (
 
         const body = {
             jti: decodedToken.jti,
-            expires: new Date(decodedToken.exp || new Date()).getTime(),
+            expires: dayjs(decodedToken.exp || new Date()).toDate(),
         };
         await TokenExclude.query().insert(body);
 
@@ -279,8 +281,6 @@ export const changePassword = async (req: IUserRequest, res: Response) => {
             });
         }
 
-        console.log(req.body.oldPassword, queriedUser);
-
         const oldPasswordCompare = await verifyHashedPassword(
             req.body.oldPassword,
             queriedUser.password,
@@ -303,8 +303,6 @@ export const changePassword = async (req: IUserRequest, res: Response) => {
 
         const accessToken = createAccessToken(updatedUser.username);
         const refreshToken = createRefreshToken(updatedUser.username);
-
-        console.log(updatedUser);
 
         return respondOk({
             req,

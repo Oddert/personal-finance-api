@@ -5,9 +5,9 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('budget_row', (table) => {
-        table.increments('id').primary();
-        table.integer('budget_id').references('budget.id').notNullable();
-        table.integer('category_id').references('category.id').notNullable();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
+        table.uuid('budget_id').references('budget.id').notNullable();
+        table.uuid('category_id').references('category.id').notNullable();
         table.string('label').notNullable();
         table.float('value').notNullable();
         table.float('var_low_pc').notNullable();

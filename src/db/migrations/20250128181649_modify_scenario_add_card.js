@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.alterTable('scenario', (table) => {
-        table.integer('card_id').references('card.id');
+        table.uuid('card_id').references('card.id').notNullable();
     });
 };
 

@@ -9,7 +9,6 @@ const { getHashedPassword } = require('../../security/hash');
  */
 exports.seed = async function (knex) {
     // Deletes All existing entries
-    await knex('user').delete();
     await knex('user').insert([
         {
             id: 'dc4b572d-1be4-412f-b99a-4cc947e9f048',

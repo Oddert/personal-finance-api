@@ -89,6 +89,19 @@ export const scenarioCreateSchema: Schema<
             },
         },
     },
+    'transactors.*.category_id': {
+        isString: true,
+        errorMessage:
+            'Field "category_id" on Transactor  is invalid. Please ensure it is a valid UUID.',
+        isLength: {
+            errorMessage:
+                'Length error. "category_id" on Transactor  must be a valid UUID.',
+            options: {
+                min: 32,
+                max: 36,
+            },
+        },
+    },
     'transactors.*.description': {
         isString: true,
         exists: {

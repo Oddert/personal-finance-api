@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,7 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
+import { nullOr } from '../../utils/testUtils';
 
 chai.use(chaiHttp);
 
@@ -20,6 +22,10 @@ const migrateOpts = {
 const seedOpts = {
     directory: path.join(__dirname, '../../db/seeds'),
 };
+
+const transactionId1 = '5a23ad67-9a9f-4b3e-9f8b-8c22ff310662';
+const transactionId2 = 'ffcc3053-211f-4e4e-8513-093f8094a362';
+const transactionId3 = 'a3455fb5-403c-42bf-9ad3-27714dab1f1e';
 
 describe('[UNIT] routes : transaction', () => {
     beforeEach(() => {
@@ -39,58 +45,54 @@ describe('[UNIT] routes : transaction', () => {
                 .get('/transaction')
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
                     expect(
                         res.body.payload.transactions,
                     ).to.have.lengthOf.above(0);
-                    expect(res.body.payload.transactions[0]).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
-                        'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
-                    );
-                    expect(res.body.payload.transactions[0].id).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transactions[0].date).to.be.a(
-                        'number',
-                    );
-                    expect(
-                        res.body.payload.transactions[0].transaction_type,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.transactions[0].description,
-                    ).to.be.a('string');
-                    expect(res.body.payload.transactions[0].debit).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transactions[0].credit).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transactions[0].ballance).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transactions[0].created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transactions[0].updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(
-                        res.body.payload.transactions[0].category_id,
-                    ).to.be.a('number');
+                    for (const transaction of res.body.payload.transactions) {
+                        expect(transaction).to.have.all.keys(
+                            'assignedCategory',
+                            'ballance',
+                            'categoryId',
+                            'cardId',
+                            'createdOn',
+                            'credit',
+                            'currency',
+                            'date',
+                            'debit',
+                            'description',
+                            'id',
+                            'transactionType',
+                            'updatedOn',
+                            'userId',
+                        );
+                        expect(transaction.assignedCategory).to.eql(null);
+                        expect(transaction.ballance).to.be.a('number');
+                        expect(transaction.categoryId).to.be.a('string');
+                        expect(transaction.cardId).to.be.a('string');
+                        expect(transaction.createdOn).to.be.a('string');
+                        expect(transaction.credit).to.be.a('number');
+                        expect(transaction.currency).to.be.a('string');
+                        expect(transaction.date).to.be.a('string');
+                        expect(transaction.debit).to.be.a('number');
+                        expect(transaction.description).to.be.a('string');
+                        expect(transaction.id).to.be.a('string');
+                        expect(transaction.transactionType).to.be.a('string');
+                        expect(transaction.updatedOn).to.be.a('string');
+                        expect(transaction.userId).to.be.a('string');
+                    }
                     done();
                 });
         });
@@ -102,42 +104,60 @@ describe('[UNIT] routes : transaction', () => {
                 .get('/transaction?includeCategory=true')
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
                     expect(
                         res.body.payload.transactions,
                     ).to.have.lengthOf.above(0);
-                    expect(res.body.payload.transactions[0]).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
-                        'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
-                        'assignedCategory',
-                    );
-                    expect(
-                        res.body.payload.transactions[0].assignedCategory,
-                    ).to.be.a('object');
-                    expect(
-                        res.body.payload.transactions[0].assignedCategory,
-                    ).to.have.all.keys(
-                        'id',
-                        'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
-                    );
+                    for (const transaction of res.body.payload.transactions) {
+                        expect(transaction).to.have.all.keys(
+                            'assignedCategory',
+                            'ballance',
+                            'categoryId',
+                            'cardId',
+                            'createdOn',
+                            'credit',
+                            'currency',
+                            'date',
+                            'debit',
+                            'description',
+                            'id',
+                            'transactionType',
+                            'updatedOn',
+                            'userId',
+                        );
+                        if (
+                            transaction.assignedCategory ||
+                            transaction.categoryId.length
+                        ) {
+                            expect(transaction.assignedCategory).to.be.a(
+                                'object',
+                            );
+                            expect(
+                                transaction.assignedCategory,
+                            ).to.have.all.keys(
+                                'colour',
+                                'createdOn',
+                                'description',
+                                'id',
+                                'label',
+                                'matchers',
+                                'updatedOn',
+                                'userId',
+                            );
+                        }
+                    }
                     done();
                 });
         });
@@ -146,54 +166,53 @@ describe('[UNIT] routes : transaction', () => {
     describe('GET /transaction/:id', () => {
         it('should retrieve a single transaction', (done) => {
             chai.request(server)
-                .get('/transaction/1')
+                .get(`/transaction/${transactionId1}`)
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.transaction).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
+                    const transaction = res.body.payload.transaction;
+                    expect(transaction).to.have.all.keys(
+                        'assignedCategory',
                         'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
+                        'categoryId',
+                        'cardId',
+                        'createdOn',
+                        'credit',
+                        'currency',
+                        'date',
+                        'debit',
+                        'description',
+                        'id',
+                        'transactionType',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.transaction.id).to.eql(1);
-                    expect(res.body.payload.transaction.date).to.be.a('number');
-                    expect(
-                        res.body.payload.transaction.transaction_type,
-                    ).to.be.a('string');
-                    expect(res.body.payload.transaction.description).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.debit).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transaction.credit).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transaction.ballance).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transaction.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.category_id).to.be.a(
-                        'number',
-                    );
+                    expect(transaction.assignedCategory).to.eql(null);
+                    expect(transaction.ballance).to.be.a('number');
+                    expect(transaction.categoryId).to.be.a('string');
+                    expect(transaction.cardId).to.be.a('string');
+                    expect(transaction.createdOn).to.be.a('string');
+                    expect(transaction.credit).to.be.a('number');
+                    expect(transaction.currency).to.be.a('string');
+                    expect(transaction.date).to.be.a('string');
+                    expect(transaction.debit).to.be.a('number');
+                    expect(transaction.description).to.be.a('string');
+                    expect(transaction.id).to.be.a('string');
+                    expect(transaction.transactionType).to.be.a('string');
+                    expect(transaction.updatedOn).to.be.a('string');
+                    expect(transaction.userId).to.be.a('string');
                     done();
                 });
         });
@@ -202,41 +221,49 @@ describe('[UNIT] routes : transaction', () => {
     describe('GET /transaction/:id?includeCategory=true', () => {
         it('should retrieve a single transaction with category information', (done) => {
             chai.request(server)
-                .get('/transaction/1?includeCategory=true')
+                .get(`/transaction/${transactionId1}?includeCategory=true`)
                 .set('Content-Type', 'application/json')
                 .send()
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.transaction).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
-                        'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
+                    const transaction = res.body.payload.transaction;
+                    expect(transaction).to.have.all.keys(
                         'assignedCategory',
+                        'ballance',
+                        'categoryId',
+                        'cardId',
+                        'createdOn',
+                        'credit',
+                        'currency',
+                        'date',
+                        'debit',
+                        'description',
+                        'id',
+                        'transactionType',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(
-                        res.body.payload.transaction.assignedCategory,
-                    ).to.be.a('object');
-                    expect(
-                        res.body.payload.transaction.assignedCategory,
-                    ).to.have.all.keys(
+                    expect(transaction.assignedCategory).to.be.a('object');
+                    expect(transaction.assignedCategory).to.have.all.keys(
+                        'colour',
+                        'createdOn',
+                        'description',
                         'id',
                         'label',
-                        'description',
-                        'colour',
-                        'created_on',
-                        'updated_on',
+                        'matchers',
+                        'updatedOn',
+                        'userId',
                     );
                     done();
                 });
@@ -247,207 +274,222 @@ describe('[UNIT] routes : transaction', () => {
         it('should create a new transaction', (done) => {
             const date = new Date();
 
+            const ballance = 934.17;
+            const cardId = 'be913800-df3b-4285-803a-88e971fde8f3';
+            const credit = 0;
+            const currency = 'GBP';
+            const debit = 23;
+            const description = `TEST_TRANSACTION_${date.toString()}`;
             const transDate = new Date('23 june 2023').getTime();
             const transType = 'DEB';
-            const description = `TEST_TRANSACTION_${date.toString()}`;
-            const debit = 23;
-            const credit = 0;
-            const ballance = 934.17;
 
             chai.request(server)
                 .post('/transaction')
                 .set('Content-Type', 'application/json')
                 .send({
-                    date: transDate,
-                    transaction_type: transType,
-                    description: description,
-                    debit: debit,
-                    credit: credit,
                     ballance: ballance,
+                    cardId: cardId,
+                    credit: credit,
+                    currency: currency,
+                    date: transDate,
+                    debit: debit,
+                    description: description,
+                    transactionType: transType,
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.transaction).to.be.a('object');
-                    expect(res.body.payload.transaction).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
+                    const transaction = res.body.payload.transaction;
+                    expect(transaction).to.be.a('object');
+                    expect(transaction).to.have.all.keys(
+                        'assignedCategory',
                         'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
+                        'categoryId',
+                        'cardId',
+                        'createdOn',
+                        'credit',
+                        'currency',
+                        'date',
+                        'debit',
+                        'description',
+                        'id',
+                        'transactionType',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.transaction.id).to.be.a('number');
-                    expect(res.body.payload.transaction.date).to.eql(transDate);
-                    expect(
-                        res.body.payload.transaction.transaction_type,
-                    ).to.eql(transType);
-                    expect(res.body.payload.transaction.description).to.eql(
-                        description,
-                    );
-                    expect(res.body.payload.transaction.debit).to.eql(debit);
-                    expect(res.body.payload.transaction.credit).to.eql(credit);
-                    expect(res.body.payload.transaction.ballance).to.eql(
-                        ballance,
-                    );
-                    expect(res.body.payload.transaction.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.updated_on).to.eql(
-                        res.body.payload.transaction.created_on,
-                    );
+                    expect(transaction.assignedCategory).to.eql(null);
+                    expect(transaction.ballance).to.be.eql(ballance);
+                    expect(transaction.categoryId).to.be.eql(null);
+                    expect(transaction.cardId).to.be.eql(cardId);
+                    expect(transaction.createdOn).to.be.a('string');
+                    expect(transaction.credit).to.be.eql(credit);
+                    expect(transaction.currency).to.be.eql(currency);
+                    expect(transaction.date).to.be.a('string');
+                    expect(transaction.debit).to.be.eql(debit);
+                    expect(transaction.description).to.be.eql(description);
+                    expect(transaction.id).to.be.a('string');
+                    expect(transaction.transactionType).to.be.eql(transType);
+                    expect(transaction.updatedOn).to.be.a('string');
+                    expect(transaction.userId).to.be.a('string');
                     done();
                 });
         });
     });
 
-    describe('PUT /transaction/1', () => {
+    describe('PUT /transaction/:transactionId', () => {
         it('should update a single transaction', (done) => {
             const date = new Date();
 
+            const ballance = 622.97;
+            const cardId = 'dc4b572d-1be4-412f-b99a-4cc947e9f048'; // not currently in seed data
+            const credit = 0;
+            const currency = 'EUR';
+            const debit = 52;
+            const description = `TEST_TRANSACTION_${date.toString()}`;
             const transDate = new Date('30 july 2022').getTime();
             const transType = 'DEB';
-            const description = `TEST_TRANSACTION_${date.toString()}`;
-            const debit = 52;
-            const credit = 0;
-            const ballance = 622.97;
 
             chai.request(server)
-                .put('/transaction/1')
+                .put(`/transaction/${transactionId2}`)
                 .set('Content-Type', 'application/json')
                 .send({
-                    date: transDate,
-                    transaction_type: transType,
-                    description: description,
-                    debit: debit,
-                    credit: credit,
                     ballance: ballance,
+                    cardId: cardId,
+                    credit: credit,
+                    currency: currency,
+                    date: transDate,
+                    debit: debit,
+                    description: description,
+                    transactionType: transType,
                 })
-                .end((err, res) => {
-                    should.not.exist(err);
+                .end((error, res) => {
+                    if (error) {
+                        console.error(error);
+                    }
+                    should.not.exist(error);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(201);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
 
-                    expect(res.body.payload.transaction).to.be.a('object');
-                    expect(res.body.payload.transaction).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
+                    const transaction = res.body.payload.transaction;
+                    expect(transaction).to.be.a('object');
+                    expect(transaction).to.have.all.keys(
+                        'assignedCategory',
                         'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
+                        'categoryId',
+                        'cardId',
+                        'createdOn',
+                        'credit',
+                        'currency',
+                        'date',
+                        'debit',
+                        'description',
+                        'id',
+                        'transactionType',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.transaction.id).to.eql(1);
-                    expect(res.body.payload.transaction.date).to.eql(transDate);
-                    expect(
-                        res.body.payload.transaction.transaction_type,
-                    ).to.eql(transType);
-                    expect(res.body.payload.transaction.description).to.eql(
-                        description,
-                    );
-                    expect(res.body.payload.transaction.debit).to.eql(debit);
-                    expect(res.body.payload.transaction.credit).to.eql(credit);
-                    expect(res.body.payload.transaction.ballance).to.eql(
-                        ballance,
-                    );
-                    expect(res.body.payload.transaction.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.updated_on).to.not.eql(
-                        res.body.payload.transaction.created_on,
-                    );
+                    expect(transaction.ballance).to.be.eql(ballance);
+                    expect(transaction.categoryId).to.satisfy(nullOr('string'));
+                    expect(transaction.cardId).to.be.eql(cardId);
+                    expect(transaction.createdOn).to.be.a('string');
+                    expect(transaction.credit).to.be.eql(credit);
+                    expect(transaction.currency).to.be.eql(currency);
+                    expect(transaction.date).to.be.a('string');
+                    expect(transaction.debit).to.be.eql(debit);
+                    expect(transaction.description).to.be.eql(description);
+                    expect(transaction.id).to.be.eql(transactionId2);
+                    expect(transaction.transactionType).to.be.eql(transType);
+                    expect(transaction.updatedOn).to.be.a('string');
+                    expect(transaction.userId).to.be.a('string');
                     done();
                 });
         });
     });
 
-    describe('DELETE /transaction/1', () => {
+    describe('DELETE /transaction/:transactionId', () => {
         it('should delete a single transaction', (done) => {
             chai.request(server)
-                .get('/transaction/1')
+                .get(`/transaction/${transactionId3}`)
                 .set('Content-Type', 'application/json')
                 .end((err1, res) => {
                     should.not.exist(err1);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
-                    expect(res.body.payload.transaction).to.have.all.keys(
-                        'id',
-                        'date',
-                        'transaction_type',
-                        'description',
-                        'debit',
-                        'credit',
+                    const transaction = res.body.payload.transaction;
+                    expect(transaction).to.have.all.keys(
+                        'assignedCategory',
                         'ballance',
-                        'created_on',
-                        'updated_on',
-                        'category_id',
+                        'categoryId',
+                        'cardId',
+                        'createdOn',
+                        'credit',
+                        'currency',
+                        'date',
+                        'debit',
+                        'description',
+                        'id',
+                        'transactionType',
+                        'updatedOn',
+                        'userId',
                     );
-                    expect(res.body.payload.transaction.id).to.eql(1);
-                    expect(res.body.payload.transaction.date).to.be.a('number');
-                    expect(
-                        res.body.payload.transaction.transaction_type,
-                    ).to.be.a('string');
-                    expect(res.body.payload.transaction.description).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.debit).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transaction.credit).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transaction.ballance).to.be.a(
-                        'number',
-                    );
-                    expect(res.body.payload.transaction.created_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.updated_on).to.be.a(
-                        'string',
-                    );
-                    expect(res.body.payload.transaction.category_id).to.be.a(
-                        'number',
-                    );
+                    expect(transaction.assignedCategory).to.eql(null);
+                    expect(transaction.ballance).to.be.a('number');
+                    expect(transaction.categoryId).to.be.a('string');
+                    expect(transaction.cardId).to.be.a('string');
+                    expect(transaction.createdOn).to.be.a('string');
+                    expect(transaction.credit).to.be.a('number');
+                    expect(transaction.currency).to.be.a('string');
+                    expect(transaction.date).to.be.a('string');
+                    expect(transaction.debit).to.be.a('number');
+                    expect(transaction.description).to.be.a('string');
+                    expect(transaction.id).to.be.a('string');
+                    expect(transaction.transactionType).to.be.a('string');
+                    expect(transaction.updatedOn).to.be.a('string');
+                    expect(transaction.userId).to.be.a('string');
 
                     chai.request(server)
-                        .delete('/transaction/1')
+                        .delete(`/transaction/${transactionId3}`)
                         .set('Content-Type', 'application/json')
                         .end((err2, res2) => {
                             should.not.exist(err2);
                             res2.redirects.length.should.eql(0);
-                            res2.status.should.eql(204);
+                            res2.status.should.eql(
+                                204,
+                                `Invalid response: ${JSON.stringify(res2.body)}`,
+                            );
 
                             chai.request(server)
-                                .get('/transaction/1')
+                                .get(`/transaction/${transactionId3}`)
                                 .set('Content-Type', 'application/json')
                                 .end((err3, res3) => {
                                     should.not.exist(err3);
                                     res3.redirects.length.should.eql(0);
-                                    res3.status.should.eql(404);
+                                    res3.status.should.eql(
+                                        404,
+                                        `Invalid response: ${JSON.stringify(res3.body)}`,
+                                    );
                                     res3.type.should.eql('application/json');
                                     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                                     expect(res3.body.payload.transaction).to.not

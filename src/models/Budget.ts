@@ -1,15 +1,18 @@
 import { ColumnNameMappers, Model } from 'objection';
 
 import knex from '../db/knex';
+import { IClientBudget } from '../types/clientTypes';
+import { reprBudgetRowList } from './BudgetRow';
+import type BudgetRow from './BudgetRow';
 
 Model.knex(knex);
 
 export default class Budget extends Model {
     id?: string;
 
-    card_id: string;
+    cardId: string;
 
-    user_id: string;
+    userId: string;
 
     name: string;
 
@@ -23,9 +26,11 @@ export default class Budget extends Model {
 
     updatedOn: string;
 
-    static created_on: Date | string;
+    budgetRows: BudgetRow[];
 
-    static updated_on: Date | string;
+    static createdOn: Date | string;
+
+    static updatedOn: Date | string;
 
     static get tableName() {
         return 'budget';
@@ -33,22 +38,22 @@ export default class Budget extends Model {
 
     static beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     static $beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     static $afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
     }
 
@@ -64,8 +69,8 @@ export default class Budget extends Model {
             ],
             properties: {
                 id: { type: 'string' },
-                card_id: { type: 'string' },
-                user_id: { type: 'string' },
+                cardId: { type: 'string' },
+                userId: { type: 'string' },
                 name: { type: 'string', minLength: 3 },
                 shortDescription: { type: 'string' },
                 longDescription: { type: 'string' },
@@ -93,13 +98,14 @@ export default class Budget extends Model {
     static columnNameMappers: ColumnNameMappers = {
         parse(obj) {
             return {
+                createdOn: obj.created_on,
                 id: obj.id,
+                cardId: obj.card_id,
                 userId: obj.user_id,
                 name: obj.name,
                 shortDescription: obj.short_desc,
                 longDescription: obj.long_desc,
                 isDefault: obj.is_default,
-                createdOn: obj.created_on,
                 updatedOn: obj.updated_on,
             };
         },
@@ -118,3 +124,43 @@ export default class Budget extends Model {
         },
     };
 }
+
+/**
+ * Formats a budget to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param budget The budget to return.
+ * @returns The formatted budget.
+ */
+export const reprBudget = (budget: Budget) => {
+    const formattedBudget: IClientBudget = {
+        budgetRows: [],
+        cardId: budget.cardId,
+        createdOn: budget.createdOn,
+        id: budget.id ?? '',
+        isDefault: Boolean(budget.isDefault),
+        longDescription: budget.longDescription,
+        name: budget.name,
+        shortDescription: budget.shortDescription,
+        updatedOn: budget.updatedOn,
+    };
+
+    if (budget.budgetRows) {
+        formattedBudget.budgetRows = reprBudgetRowList(budget.budgetRows);
+    }
+
+    return formattedBudget;
+};
+
+/**
+ * List format of {@link reprBudget}.
+ *
+ * Formats a list of budgets to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param budgets List of budgets to represent.
+ * @returns The formatted budgets.
+ */
+export const reprBudgetList = (budgets: Budget[]) => {
+    return budgets.map(reprBudget);
+};

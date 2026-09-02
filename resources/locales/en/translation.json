@@ -10,6 +10,8 @@
     "budget": {
         "messages": {
             "deletedSuccessfully": "Budget deleted successfully.",
+            "issueCreating": "Something went wrong creating new Budget.",
+            "issueRetrievingCreatedItem": "Something went wrong retrieving the created budget.",
             "notFoundById": "No Budget with ID \"{{budgetId}}\" found.",
             "setAsDefault": "Budget set as default.",
             "updatedSuccessfully": "Budget updated successfully."
@@ -46,6 +48,7 @@
             "deletedSuccessfully": "Scenario deleted successfully.",
             "scenariosCreated": "Scenarios created successfully.",
             "notFoundById": "No Scenario with ID \"{{scenarioId}}\" found.",
+            "notFoundAfterUpdate": "Issue retrieving scenario after update.",
             "setAsDefault": "Scenario set as default.",
             "updatedSuccessfully": "Scenario updated successfully."
         }

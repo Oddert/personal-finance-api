@@ -1,6 +1,6 @@
-const { v4: uuid } = require('uuid');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
+const { v4: uuid } = require('uuid');
 
 dayjs.extend(customParseFormat);
 
@@ -10,8 +10,7 @@ dayjs.extend(customParseFormat);
  */
 exports.seed = async function (knex) {
     // Deletes ALL existing entries
-    const scenarioUuid = uuid();
-    await knex('scenario').del();
+    const scenarioUuid = 'f75ac2d1-1ff2-4f14-aa6a-0a7d7fda372d';
     await knex('scenario').insert([
         {
             id: scenarioUuid,
@@ -23,14 +22,26 @@ exports.seed = async function (knex) {
             end_date: null,
             title: 'BAU',
             description: 'Business as usual',
-            start_ballance: 1943,
         },
     ]);
-    await knex('transactor').del();
+    await knex('scenario_card_bridge').insert([
+        {
+            id: '6ed8bb49-f22b-4091-b8f2-6fd9b17e51ba',
+            scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
+            calc_start_date: new Date(),
+            calc_end_date: null,
+            display_start_date: new Date(),
+            display_end_date: null,
+            start_ballance: 1943,
+            note: 'Primary card bridge',
+        },
+    ]);
     await knex('transactor').insert([
         {
             id: '1fb5481f-a257-48e3-beed-2c099a63006b',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Mortgage',
             created_on: new Date(),
             updated_on: new Date(),
@@ -40,6 +51,7 @@ exports.seed = async function (knex) {
         {
             id: '06dd500e-b7f5-4aa1-a4af-bc45bebce138',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Salary',
             created_on: new Date(),
             updated_on: new Date(),
@@ -49,6 +61,7 @@ exports.seed = async function (knex) {
         {
             id: '5891d4d5-4873-4aab-b911-d4c12600be7e',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Food',
             created_on: new Date(),
             updated_on: new Date(),
@@ -58,6 +71,7 @@ exports.seed = async function (knex) {
         {
             id: 'a0bc07f7-bde3-410c-9a30-d5d5154ca418',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Council Tax',
             created_on: new Date(),
             updated_on: new Date(),
@@ -67,6 +81,7 @@ exports.seed = async function (knex) {
         {
             id: 'f442d1e3-4a86-40af-9316-c2a078d53e2b',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Energy',
             created_on: new Date(),
             updated_on: new Date(),
@@ -76,6 +91,7 @@ exports.seed = async function (knex) {
         {
             id: 'ce999b56-e1c0-4a73-a486-bb7c4fdb97ff',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Dentist',
             created_on: new Date(),
             updated_on: new Date(),
@@ -85,6 +101,7 @@ exports.seed = async function (knex) {
         {
             id: '4121eb31-591c-4b1e-9ce2-6c4f30c33180',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Phone',
             created_on: new Date(),
             updated_on: new Date(),
@@ -94,6 +111,7 @@ exports.seed = async function (knex) {
         {
             id: '7fb56243-3bf5-4cd1-8d67-8aaac0b69385',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Home Insurance',
             created_on: new Date(),
             updated_on: new Date(),
@@ -103,6 +121,7 @@ exports.seed = async function (knex) {
         {
             id: 'e711083e-22bf-426a-b70a-35035e1d830d',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'EE',
             created_on: new Date(),
             updated_on: new Date(),
@@ -112,6 +131,7 @@ exports.seed = async function (knex) {
         {
             id: 'ec8d1f38-b521-46fd-9271-a70fd99850fb',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Spotify',
             created_on: new Date(),
             updated_on: new Date(),
@@ -121,6 +141,7 @@ exports.seed = async function (knex) {
         {
             id: '69608c9d-213a-486a-9048-e07ca1bf6e16',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Free Code Camp',
             created_on: new Date(),
             updated_on: new Date(),
@@ -130,6 +151,7 @@ exports.seed = async function (knex) {
         {
             id: '4a0da5eb-8bb9-46fc-9252-d7b4c94375ec',
             scenario_id: scenarioUuid,
+            card_id: 'be913800-df3b-4285-803a-88e971fde8f3',
             description: 'Website',
             created_on: new Date(),
             updated_on: new Date(),
@@ -137,10 +159,9 @@ exports.seed = async function (knex) {
             is_addition: false,
         },
     ]);
-    await knex('scheduler').del();
     await knex('scheduler').insert([
         {
-            id: 1,
+            id: uuid(),
             transactor_id: '1fb5481f-a257-48e3-beed-2c099a63006b',
             scheduler_code: 'DAY',
             day: 22,
@@ -148,7 +169,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 2,
+            id: uuid(),
             transactor_id: '06dd500e-b7f5-4aa1-a4af-bc45bebce138',
             scheduler_code: 'SCALAR',
             created_on: new Date(),
@@ -157,7 +178,7 @@ exports.seed = async function (knex) {
             start_date: new Date(dayjs().date(18).month(1).valueOf()), // '18 january 2024'
         },
         {
-            id: 3,
+            id: uuid(),
             transactor_id: '5891d4d5-4873-4aab-b911-d4c12600be7e',
             scheduler_code: 'SCALAR',
             created_on: new Date(),
@@ -165,25 +186,25 @@ exports.seed = async function (knex) {
             step: 7,
             start_date: new Date(dayjs().date(6).month(1).valueOf()), // '6 january 2024'
         },
+        // {
+        //     id: uuid(),
+        //     transactor_id: 'c349163f-8f41-466e-91ec-1ba84e6731c0',
+        //     scheduler_code: 'DAY',
+        //     day: 23,
+        //     created_on: new Date(),
+        //     updated_on: new Date(),
+        // },
+        // {
+        //     id: uuid(),
+        //     transactor_id: 'ee2ef636-ffe1-441f-b7ef-86f43b6afaff',
+        //     scheduler_code: 'SCALAR',
+        //     created_on: new Date(),
+        //     updated_on: new Date(),
+        //     step: 7,
+        //     start_date: new Date(dayjs().date(1).month(1).valueOf()), // '1 january 2024'
+        // },
         {
-            id: 4,
-            transactor_id: 'c349163f-8f41-466e-91ec-1ba84e6731c0',
-            scheduler_code: 'DAY',
-            day: 23,
-            created_on: new Date(),
-            updated_on: new Date(),
-        },
-        {
-            id: 5,
-            transactor_id: 'ee2ef636-ffe1-441f-b7ef-86f43b6afaff',
-            scheduler_code: 'SCALAR',
-            created_on: new Date(),
-            updated_on: new Date(),
-            step: 7,
-            start_date: new Date(dayjs().date(1).month(1).valueOf()), // '1 january 2024'
-        },
-        {
-            id: 6,
+            id: uuid(),
             transactor_id: 'a0bc07f7-bde3-410c-9a30-d5d5154ca418',
             scheduler_code: 'DAY',
             day: 29,
@@ -191,7 +212,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 7,
+            id: uuid(),
             transactor_id: 'f442d1e3-4a86-40af-9316-c2a078d53e2b',
             scheduler_code: 'DAY',
             day: 22,
@@ -199,7 +220,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 8,
+            id: uuid(),
             transactor_id: 'ce999b56-e1c0-4a73-a486-bb7c4fdb97ff',
             scheduler_code: 'DAY',
             day: 5,
@@ -207,7 +228,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 9,
+            id: uuid(),
             transactor_id: '4121eb31-591c-4b1e-9ce2-6c4f30c33180',
             scheduler_code: 'DAY',
             day: 5,
@@ -215,40 +236,40 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 10,
+            id: uuid(),
             transactor_id: '7fb56243-3bf5-4cd1-8d67-8aaac0b69385',
             scheduler_code: 'DAY',
             day: 5,
             created_on: new Date(),
             updated_on: new Date(),
         },
+        // {
+        //     id: uuid(),
+        //     transactor_id: 'fa4e4880-0c6f-4465-b202-93df5a9b08b7',
+        //     scheduler_code: 'SCALAR',
+        //     created_on: new Date(),
+        //     updated_on: new Date(),
+        //     step: 365,
+        //     start_date: new Date(dayjs().date(12).month(2).valueOf()), // '12 february 2024'
+        // },
         {
-            id: 11,
-            transactor_id: 'fa4e4880-0c6f-4465-b202-93df5a9b08b7',
-            scheduler_code: 'SCALAR',
-            created_on: new Date(),
-            updated_on: new Date(),
-            step: 365,
-            start_date: new Date(dayjs().date(12).month(2).valueOf()), // '12 february 2024'
-        },
-        {
-            id: 12,
+            id: uuid(),
             transactor_id: 'e711083e-22bf-426a-b70a-35035e1d830d',
             scheduler_code: 'DAY',
             day: 15,
             created_on: new Date(),
             updated_on: new Date(),
         },
+        // {
+        //     id: uuid(),
+        //     transactor_id: '0b14a04d-9653-40f5-8696-9f0631af75fb',
+        //     scheduler_code: 'DAY',
+        //     day: 19,
+        //     created_on: new Date(),
+        //     updated_on: new Date(),
+        // },
         {
-            id: 13,
-            transactor_id: '0b14a04d-9653-40f5-8696-9f0631af75fb',
-            scheduler_code: 'DAY',
-            day: 19,
-            created_on: new Date(),
-            updated_on: new Date(),
-        },
-        {
-            id: 14,
+            id: uuid(),
             transactor_id: 'ec8d1f38-b521-46fd-9271-a70fd99850fb',
             scheduler_code: 'DAY',
             day: 28,
@@ -256,7 +277,7 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 15,
+            id: uuid(),
             transactor_id: '69608c9d-213a-486a-9048-e07ca1bf6e16',
             scheduler_code: 'DAY',
             day: 14,
@@ -264,20 +285,20 @@ exports.seed = async function (knex) {
             updated_on: new Date(),
         },
         {
-            id: 16,
+            id: uuid(),
             transactor_id: '4a0da5eb-8bb9-46fc-9252-d7b4c94375ec',
             scheduler_code: 'DAY',
             day: 4,
             created_on: new Date(),
             updated_on: new Date(),
         },
-        {
-            id: 17,
-            transactor_id: '61c6dc20-63b2-42d8-8b6b-2c8eca102753',
-            scheduler_code: 'DAY',
-            day: 2,
-            created_on: new Date(),
-            updated_on: new Date(),
-        },
+        // {
+        //     id: uuid(),
+        //     transactor_id: '61c6dc20-63b2-42d8-8b6b-2c8eca102753',
+        //     scheduler_code: 'DAY',
+        //     day: 2,
+        //     created_on: new Date(),
+        //     updated_on: new Date(),
+        // },
     ]);
 };

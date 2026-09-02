@@ -51,12 +51,12 @@ export const getSeeds = async (req: IUserRequest, res: Response) => {
         const categoryMatcher = await CategoryMatcher.query();
         const scenario = (await Scenario.query()).map((datum) => ({
             ...datum,
-            start_date: datum.start_date === '' ? null : datum.start_date,
-            end_date: datum.end_date === '' ? null : datum.end_date,
+            startDate: datum.startDate === '' ? null : datum.startDate,
+            endDate: datum.endDate === '' ? null : datum.endDate,
         }));
         const transactor = (await Transactor.query()).map((datum) => ({
             ...datum,
-            is_addition: Boolean(datum.is_addition),
+            is_addition: Boolean(datum.isAddition),
         }));
         const scheduler = await Scheduler.query();
         const transaction = await Transaction.query();

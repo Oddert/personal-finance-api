@@ -5,13 +5,13 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('transactor', (table) => {
-        table.increments('id').primary();
+        table.uuid('id').primary().defaultTo(knex.fn.uuid()).notNullable();
         table.datetime('created_on').notNullable();
         table.datetime('updated_on').notNullable();
         table.string('description').notNullable();
         table.boolean('is_addition').notNullable().defaultTo(false);
         table.float('value').notNullable().defaultTo(0);
-        table.integer('scenario_id').references('scenario.id');
+        table.uuid('scenario_id').references('scenario.id').notNullable();
     });
 };
 

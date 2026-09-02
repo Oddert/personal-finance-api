@@ -10,7 +10,7 @@ import {
     respondServerError,
 } from '../utils/responses';
 
-import Card from '../models/Card';
+import Card, { reprCard, reprCardList } from '../models/Card';
 
 /**
  * Returns all Cards belonging to an authenticated user.
@@ -18,7 +18,7 @@ import Card from '../models/Card';
 export const getCards = async (req: IUserRequest, res: Response) => {
     try {
         const cards = await Card.query().where('user_id', '=', req.user.id);
-        return respondOk({ req, res, payload: { cards } });
+        return respondOk({ req, res, payload: { cards: reprCardList(cards) } });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -33,7 +33,17 @@ export const getSingleCard = async (req: IUserRequest, res: Response) => {
             .findById(req.params.id)
             .where('user_id', '=', req.user.id);
 
-        return respondOk({ req, res, payload: { card } });
+        if (!card) {
+            return respondNotFound({
+                req,
+                res,
+                error: req.t('card.messages.notFoundById', {
+                    cardId: req.params.id,
+                }),
+            });
+        }
+
+        return respondOk({ req, res, payload: { card: reprCard(card) } });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -54,7 +64,8 @@ export const createSingleCard = async (req: IUserRequest, res: Response) => {
             id: uuid(),
         };
         const card = await Card.query().insertAndFetch(body);
-        return respondOk({ req, res, payload: { card } });
+
+        return respondOk({ req, res, payload: { card: reprCard(card) } });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });
     }
@@ -101,7 +112,7 @@ export const updateSingleCard = async (req: IUserRequest, res: Response) => {
             req,
             res,
             message: req.t('card.messages.updatedSuccessfully'),
-            payload: { card },
+            payload: { card: reprCard(card) },
         });
     } catch (error: any) {
         return respondServerError({ req, res, error: error.message });

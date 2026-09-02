@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,6 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
 
 chai.use(chaiHttp);
 
@@ -45,7 +46,10 @@ describe('[INTEGRATION] routes : category', () => {
                 .end((err1, res1) => {
                     should.not.exist(err1);
                     res1.redirects.length.should.eql(0);
-                    res1.status.should.eql(200);
+                    res1.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res1.body)}`,
+                    );
                     res1.type.should.eql('application/json');
                     expect(res1.body.payload.categories).to.have.lengthOf.above(
                         0,
@@ -63,7 +67,10 @@ describe('[INTEGRATION] routes : category', () => {
                         .end((err2, res2) => {
                             should.not.exist(err2);
                             res2.redirects.length.should.eql(0);
-                            res2.status.should.eql(201);
+                            res2.status.should.eql(
+                                201,
+                                `Invalid response: ${JSON.stringify(res2.body)}`,
+                            );
                             res2.type.should.eql('application/json');
 
                             res2.body.status.should.eql(res2.status);
@@ -71,15 +78,17 @@ describe('[INTEGRATION] routes : category', () => {
                                 'object',
                             );
                             expect(res2.body.payload.category).to.have.all.keys(
+                                'colour',
+                                'createdOn',
+                                'description',
                                 'id',
                                 'label',
-                                'description',
-                                'colour',
-                                'created_on',
-                                'updated_on',
+                                'matchers',
+                                'updatedOn',
+                                'userId',
                             );
                             expect(res2.body.payload.category.id).to.be.a(
-                                'number',
+                                'string',
                             );
                             expect(res2.body.payload.category.label).to.eql(
                                 catLabel,
@@ -91,10 +100,10 @@ describe('[INTEGRATION] routes : category', () => {
                                 catColour,
                             );
                             expect(
-                                res2.body.payload.category.created_on,
+                                res2.body.payload.category.createdOn,
                             ).to.be.a('string');
                             expect(
-                                res2.body.payload.category.updated_on,
+                                res2.body.payload.category.updatedOn,
                             ).to.be.a('string');
 
                             chai.request(server)
@@ -104,7 +113,10 @@ describe('[INTEGRATION] routes : category', () => {
                                 .end((err3, res3) => {
                                     should.not.exist(err3);
                                     res3.redirects.length.should.eql(0);
-                                    res3.status.should.eql(200);
+                                    res3.status.should.eql(
+                                        200,
+                                        `Invalid response: ${JSON.stringify(res3.body)}`,
+                                    );
                                     res3.type.should.eql('application/json');
                                     expect(
                                         res3.body.payload.categories,

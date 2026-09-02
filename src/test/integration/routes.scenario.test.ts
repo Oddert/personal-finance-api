@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+
+import 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import path from 'path';
@@ -5,8 +8,7 @@ import path from 'path';
 import knex from '../../db/knex';
 
 import server from '../../';
-
-process.env.NODE_ENV = 'test';
+import { nullOr } from '../../utils/testUtils';
 
 chai.use(chaiHttp);
 
@@ -21,15 +23,7 @@ const seedOpts = {
     directory: path.join(__dirname, '../../db/seeds'),
 };
 
-/**
- * Curried function which tests a value for null.
- *
- * Returns `true` if the item is null, otherwise returns the default value `other`.
- * @param other Default value to return.
- */
-const nullOr = (other: string) => (s: any) => s === null || typeof s == other;
-
-describe('[INTEGRATION] routes : transaction', () => {
+describe('[INTEGRATION] routes : scenario', () => {
     beforeEach(() => {
         return knex.migrate
             .rollback(migrateOpts)
@@ -48,128 +42,105 @@ describe('[INTEGRATION] routes : transaction', () => {
                 .end((err, res) => {
                     should.not.exist(err);
                     res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
+                    res.status.should.eql(
+                        200,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
                     res.type.should.eql('application/json');
 
                     res.body.status.should.eql(res.status);
                     expect(res.body.payload.scenarios).to.have.lengthOf.above(
                         0,
                     );
-                    expect(res.body.payload.scenarios[0]).to.have.all.keys(
-                        'id',
-                        'start_date',
-                        'end_date',
-                        'created_on',
-                        'updated_on',
-                        'title',
-                        'description',
-                        'start_ballance',
-                        'transactors',
-                    );
-                    expect(res.body.payload.scenarios[0].transactors).to.be.a(
-                        'array',
-                    );
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0],
-                    ).to.have.all.keys(
-                        'id',
-                        'created_on',
-                        'updated_on',
-                        'description',
-                        'is_addition',
-                        'value',
-                        'scenario_id',
-                        'schedulers',
-                    );
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0].id,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0].created_on,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0].updated_on,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .description,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .is_addition,
-                    ).to.be.oneOf([0, 1, true, false]);
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0].value,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .scenario_id,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .scenario_id,
-                    ).to.eql(res.body.payload.scenarios[0].id);
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0].schedulers,
-                    ).to.be.a('array');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0],
-                    ).to.have.all.keys(
-                        'id',
-                        'scheduler_code',
-                        'created_on',
-                        'updated_on',
-                        'step',
-                        'start_date',
-                        'day',
-                        'nth_day',
-                        'transactor_id',
-                    );
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].id,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].id,
-                    ).to.eql(res.body.payload.scenarios[0].transactors[0].id);
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].scheduler_code,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].created_on,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].updated_on,
-                    ).to.be.a('string');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].step,
-                    ).to.satisfy(nullOr('string'));
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].start_date,
-                    ).to.satisfy(nullOr('number'));
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].day,
-                    ).to.satisfy(nullOr('number'));
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].nth_day,
-                    ).to.satisfy(nullOr('number'));
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].transactor_id,
-                    ).to.be.a('number');
-                    expect(
-                        res.body.payload.scenarios[0].transactors[0]
-                            .schedulers[0].transactor_id,
-                    ).to.eql(res.body.payload.scenarios[0].transactors[0].id);
+                    for (const scenario of res.body.payload.scenarios) {
+                        expect(scenario).to.have.all.keys(
+                            'cardId',
+                            'createdOn',
+                            'description',
+                            'endDate',
+                            'id',
+                            'startBallance',
+                            'startDate',
+                            'title',
+                            'cards',
+                            'transactors',
+                            'updatedOn',
+                            'userId',
+                        );
+                        expect(scenario.cards).to.be.a('array');
+                        expect(scenario.transactors).to.be.a('array');
+
+                        for (const transactor of scenario.transactors) {
+                            expect(transactor).to.have.all.keys(
+                                'categoryId',
+                                'cardId',
+                                'createdOn',
+                                'description',
+                                'id',
+                                'isAddition',
+                                'scenarioId',
+                                'schedulers',
+                                'updatedOn',
+                                'value',
+                            );
+                            expect(transactor.id).to.be.a('string');
+                            expect(transactor.createdOn).to.be.a('string');
+                            expect(transactor.categoryId).to.satisfy(
+                                nullOr('string'),
+                            );
+                            expect(transactor.updatedOn).to.be.a('string');
+                            expect(transactor.description).to.be.a('string');
+                            expect(transactor.isAddition).to.be.oneOf([
+                                true,
+                                false,
+                            ]);
+                            expect(transactor.value).to.be.a('number');
+                            expect(transactor.scenarioId).to.be.a('string');
+                            expect(transactor.scenarioId).to.eql(scenario.id);
+                            expect(transactor.schedulers).to.be.a('array');
+
+                            for (const scheduler of transactor.schedulers) {
+                                expect(scheduler).to.have.all.keys(
+                                    'createdOn',
+                                    'day',
+                                    'id',
+                                    'nthDay',
+                                    'startDate',
+                                    'schedulerCode',
+                                    'step',
+                                    'transactorId',
+                                    'updatedOn',
+                                );
+                                expect(scheduler.id).to.be.a('string');
+                                expect(scheduler.transactorId).to.eql(
+                                    transactor.id,
+                                );
+                                expect(scheduler.schedulerCode).to.be.a(
+                                    'string',
+                                );
+                                expect(scheduler.createdOn).to.be.a('string');
+                                expect(scheduler.updatedOn).to.be.a('string');
+                                expect(scheduler.step).to.satisfy(
+                                    nullOr('string'),
+                                );
+                                expect(scheduler.startDate).to.satisfy(
+                                    nullOr('number'),
+                                );
+                                expect(scheduler.day).to.satisfy(
+                                    nullOr('number'),
+                                );
+                                expect(scheduler.nthDay).to.satisfy(
+                                    nullOr('number'),
+                                );
+                                expect(scheduler.transactorId).to.be.a(
+                                    'string',
+                                );
+                                expect(scheduler.transactorId).to.eql(
+                                    transactor.id,
+                                );
+                            }
+                        }
+                    }
                     done();
                 });
         });

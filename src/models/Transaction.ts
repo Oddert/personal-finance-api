@@ -1,17 +1,18 @@
 import { ColumnNameMappers, Model } from 'objection';
 
 import knex from '../db/knex';
+import { reprCategory } from './Category';
 
 Model.knex(knex);
 
 export default class Transaction extends Model {
     id?: string;
 
-    card_id?: number;
+    cardId?: string;
 
-    date?: Date;
+    date?: string;
 
-    transaction_type?: string;
+    transactionType?: string;
 
     description?: string;
 
@@ -21,17 +22,19 @@ export default class Transaction extends Model {
 
     ballance?: number;
 
-    created_on: Date | string;
+    createdOn: Date | string;
 
-    updated_on: Date | string;
+    updatedOn: Date | string;
 
     currency?: string;
 
-    static created_on: Date | string;
+    static createdOn: Date | string;
 
-    static updated_on: Date | string;
+    static updatedOn: Date | string;
 
-    category_id?: string;
+    categoryId?: string;
+
+    userId: string;
 
     static get tableName() {
         return 'transaction';
@@ -39,16 +42,16 @@ export default class Transaction extends Model {
 
     static beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     static afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
     }
 
@@ -57,7 +60,7 @@ export default class Transaction extends Model {
             type: 'object',
             properties: {
                 id: { type: 'string' },
-                date: { type: ['number', 'string'] },
+                date: { type: 'string' },
                 transaction_type: {
                     type: 'string',
                     minLength: 1,
@@ -68,8 +71,8 @@ export default class Transaction extends Model {
                 debit: { type: 'number' },
                 credit: { type: 'number' },
                 ballance: { type: 'number' },
-                created_on: { type: 'string' },
-                updated_on: { type: 'string' },
+                createdOn: { type: 'string' },
+                updatedOn: { type: 'string' },
                 category_id: { type: 'string' },
                 currency: { type: 'string' },
             },
@@ -83,10 +86,28 @@ export default class Transaction extends Model {
                 relation: Model.BelongsToOneRelation,
                 modelClass: Category,
                 join: {
-                    from: 'transaction.category_id',
+                    from: 'transaction.categoryId',
                     to: 'category.id',
                 },
             },
+        };
+    }
+
+    toJson() {
+        return {
+            ballance: this.ballance,
+            categoryId: this.categoryId,
+            cardId: this.cardId,
+            createdOn: new Date(this.createdOn).toISOString(),
+            credit: this.credit,
+            currency: this.currency,
+            date: this.date,
+            description: this.description,
+            debit: this.debit,
+            id: this.id,
+            transactionType: this.transactionType,
+            updatedOn: new Date(this.updatedOn).toISOString(),
+            userId: this.userId,
         };
     }
 
@@ -127,3 +148,35 @@ export default class Transaction extends Model {
         },
     };
 }
+
+/**
+ * Formats a transaction to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param transaction The transaction to return.
+ * @returns The formatted transaction.
+ */
+export const reprTransaction = (transaction: { [key: string]: any }) => {
+    return {
+        ...transaction,
+        createdOn: new Date(transaction.createdOn).toISOString(),
+        updatedOn: new Date(transaction.updatedOn).toISOString(),
+        date: new Date(transaction.date).toISOString(),
+        assignedCategory: transaction.assignedCategory
+            ? reprCategory(transaction.assignedCategory)
+            : null,
+    };
+};
+
+/**
+ * List format of {@link reprTransaction}.
+ *
+ * Formats a list of transactions to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param transactions List of transactions to represent.
+ * @returns The formatted transactions.
+ */
+export const reprTransactionList = (transactions: Transaction[]) => {
+    return transactions.map(reprTransaction);
+};

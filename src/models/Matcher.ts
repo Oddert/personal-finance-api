@@ -1,6 +1,8 @@
 import { Model } from 'objection';
 
 import knex from '../db/knex';
+import { IClientMatcher } from '../types/clientTypes';
+import { TMatchType } from '../types/ModelResponseFormats.types';
 
 Model.knex(knex);
 
@@ -16,6 +18,8 @@ export default class Matcher extends Model {
     created_on: Date | number | string;
 
     updated_on: Date | number | string;
+
+    user_id: string;
 
     static created_on: string;
 
@@ -79,3 +83,39 @@ export default class Matcher extends Model {
         };
     }
 }
+
+/**
+ * Formats a matcher to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param matcher The matcher to return.
+ * @returns The formatted matcher.
+ */
+export const reprMatcher = (matcher: Matcher): IClientMatcher => {
+    return {
+        caseSensitive: Boolean(matcher.case_sensitive),
+        createdOn: matcher.created_on
+            ? new Date(matcher.created_on).toISOString()
+            : '',
+        id: matcher.id ?? '',
+        match: matcher.match ?? '',
+        matchType: (matcher.match_type as TMatchType) ?? 'exact',
+        updatedOn: matcher.updated_on
+            ? new Date(matcher.updated_on).toISOString()
+            : '',
+        userId: matcher.user_id,
+    };
+};
+
+/**
+ * List format of {@link reprMatcher}.
+ *
+ * Formats a list of matchers to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param matchers List of matchers to represent.
+ * @returns The formatted matchers.
+ */
+export const reprMatcherList = (matchers: Matcher[]) => {
+    return matchers.map(reprMatcher);
+};

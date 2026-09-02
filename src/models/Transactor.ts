@@ -1,23 +1,34 @@
-import { Model } from 'objection';
+import { ColumnNameMappers, Model } from 'objection';
+
+import { IClientTransactor } from '../types/clientTypes';
+
+import { reprSchedulerList } from './Scheduler';
+import type Scheduler from './Scheduler';
 
 export default class Transactor extends Model {
     id?: string;
 
-    created_on: Date | string;
+    categoryId: string | null;
 
-    updated_on: Date | string;
+    cardId: string;
 
-    static created_on: Date | string;
+    createdOn: Date | string;
 
-    static updated_on: Date | string;
+    updatedOn: Date | string;
+
+    static createdOn: Date | string;
+
+    static updatedOn: Date | string;
 
     description: string;
 
-    is_addition: boolean;
+    isAddition: boolean;
 
     value: number;
 
-    scenario_id: string;
+    scenarioId: string;
+
+    schedulers: Scheduler[];
 
     static get tableName() {
         return 'transactor';
@@ -25,31 +36,17 @@ export default class Transactor extends Model {
 
     $beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     $afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
-    }
-
-    toJson() {
-        return {
-            id: this.id,
-            createdOn: this.created_on,
-            updatedOn: this.updated_on,
-            description: this.description,
-            isAddition: Boolean(this.is_addition),
-            value: this.value,
-            scenarioId: this.scenario_id,
-            // @ts-expect-error ORM types do not recognise relations
-            schedulers: this?.schedulers.map((scheduler) => scheduler.toJson()),
-        };
     }
 
     static get jsonSchema() {
@@ -58,6 +55,8 @@ export default class Transactor extends Model {
             properties: {
                 id: { type: 'string' },
                 created_on: { type: 'string' },
+                category_id: { type: 'string' },
+                card_id: { type: 'string' },
                 updated_on: { type: 'string' },
                 description: { type: 'string' },
                 value: { type: 'number' },
@@ -88,4 +87,81 @@ export default class Transactor extends Model {
             },
         };
     }
+
+    static columnNameMappers: ColumnNameMappers = {
+        parse(obj) {
+            return {
+                id: obj.id,
+                categoryId: obj.category_id ?? null,
+                cardId: obj.card_id,
+                createdOn: obj.created_on,
+                updatedOn: obj.updated_on,
+                description: obj.description,
+                isAddition: obj.is_addition,
+                value: obj.value,
+                scenarioId: obj.scenario_id,
+            };
+        },
+        format(obj) {
+            return {
+                id: obj.id,
+                category_id: obj.categoryId ?? null,
+                card_id: obj.cardId,
+                created_on: obj.createdOn,
+                updated_on: obj.updatedOn,
+                description: obj.description,
+                is_addition: obj.isAddition,
+                value: obj.value,
+                scenario_id: obj.scenarioId,
+            };
+        },
+    };
 }
+
+/**
+ * Formats a transactor to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param transactor The transactor to return.
+ * @returns The formatted transactor.
+ */
+export const reprTransactor = (transactor: Transactor): IClientTransactor => {
+    const formattedTransactor: IClientTransactor = {
+        categoryId: transactor.categoryId ?? null,
+        cardId: transactor.cardId ?? '',
+        createdOn: transactor.createdOn
+            ? new Date(transactor.createdOn).toISOString()
+            : '',
+        description: transactor.description,
+        id: transactor.id ?? '',
+        isAddition: Boolean(transactor.isAddition),
+        scenarioId: transactor.scenarioId,
+        updatedOn: transactor.updatedOn
+            ? new Date(transactor.updatedOn).toISOString()
+            : '',
+        value: transactor.value,
+    };
+
+    if (transactor.schedulers) {
+        formattedTransactor.schedulers = reprSchedulerList(
+            transactor.schedulers,
+        );
+    }
+
+    return formattedTransactor;
+};
+
+/**
+ * List format of {@link reprTransactor}.
+ *
+ * Formats a list of transactors to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param transactors List of transactors to represent.
+ * @returns The formatted transactors.
+ */
+export const reprTransactorList = (
+    transactors: Transactor[],
+): IClientTransactor[] => {
+    return transactors.map(reprTransactor);
+};

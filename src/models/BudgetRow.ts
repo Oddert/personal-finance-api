@@ -1,15 +1,28 @@
 import { ColumnNameMappers, Model } from 'objection';
 
 import knex from '../db/knex';
+import { IClientBudgetRow } from '../types/clientTypes';
 
 Model.knex(knex);
 
 export default class BudgetRow extends Model {
     id?: string;
 
-    static created_on: Date | string;
+    static createdOn: Date | string;
 
-    static updated_on: Date | string;
+    static updatedOn: Date | string;
+
+    categoryId: string;
+
+    colour: string;
+
+    label: string;
+
+    value: number;
+
+    varHighPc: number;
+
+    varLowPc: number;
 
     static get tableName() {
         return 'budget_row';
@@ -17,22 +30,22 @@ export default class BudgetRow extends Model {
 
     static beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     static $beforeInsert() {
         const now = new Date().toISOString();
-        this.created_on = now;
-        this.updated_on = now;
+        this.createdOn = now;
+        this.updatedOn = now;
     }
 
     static $afterFind() {
-        this.created_on = this.created_on
-            ? new Date(this.created_on).toISOString()
+        this.createdOn = this.createdOn
+            ? new Date(this.createdOn).toISOString()
             : '';
-        this.updated_on = this.updated_on
-            ? new Date(this.updated_on).toISOString()
+        this.updatedOn = this.updatedOn
+            ? new Date(this.updatedOn).toISOString()
             : '';
     }
 
@@ -104,3 +117,37 @@ export default class BudgetRow extends Model {
         },
     };
 }
+
+/**
+ * Formats a budgetRow to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param budgetRow The budgetRow to return.
+ * @returns The formatted budgetRow.
+ */
+export const reprBudgetRow = (budgetRow: BudgetRow) => {
+    const formattedBudget: IClientBudgetRow = {
+        categoryId: budgetRow.categoryId,
+        colour: budgetRow.colour,
+        id: budgetRow.id ?? '',
+        label: budgetRow.label,
+        value: budgetRow.value,
+        varHighPc: budgetRow.varHighPc,
+        varLowPc: budgetRow.varLowPc,
+    };
+
+    return formattedBudget;
+};
+
+/**
+ * List format of {@link reprBudgetRow}.
+ *
+ * Formats a list of budgetRows to a standard representation, validating fields and enforcing type consistency.
+ *
+ * Used to circumvent Objection's in-built representation methods due to persistent inconsistencies.
+ * @param budgetRows List of budgetRows to represent.
+ * @returns The formatted budgetRows.
+ */
+export const reprBudgetRowList = (budgetRows: BudgetRow[]) => {
+    return budgetRows.map(reprBudgetRow);
+};
