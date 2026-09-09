@@ -464,15 +464,12 @@ export const createManyTransactions = async (
         for (const transaction of req.body.transactions) {
             const body = {
                 ...transaction,
-                created_on: date,
-                updated_on: date,
+                createdOn: date,
+                updatedOn: date,
                 userId: req.user.id,
                 categoryId: transaction.assignedCategory,
                 id: uuid(),
             };
-            if (typeof transaction.date === 'string') {
-                body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf();
-            }
 
             const createdTransaction =
                 await Transaction.query().insertAndFetch(body);
@@ -549,7 +546,9 @@ export const getTransactionCount = async (req: IUserRequest, res: Response) => {
                 ? dayjs(req.query.to).toDate()
                 : dayjs(undefined).toDate();
 
-        const cardId = req.query.cardId ? String(req.query.cardId) : null;
+        const cardId = req.query.cardId
+            ? String(req.query.cardId).split(',')
+            : [];
 
         if (!cardId) {
             return respondBadRequest({
@@ -562,7 +561,7 @@ export const getTransactionCount = async (req: IUserRequest, res: Response) => {
         const count = await Transaction.query()
             .where('user_id', '=', req.user.id)
             .whereBetween('date', [startDate, endDate])
-            .where('card_id', '=', cardId)
+            .where('card_id', 'in', cardId)
             .resultSize();
 
         return respondOk({ req, res, payload: { count } });
