@@ -550,19 +550,15 @@ export const getTransactionCount = async (req: IUserRequest, res: Response) => {
             ? String(req.query.cardId).split(',')
             : [];
 
-        if (!cardId) {
-            return respondBadRequest({
-                req,
-                res,
-                message: 'No Card ID supplied in request.',
-            });
+        const query = Transaction.query()
+            .where('user_id', '=', req.user.id)
+            .whereBetween('date', [startDate, endDate]);
+
+        if (cardId.length) {
+            query.whereIn('card_id', cardId);
         }
 
-        const count = await Transaction.query()
-            .where('user_id', '=', req.user.id)
-            .whereBetween('date', [startDate, endDate])
-            .where('card_id', 'in', cardId)
-            .resultSize();
+        const count = await query.resultSize();
 
         return respondOk({ req, res, payload: { count } });
     } catch (error: any) {
