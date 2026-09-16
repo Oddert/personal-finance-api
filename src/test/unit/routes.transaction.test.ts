@@ -9,6 +9,7 @@ import knex from '../../db/knex';
 
 import server from '../../';
 import { nullOr } from '../../utils/testUtils';
+import { ITransaction } from '../../types/ModelResponseFormats.types';
 
 chai.use(chaiHttp);
 
@@ -497,6 +498,139 @@ describe('[UNIT] routes : transaction', () => {
                                     done();
                                 });
                         });
+                });
+        });
+    });
+
+    describe('PUT /transaction/update-many', () => {
+        it('should delete one transaction and leave others intact when called with delete flag', (done) => {
+            const userId = 'dc4b572d-1be4-412f-b99a-4cc947e9f048';
+            const cardId = 'be913800-df3b-4285-803a-88e971fde8f3';
+            const transactionId4 = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+            const transactionId5 = 'ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj';
+
+            // Step 1: Seed two duplicate transactions on the same card
+            knex('transaction')
+                .insert([
+                    {
+                        id: transactionId4,
+                        user_id: userId,
+                        date: new Date(),
+                        transaction_type: 'DEB',
+                        description: 'Duplicate transaction 1',
+                        debit: 50.0,
+                        credit: 0,
+                        ballance: 100.0,
+                        currency: 'GBP',
+                        category_id: '486f9685-cc57-45f4-a2e7-fc505840de6a',
+                        card_id: cardId,
+                        created_on: new Date(),
+                        updated_on: new Date(),
+                    },
+                    {
+                        id: transactionId5,
+                        user_id: userId,
+                        date: new Date(),
+                        transaction_type: 'DEB',
+                        description: 'Duplicate transaction 1',
+                        debit: 50.0,
+                        credit: 0,
+                        ballance: 100.0,
+                        currency: 'GBP',
+                        category_id: '486f9685-cc57-45f4-a2e7-fc505840de6a',
+                        card_id: cardId,
+                        created_on: new Date(),
+                        updated_on: new Date(),
+                    },
+                ])
+                .then(() => {
+                    // Step 2: Verify both transactions exist
+                    return knex('transaction')
+                        .where('card_id', cardId)
+                        .whereIn('id', [transactionId4, transactionId5])
+                        .select();
+                })
+                .then((beforeTransactions: ITransaction[]) => {
+                    expect(beforeTransactions).to.have.lengthOf(
+                        2,
+                        'Expected 2 transactions to be seeded',
+                    );
+
+                    // Step 3: Call update-many to delete one transaction
+                    chai.request(server)
+                        .put('/transaction/update-many')
+                        .set('Content-Type', 'application/json')
+                        .send({
+                            transactions: [
+                                {
+                                    id: transactionId4,
+                                    description: 'Duplicate transaction 1',
+                                    debit: 50.0,
+                                    credit: 0,
+                                    ballance: 100.0,
+                                    cardId: cardId,
+                                    currency: 'GBP',
+                                    date: new Date().toISOString(),
+                                    transactionType: 'DEB',
+                                    categoryId:
+                                        '486f9685-cc57-45f4-a2e7-fc505840de6a',
+                                    deleted: 1, // Mark for deletion
+                                },
+                                {
+                                    id: transactionId5,
+                                    description: 'Duplicate transaction 1',
+                                    debit: 50.0,
+                                    credit: 0,
+                                    ballance: 100.0,
+                                    cardId: cardId,
+                                    currency: 'GBP',
+                                    date: new Date().toISOString(),
+                                    transactionType: 'DEB',
+                                    categoryId:
+                                        '486f9685-cc57-45f4-a2e7-fc505840de6a',
+                                    deleted: 0, // Keep this one
+                                },
+                            ],
+                        })
+                        .end((error, res) => {
+                            if (error) {
+                                console.error(
+                                    'Update many error:',
+                                    error.message,
+                                );
+                            }
+                            should.not.exist(error);
+                            res.redirects.length.should.eql(0);
+                            res.status.should.eql(
+                                201,
+                                `Invalid response: ${JSON.stringify(res.body)}`,
+                            );
+                            res.type.should.eql('application/json');
+
+                            // Step 4: Verify only one transaction remains
+                            knex('transaction')
+                                .where('card_id', cardId)
+                                .whereIn('id', [transactionId4, transactionId5])
+                                .select()
+                                .then((afterTransactions: ITransaction[]) => {
+                                    expect(afterTransactions).to.have.lengthOf(
+                                        1,
+                                        `Expected 1 transaction to remain, but found ${afterTransactions.length}. Remaining: ${afterTransactions.map((t) => t.id).join(', ')}`,
+                                    );
+                                    expect(afterTransactions[0].id).to.eql(
+                                        transactionId5,
+                                    );
+                                    done();
+                                })
+                                .catch((dbError: unknown) => {
+                                    console.error('DB error:', dbError);
+                                    done(dbError);
+                                });
+                        });
+                })
+                .catch((seedError: unknown) => {
+                    console.error('Seed error:', seedError);
+                    done(seedError);
                 });
         });
     });

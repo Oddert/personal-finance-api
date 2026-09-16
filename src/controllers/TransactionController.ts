@@ -244,7 +244,7 @@ export const getTransactionsAgg = async (req: IUserRequest, res: Response) => {
                 return req.query.cardId.split(',');
             } else {
                 const cards = await Card.query().where(
-                    'userId',
+                    'user_id',
                     '=',
                     req.user.id,
                 );
@@ -497,21 +497,48 @@ export const updateManyTransactions = async (
     try {
         const date = new Date().toISOString();
         const updatedTransactions: object[] = [];
+        const deletedIds: string[] = [];
 
+        // First, separate deletes and updates to handle them in two passes
         for (const transaction of req.body.transactions) {
-            if (transaction.deleted) {
+            if (transaction.deleted === 1 || transaction.deleted === true) {
+                deletedIds.push(transaction.id);
+            }
+        }
+
+        // Verify all transactions to delete belong to the user before deletion
+        if (deletedIds.length > 0) {
+            const transactionsToDelete = await Transaction.query()
+                .where('user_id', '=', req.user.id)
+                .whereIn('id', deletedIds);
+
+            console.log(
+                `Deleting ${transactionsToDelete.length} transactions out of ${deletedIds.length} requested`,
+            );
+
+            // Only delete if they all belong to the user
+            if (transactionsToDelete.length === deletedIds.length) {
                 await Transaction.query()
-                    .where('id', '=', transaction.id)
+                    .where('user_id', '=', req.user.id)
+                    .whereIn('id', deletedIds)
                     .delete();
             } else {
+                return respondBadRequest({
+                    req,
+                    res,
+                    error: 'Some transactions do not belong to the authenticated user',
+                });
+            }
+        }
+
+        // Then handle updates for non-deleted transactions
+        for (const transaction of req.body.transactions) {
+            if (!(transaction.deleted === 1 || transaction.deleted === true)) {
+                const { deleted, id, ...rest } = transaction;
                 const body = {
-                    ...transaction,
-                    created_on: date,
-                    updated_on: date,
+                    ...rest,
+                    updatedOn: date,
                 };
-                if (typeof transaction.date === 'string') {
-                    body.date = dayjs(transaction.date, 'DD/MM/YYYY').valueOf();
-                }
 
                 const updatedTransaction = await Transaction.query()
                     .where('user_id', '=', req.user.id)
