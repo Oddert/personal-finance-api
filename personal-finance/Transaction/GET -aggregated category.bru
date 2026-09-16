@@ -1,0 +1,25 @@
+meta {
+  name: GET /aggregated category
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/transaction/aggregated?cardId=0fce8d26-52d6-4f94-bf15-3996e4a038d7&pivot=category
+  body: none
+  auth: bearer
+}
+
+params:query {
+  cardId: 0fce8d26-52d6-4f94-bf15-3996e4a038d7
+  pivot: category
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

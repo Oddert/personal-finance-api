@@ -1,17 +1,16 @@
 meta {
-  name: GET /aggregated
+  name: GET /aggregated copy
   type: http
-  seq: 1
+  seq: 2
 }
 
 get {
-  url: {{url}}/transaction/aggregated?cardId=be913800df3b4285803a88e971fde8f3&pivot=category
+  url: {{url}}/transaction/aggregated?pivot=category
   body: none
   auth: bearer
 }
 
 params:query {
-  cardId: be913800df3b4285803a88e971fde8f3
   pivot: category
 }
 
