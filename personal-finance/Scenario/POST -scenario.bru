@@ -1,0 +1,80 @@
+meta {
+  name: POST /scenario
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/scenario
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+      "id": "ccfb787b-b937-45a3-a731-353c2409e5a5",
+      "userId": "",
+      "cardId": "{{cardDebitId}}",
+      "startDate": null,
+      "endDate": null,
+      "createdOn": "",
+      "updatedOn": "",
+      "title": "",
+      "description": "",
+      "startBallance": 0,
+      "transactors": [
+          {
+              "createdOn": "",
+              "categoryId": "{{categoryFoodId}}",
+              "description": "Food",
+              "id": "3a1cc64b-0809-41fd-a21a-e7f7835230a5",
+              "isAddition": false,
+              "scenarioId": "",
+              "schedulers": [],
+              "updatedOn": "",
+              "value": 126.67,
+              "staged": true,
+              "deleted": false,
+              "cardId": "{{cardCreditId}}"
+          },
+          {
+              "createdOn": "",
+              "categoryId": "{{categoryTravelId}}",
+              "description": "Travel",
+              "id": "535e122d-03c7-414a-9f18-069f69dcb976",
+              "isAddition": false,
+              "scenarioId": "",
+              "schedulers": [],
+              "updatedOn": "",
+              "value": 462.48,
+              "staged": true,
+              "deleted": false,
+              "cardId": "{{cardCreditId}}"
+          },
+          {
+              "createdOn": "",
+              "categoryId": "{{categoryIncomeId}}",
+              "description": "Salary",
+              "id": "a1da2911-7c2f-4c56-8ee8-5bc047bc5fd0",
+              "isAddition": false,
+              "scenarioId": "",
+              "schedulers": [],
+              "updatedOn": "",
+              "value": 447.72,
+              "staged": true,
+              "deleted": false,
+              "cardId": "{{cardDebitId}}"
+          }
+      ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

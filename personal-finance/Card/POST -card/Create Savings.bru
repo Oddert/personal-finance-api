@@ -1,0 +1,37 @@
+meta {
+  name: Create Savings
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{url}}/card
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "bankName": "Zopa Bank",
+    "cardName": "Zopa Cash ISA",
+    "cardType": "SAVING",
+    "sortCode": 453261
+  }
+}
+
+script:post-response {
+  if (res.body.payload && res.body.payload.card) {
+    bru.setEnvVar("cardSavingsId", res.body.payload.card.id)
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

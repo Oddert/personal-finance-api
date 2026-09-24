@@ -1,0 +1,36 @@
+meta {
+  name: Create 'Income'
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{url}}/category
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "colour": "#12229d",
+    "label": "Income",
+    "description": "Earnings and stuff"
+  }
+}
+
+script:post-response {
+  if (res.body.payload && res.body.payload.category) {
+    bru.setEnvVar("categoryIncomeId", res.body.payload.category.id)
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

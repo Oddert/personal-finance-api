@@ -1,0 +1,36 @@
+meta {
+  name: Create 'Travel'
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/category
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "colour": "#d92858",
+    "label": "Travel",
+    "description": "Transport costs excluding bike"
+  }
+}
+
+script:post-response {
+  if (res.body.payload && res.body.payload.category) {
+    bru.setEnvVar("categoryTravelId", res.body.payload.category.id)
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

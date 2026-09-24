@@ -1,0 +1,36 @@
+meta {
+  name: Create 'Food'
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/category
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "colour": "#28d958",
+    "label": "Food",
+    "description": "Groceries etc"
+  }
+}
+
+script:post-response {
+  if (res.body.payload && res.body.payload.category) {
+    bru.setEnvVar("categoryFoodId", res.body.payload.category.id)
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

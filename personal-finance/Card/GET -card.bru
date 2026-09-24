@@ -1,0 +1,21 @@
+meta {
+  name: GET /card
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/card
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

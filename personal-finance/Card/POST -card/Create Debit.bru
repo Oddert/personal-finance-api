@@ -1,0 +1,37 @@
+meta {
+  name: Create Debit
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/card
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "bankName": "Bank of Scotland",
+    "cardName": "Main Debit Account",
+    "cardType": "DEBIT",
+    "sortCode": 123456
+  }
+}
+
+script:post-response {
+  if (res.body.payload && res.body.payload.card) {
+    bru.setEnvVar("cardDebitId", res.body.payload.card.id)
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

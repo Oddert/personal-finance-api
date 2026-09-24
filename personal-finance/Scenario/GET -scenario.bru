@@ -1,0 +1,21 @@
+meta {
+  name: GET /scenario
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/scenario/304e06c1-cfa1-47fe-bfc5-c44c5491564d
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
