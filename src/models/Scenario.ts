@@ -56,7 +56,7 @@ export class ScenarioCardBridge extends Model {
                 calcEndDate: obj.calc_end_date,
                 displayStartDate: obj.display_start_date,
                 displayEndDate: obj.display_end_date,
-                startBalance: obj.start_balance,
+                startBalance: obj.start_ballance,
                 note: obj.note,
             };
         },
@@ -69,7 +69,7 @@ export class ScenarioCardBridge extends Model {
                 calc_end_date: obj.calcEndDate,
                 display_start_date: obj.displayStartDate,
                 display_end_date: obj.displayEndDate,
-                start_balance: obj.startBalance,
+                start_ballance: obj.startBalance,
                 note: obj.note,
             };
         },
@@ -90,10 +90,18 @@ export const reprScenarioCardBridge = (
     scenarioId: scb.scenarioId,
     cardId: scb.cardId,
     cardName: scb.card?.cardName ?? '',
-    calcStartDate: scb.calcStartDate,
-    calcEndDate: scb.calcEndDate ?? null,
-    displayStartDate: scb.displayStartDate,
-    displayEndDate: scb.displayEndDate ?? null,
+    calcStartDate: scb.calcStartDate
+        ? new Date(scb.calcStartDate).toISOString()
+        : '',
+    calcEndDate: scb.calcEndDate
+        ? new Date(scb.calcEndDate).toISOString()
+        : null,
+    displayStartDate: scb.displayStartDate
+        ? new Date(scb.displayStartDate).toISOString()
+        : '',
+    displayEndDate: scb.displayEndDate
+        ? new Date(scb.displayEndDate).toISOString()
+        : null,
     startBalance: scb.startBalance,
     note: scb.note ?? null,
 });
@@ -148,29 +156,6 @@ export default class Scenario extends Model {
 
     static get tableName() {
         return 'scenario';
-    }
-
-    $beforeInsert() {
-        const now = new Date().toISOString();
-        this.createdOn = now;
-        this.updatedOn = now;
-        this.startDate = this.startDate
-            ? new Date(this.startDate).toISOString()
-            : '';
-        this.endDate = this.endDate ? new Date(this.endDate).toISOString() : '';
-    }
-
-    $afterFind() {
-        this.createdOn = this.createdOn
-            ? new Date(this.createdOn).toISOString()
-            : '';
-        this.updatedOn = this.updatedOn
-            ? new Date(this.updatedOn).toISOString()
-            : '';
-        this.startDate = this.startDate
-            ? new Date(this.startDate).toISOString()
-            : '';
-        this.endDate = this.endDate ? new Date(this.endDate).toISOString() : '';
     }
 
     toJson() {

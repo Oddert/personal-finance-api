@@ -69,6 +69,9 @@ describe('[INTEGRATION] routes : scenario', () => {
                         );
                         expect(scenario.cards).to.be.a('array');
                         expect(scenario.transactors).to.be.a('array');
+                        expect(scenario.transactors).to.have.lengthOf.above(1);
+
+                        let schedulerCount = 0;
 
                         for (const transactor of scenario.transactors) {
                             expect(transactor).to.have.all.keys(
@@ -98,6 +101,7 @@ describe('[INTEGRATION] routes : scenario', () => {
                             expect(transactor.scenarioId).to.be.a('string');
                             expect(transactor.scenarioId).to.eql(scenario.id);
                             expect(transactor.schedulers).to.be.a('array');
+                            schedulerCount += transactor.schedulers.length;
 
                             for (const scheduler of transactor.schedulers) {
                                 expect(scheduler).to.have.all.keys(
@@ -121,10 +125,10 @@ describe('[INTEGRATION] routes : scenario', () => {
                                 expect(scheduler.createdOn).to.be.a('string');
                                 expect(scheduler.updatedOn).to.be.a('string');
                                 expect(scheduler.step).to.satisfy(
-                                    nullOr('string'),
+                                    nullOr('number'),
                                 );
                                 expect(scheduler.startDate).to.satisfy(
-                                    nullOr('number'),
+                                    nullOr('string'),
                                 );
                                 expect(scheduler.day).to.satisfy(
                                     nullOr('number'),
@@ -140,7 +144,77 @@ describe('[INTEGRATION] routes : scenario', () => {
                                 );
                             }
                         }
+
+                        expect(schedulerCount).to.be.above(1);
                     }
+                    done();
+                });
+        });
+    });
+
+    describe('POST /scenario', () => {
+        it('should create a scenario with multiple transactors and schedulers', (done) => {
+            chai.request(server)
+                .post('/scenario')
+                .set('Content-Type', 'application/json')
+                .send({
+                    cardId: 'be913800-df3b-4285-803a-88e971fde8f3',
+                    description: '[test] scenario with nested records',
+                    endDate: null,
+                    startBallance: 1000,
+                    startDate: '1 Jan 2025',
+                    title: '[test] nested scenario',
+                    transactors: [
+                        {
+                            cardId: 'be913800-df3b-4285-803a-88e971fde8f3',
+                            description: 'Mortgage',
+                            isAddition: false,
+                            scenarioId: 'scenario-id-is-generated',
+                            schedulers: [
+                                {
+                                    day: 1,
+                                    schedulerCode: 'DAY',
+                                },
+                            ],
+                            value: 600.55,
+                        },
+                        {
+                            cardId: 'be913800-df3b-4285-803a-88e971fde8f3',
+                            description: 'Salary',
+                            isAddition: true,
+                            scenarioId: 'scenario-id-is-generated',
+                            schedulers: [
+                                {
+                                    day: 15,
+                                    schedulerCode: 'DAY',
+                                },
+                            ],
+                            value: 1894.28,
+                        },
+                    ],
+                })
+                .end((err, res) => {
+                    should.not.exist(err);
+                    res.status.should.eql(
+                        201,
+                        `Invalid response: ${JSON.stringify(res.body)}`,
+                    );
+
+                    const scenario = res.body.payload.scenario;
+                    expect(scenario.transactors).to.have.lengthOf(2);
+                    expect(scenario.transactors[0].schedulers).to.have.lengthOf(
+                        1,
+                    );
+                    expect(scenario.transactors[1].schedulers).to.have.lengthOf(
+                        1,
+                    );
+                    expect(
+                        scenario.transactors[0].schedulers[0].transactorId,
+                    ).to.eql(scenario.transactors[0].id);
+                    expect(
+                        scenario.transactors[1].schedulers[0].transactorId,
+                    ).to.eql(scenario.transactors[1].id);
+
                     done();
                 });
         });

@@ -36,18 +36,18 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
 
         if (req.query?.from || req.query?.to) {
             const scenarios = await Scenario.query()
-                .where('user_id', '=', req.user.id)
-                .whereBetween('start_date', [startDate, endDate])
-                .withGraphFetched('[cards, transactors.[schedulers]]')
-                .orderBy('title', 'DESC');
+                .where('scenario.user_id', '=', req.user.id)
+                .whereBetween('scenario.start_date', [startDate, endDate])
+                .withGraphJoined('[cards, transactors.[schedulers]]')
+                .orderBy('scenario.title', 'DESC');
 
             return respondOk({ req, res, payload: { scenarios } });
         }
 
         const scenarios = await Scenario.query()
-            .where('user_id', '=', req.user.id)
-            .withGraphFetched('[cards, transactors.[schedulers]]')
-            .orderBy('title', 'DESC');
+            .where('scenario.user_id', '=', req.user.id)
+            .withGraphJoined('[cards, transactors.[schedulers]]')
+            .orderBy('scenario.title', 'DESC');
 
         return respondOk({
             req,
@@ -67,9 +67,9 @@ export const getScenarios = async (req: IUserRequest, res: Response) => {
 export const getSingleScenario = async (req: IUserRequest, res: Response) => {
     try {
         const scenario = await Scenario.query()
-            .where('user_id', '=', req.user.id)
+            .where('scenario.user_id', '=', req.user.id)
             .findById(req.params.id)
-            .withGraphFetched('[cards, transactors.[schedulers]]');
+            .withGraphJoined('[cards, transactors.[schedulers]]');
 
         if (!scenario) {
             return respondNotFound({
@@ -101,50 +101,69 @@ export const createSingleScenario = async (
     try {
         const now = new Date().toISOString();
         const scenarioId = uuid();
-        const body = {
+
+        // Insert the scenario itself
+        await Scenario.query().insert({
             id: scenarioId,
             cardId: req.body.cardId,
             userId: req.user.id,
             updatedOn: now,
             createdOn: now,
-            startDate: req.body.startDate,
-            endDate: req.body.endDate,
+            startDate: req.body.startDate?.length ? req.body.startDate : null,
+            endDate: req.body.endDate?.length ? req.body.endDate : null,
             title: req.body.title,
             description: req.body.description,
             startBallance: req.body.startBallance,
-            transactors:
-                req.body.transactors?.map((transactor: any) => {
-                    const transactorId = uuid();
-                    return {
-                        id: transactorId,
-                        scenarioId: scenarioId,
-                        updatedOn: now,
-                        createdOn: now,
-                        categoryId: transactor.category_id,
-                        cardId: transactor.card_id ?? transactor.cardId,
-                        description: transactor.description,
-                        isAddition: transactor.isAddition,
-                        value: transactor.value,
-                        schedulers:
-                            transactor.schedulers?.map((scheduler: any) => {
-                                const schedulerId = uuid();
-                                return {
-                                    id: schedulerId,
-                                    transactorId: transactorId,
-                                    updatedOn: now,
-                                    createdOn: now,
-                                    schedulerCode: scheduler.schedulerCode,
-                                    step: scheduler.step,
-                                    startDate: scheduler.startDate,
-                                    day: scheduler.day,
-                                    nthDay: scheduler.nthDay,
-                                };
-                            }) ?? [],
-                    };
-                }) ?? [],
-        };
+        });
 
-        const scenario = await Scenario.query().insertGraphAndFetch(body);
+        // Insert transactors and their schedulers individually
+        if (req.body.transactors?.length) {
+            for (const transactor of req.body.transactors) {
+                const transactorId = uuid();
+
+                await Transactor.query().insert({
+                    id: transactorId,
+                    scenarioId: scenarioId,
+                    createdOn: now,
+                    updatedOn: now,
+                    categoryId:
+                        transactor.categoryId ?? transactor.category_id ?? null,
+                    cardId: transactor.card_id ?? transactor.cardId,
+                    description: transactor.description,
+                    isAddition: transactor.isAddition,
+                    value: transactor.value,
+                });
+
+                if (transactor.schedulers?.length) {
+                    for (const scheduler of transactor.schedulers) {
+                        await Scheduler.query().insert({
+                            id: uuid(),
+                            transactorId: transactorId,
+                            createdOn: now,
+                            updatedOn: now,
+                            schedulerCode:
+                                scheduler.schedulerCode ??
+                                scheduler.scheduler_code,
+                            step: scheduler.step ?? null,
+                            startDate:
+                                scheduler.startDate ??
+                                scheduler.start_date ??
+                                null,
+                            day: scheduler.day ?? null,
+                            nthDay: scheduler.nthDay ?? null,
+                        });
+                    }
+                }
+            }
+        }
+
+        const scenario = await Scenario.query()
+            .findById(scenarioId)
+            .withGraphJoined('[cards, transactors.[schedulers]]');
+
+        if (!scenario) {
+            throw new Error('Created scenario could not be retrieved.');
+        }
 
         return respondCreated({
             req,
@@ -259,9 +278,9 @@ export const updateSingleScenario = async (
         }
 
         const scenarioResponse = await Scenario.query()
-            .where('user_id', '=', req.user.id)
-            .where('id', '=', req.params.id)
-            .withGraphFetched('[cards, transactors.[schedulers]]')
+            .where('scenario.user_id', '=', req.user.id)
+            .where('scenario.id', '=', req.params.id)
+            .withGraphJoined('[cards, transactors.[schedulers]]')
             .first();
 
         if (!scenarioResponse) {

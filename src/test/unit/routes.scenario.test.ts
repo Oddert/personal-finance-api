@@ -142,6 +142,7 @@ describe('[UNIT] routes : scenario', () => {
                     const scenario = res.body.payload.scenario;
                     expect(scenario).to.have.all.keys(
                         'cardId',
+                        'cards',
                         'createdOn',
                         'description',
                         'endDate',
