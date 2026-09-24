@@ -4,6 +4,7 @@
   "description": "Server component for Personal Finance project",
   "scripts": {
     "test": "cross-env NODE_ENV=\"test\" npm run setuptests && mocha dist/test/**/*.test.js --timeout 10000 --exit",
+    "test:specific": "cross-env NODE_ENV=\"test\" npm run setuptests && mocha -- --timeout 10000 --exit",
     "test:watch": "cross-env NODE_ENV=\"test\" npm run setuptests mocha dist/test/**/*.test.js --timeout 10000 --watch",
     "test:specific:watch": "cross-env NODE_ENV=\"test\" npm run setuptests mocha --timeout 10000 -- --watch",
     "test:coverage": "cross-env NODE_ENV=\"test\" npm run build && nyc --reporter=text mocha dist/test/**/*.test.js --timeout 10000 --exit",
